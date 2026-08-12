@@ -14,9 +14,9 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 8081,
     proxy: {
-      // 与 plus-ui-react 约定一致：/dev-api 代理到后端 8080
+      // H5 仅对接 Client 后端，Admin 后端仍使用 8080。
       '/dev-api': {
-        target: 'http://localhost:8080',
+        target: 'http://localhost:8082',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/dev-api/, ''),
       },
