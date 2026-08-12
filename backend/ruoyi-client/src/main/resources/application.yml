@@ -1,0 +1,122 @@
+# 产品用户端服务配置
+server:
+  port: 8082
+  servlet:
+    context-path: /
+  jetty:
+    max-http-form-post-size: -1
+    threads:
+      min: 8
+      max: 256
+
+captcha:
+  enable: true
+  type: math
+  numberLength: 1
+  charLength: 4
+
+logging:
+  level:
+    org.dromara: @logging.level@
+    org.springframework: warn
+    org.mybatis.spring.mapper: error
+
+user:
+  password:
+    maxRetryCount: 5
+    lockTime: 10
+
+spring:
+  application:
+    name: RuoYi-Client
+  profiles:
+    active: @profiles.active@
+  messages:
+    basename: i18n/messages
+  threads:
+    virtual:
+      enabled: false
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+  mvc:
+    static-path-pattern: /static/**
+    format:
+      date-time: yyyy-MM-dd HH:mm:ss
+  jackson:
+    serialization:
+      indent_output: false
+      fail_on_empty_beans: false
+    deserialization:
+      fail_on_unknown_properties: false
+
+sa-token:
+  token-name: Authorization
+  is-concurrent: true
+  is-share: false
+  jwt-secret-key: ${CLIENT_JWT_SECRET:client-development-jwt-secret-key}
+
+security:
+  excludes:
+    - /*.html
+    - /**/*.html
+    - /**/*.css
+    - /**/*.js
+    - /favicon.ico
+    - /error
+    - /*/api-docs
+    - /*/api-docs/**
+
+mybatis-plus:
+  enableLogicDelete: true
+  mapperPackage: org.dromara.**.mapper
+  mapperLocations: classpath*:mapper/**/*Mapper.xml
+  typeAliasesPackage: org.dromara.**.domain
+  global-config:
+    dbConfig:
+      idType: ASSIGN_ID
+
+api-decrypt:
+  enabled: true
+  headerFlag: encrypt-key
+  publicKey: ${CLIENT_API_DECRYPT_PUBLIC_KEY:MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDm6u8q8X78onmbU4wGMq3b4ufbWE18YzuWo5jwkUlwWPTPcENbZYtveyTepp2Od1CTDcjhTUmVYvFkhaCF46UfOxZrwoSZc3jf3WXXd0hLOPBHuulynknj2KsWvKDuRig7J2o4KbDhyl0nnlUiMrIiD0tv1rBKpNCJ/T+MN0bERQIDAQAB}
+  privateKey: ${CLIENT_API_DECRYPT_PRIVATE_KEY:MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAO8QO5Eg4zehk9aP1SShzmlCSVHg8Ufr9yWeN4WqMMsiAPJC+PGGCoBlAD4T14Pqq7oWxc+Yrx2Nwv6eHdwUfPilfjveMO87dK977zIvdVFDSfalGBDZrTUwmzL5bBNkIFhZ/RWctEi8A1ShZCDL2/P3irtVrjh2DsDX/cgJ/7EDAgMBAAECgYEAhNZAQyRDHWZq/45soS5Hw7VRiG21pIE5k22W7G7lLfp3DCaqrYoNy8pTmCruVh7PzVdaE0CEDaf38gNqFCBOT8iTFQiYV3am4W3hsEQM5wmVBeTvCM5P2jsaaBQbqmneRjiZVbs6ha205JSho1Oc85NbaZa8gFVjwZgZWJrbzgECQQD/iZWhkRPtbdeai/Xk7D/eIXKh1Gxid0rWKQq8ikxbaiergn47XzNKrpROVyka3Gn85o7jJphgxp99R3r8sH71AkEA738Dn7xs+I4Y+MLa2EcT78JG3f/VhlWS/ks3qGJ2dfqwS7ntnmf5Q+2Xw+9UcuiK/TxD8K/0inSCkIMeWBOFFwJBAIoTebq3faEJfTqQ7ekojsokIKC4+2epNdLKknaV8/RhQ9Y0yKikJD7yXkiGaDuPZeW1Xvf2XtfL+1niSd5IMBECQDCOOMbe5dzyuj9dCg+FQZZ/dey2XK0Slm22BD/ATrIWtD12IaXXAKNz/Sv9TsrJOLykxkV69wJHIt13p+RFeNsCQGn5XGRn4ZCRVCesJYXyx29MTqkl8sD/gzYcURTZYjHqX2EvtvAyC6gBm9H0EbxmHIi4Oq0tITzklCXj5SpvBEw=}
+
+springdoc:
+  api-docs:
+    enabled: true
+  info:
+    title: 'RuoYi Client 产品用户端接口文档'
+    description: 'H5、App、微信小程序和 HarmonyOS 共用的产品用户端接口'
+    version: '${project.version}'
+  group-configs:
+    - group: 1.产品用户端
+      packages-to-scan: org.dromara.client
+
+xss:
+  enabled: true
+  excludeUrls: []
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: WHEN_AUTHORIZED
+
+--- # Spring Boot Admin 客户端
+spring.boot.admin.client:
+  enabled: false
+  url: http://localhost:9090/admin
+  username: @monitor.username@
+  password: @monitor.password@
+
+--- # 微信小程序配置
+client:
+  wechat:
+    miniapp:
+      app-id: ${CLIENT_WECHAT_MINIAPP_APP_ID:}
+      app-secret: ${CLIENT_WECHAT_MINIAPP_APP_SECRET:}

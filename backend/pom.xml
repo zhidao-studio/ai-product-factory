@@ -415,6 +415,13 @@
                 <version>${revision}</version>
             </dependency>
 
+            <!-- 产品用户体系模块 -->
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-client-system</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
             <!-- 调度任务模块 -->
             <dependency>
                 <groupId>org.dromara</groupId>
@@ -463,6 +470,8 @@
     <modules>
         <!-- web服务入口 -->
         <module>ruoyi-admin</module>
+        <!-- 产品用户端服务入口 -->
+        <module>ruoyi-client</module>
         <!-- common 通用模块 -->
         <module>ruoyi-common</module>
         <!-- 扩展模块 -->

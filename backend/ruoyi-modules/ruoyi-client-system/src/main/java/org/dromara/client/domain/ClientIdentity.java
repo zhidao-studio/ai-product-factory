@@ -1,0 +1,137 @@
+package org.dromara.client.domain;
+
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.dromara.common.mybatis.core.domain.BaseEntity;
+
+/**
+ * 产品用户第三方身份对象 client_identity。
+ *
+ * @author Lion Li
+ */
+@Data
+@EqualsAndHashCode(callSuper = true)
+@TableName("client_identity")
+public class ClientIdentity extends BaseEntity {
+
+    /**
+     * 主键。
+     */
+    @TableId(value = "id")
+    private Long id;
+
+    /**
+     * 产品用户 ID。
+     */
+    private Long userId;
+
+    /**
+     * 第三方认证唯一 ID。
+     */
+    private String authId;
+
+    /**
+     * 身份来源。
+     */
+    private String source;
+
+    /**
+     * 访问令牌。
+     */
+    private String accessToken;
+
+    /**
+     * 访问令牌有效期。
+     */
+    private int expireIn;
+
+    /**
+     * 刷新令牌。
+     */
+    private String refreshToken;
+
+    /**
+     * 第三方 open id。
+     */
+    private String openId;
+
+    /**
+     * 第三方账号。
+     */
+    private String userName;
+
+    /**
+     * 第三方昵称。
+     */
+    private String nickName;
+
+    /**
+     * 第三方邮箱。
+     */
+    private String email;
+
+    /**
+     * 第三方头像地址。
+     */
+    private String avatar;
+
+    /**
+     * 平台授权信息。
+     */
+    private String accessCode;
+
+    /**
+     * 第三方 union id。
+     */
+    private String unionId;
+
+    /**
+     * 授权范围。
+     */
+    private String scope;
+
+    /**
+     * Token 类型。
+     */
+    private String tokenType;
+
+    /**
+     * ID Token。
+     */
+    private String idToken;
+
+    /**
+     * MAC 算法。
+     */
+    private String macAlgorithm;
+
+    /**
+     * MAC key。
+     */
+    private String macKey;
+
+    /**
+     * 授权 code。
+     */
+    private String code;
+
+    /**
+     * OAuth Token。
+     */
+    private String oauthToken;
+
+    /**
+     * OAuth Token Secret。
+     */
+    private String oauthTokenSecret;
+
+    /**
+     * 删除标志（0 存在、1 删除）。
+     */
+    @TableLogic
+    private String delFlag;
+
+}

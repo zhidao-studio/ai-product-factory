@@ -20,6 +20,7 @@
         <module>ruoyi-gen</module>
         <module>ruoyi-job</module>
         <module>ruoyi-system</module>
+        <module>ruoyi-client-system</module>
         <module>ruoyi-workflow</module>
         <module>ruoyi-ai</module>
     </modules>

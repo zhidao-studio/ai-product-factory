@@ -80,6 +80,12 @@
             <artifactId>ruoyi-system</artifactId>
         </dependency>
 
+        <!-- 产品用户体系模块（仅由管理端暴露运营管理接口） -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-client-system</artifactId>
+        </dependency>
+
         <!-- 调度任务模块 -->
         <dependency>
             <groupId>org.dromara</groupId>

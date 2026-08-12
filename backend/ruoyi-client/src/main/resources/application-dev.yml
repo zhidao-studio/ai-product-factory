@@ -1,0 +1,65 @@
+--- # MyBatis Plus 开发配置
+mybatis-plus:
+  sql-log:
+    enabled: true
+    output: console
+
+--- # 产品业务数据源，与 Admin 共享业务数据
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    dynamic:
+      primary: master
+      strict: true
+      datasource:
+        master:
+          type: ${spring.datasource.type}
+          driverClassName: com.mysql.cj.jdbc.Driver
+          url: ${CLIENT_DB_URL:jdbc:mysql://localhost:3306/ry-vue?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true}
+          username: ${CLIENT_DB_USERNAME:root}
+          password: ${CLIENT_DB_PASSWORD:root}
+      hikari:
+        maxPoolSize: 20
+        minIdle: 10
+        connectionTimeout: 30000
+        validationTimeout: 5000
+        idleTimeout: 600000
+        maxLifetime: 1800000
+        keepaliveTime: 30000
+
+--- # 产品用户会话使用独立 Redis database
+spring.data:
+  redis:
+    host: ${CLIENT_REDIS_HOST:localhost}
+    port: ${CLIENT_REDIS_PORT:6379}
+    database: 1
+    password: ${CLIENT_REDIS_PASSWORD:ruoyi123}
+    timeout: 10s
+    ssl.enabled: false
+
+redisson:
+  keyPrefix: client
+  threads: 4
+  nettyThreads: 8
+  singleServerConfig:
+    clientName: RuoYi-Client
+    connectionMinimumIdleSize: 8
+    connectionPoolSize: 32
+    idleConnectionTimeout: 10000
+    timeout: 3000
+    subscriptionConnectionPoolSize: 50
+
+sms:
+  # 产品短信能力默认关闭，启用时必须同时配置供应商凭据
+  enabled: ${CLIENT_SMS_ENABLED:false}
+  config-type: yaml
+  restricted: true
+  minute-max: 1
+  account-max: 30
+  blends:
+    config1:
+      supplier: alibaba
+      access-key-id: ${CLIENT_SMS_ACCESS_KEY_ID:}
+      access-key-secret: ${CLIENT_SMS_ACCESS_KEY_SECRET:}
+      signature: ${CLIENT_SMS_SIGNATURE:}
+      sdk-app-id: ${CLIENT_SMS_SDK_APP_ID:}

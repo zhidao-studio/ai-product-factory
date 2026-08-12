@@ -348,6 +348,7 @@ insert into sys_menu values(1761400000000000001, '系统管理', 0, 1, 'system',
 insert into sys_menu values(1761400000000000002, '系统监控', 0, 3, 'monitor', null, '', 'N', 'Y', 'M', '0', '0', '', 'monitor', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '系统监控目录');
 insert into sys_menu values(1761400000000000003, '系统工具', 0, 4, 'tool', null, '', 'N', 'Y', 'M', '0', '0', '', 'tool', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '系统工具目录');
 insert into sys_menu values(1761400000000000005, '测试菜单', 0, 5, 'demo', null, '', 'N', 'Y', 'M', '0', '0', null, 'star', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '');
+insert into sys_menu values(1761400000000000007, '产品运营', 0, 6, 'client', null, '', 'N', 'Y', 'M', '0', '0', '', 'peoples', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '产品运营目录');
 insert into sys_menu values(1761400000000000006, 'AI会话',  0, 8, 'aichat', 'ai/chat/index', '', 'N', 'Y', 'C', '0', '0', '', 'checkbox', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, 'AI聊天菜单');
 insert into sys_menu values(1761400000000000004, 'PLUS官网', 0, 9, 'https://gitee.com/dromara/RuoYi-Vue-Plus', null, '', 'Y', 'Y', 'M', '0', '0', '', 'guide', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, 'RuoYi-Vue-Plus官网地址');
 -- 二级菜单
@@ -364,6 +365,8 @@ insert into sys_menu values(1761400000000000109, '在线用户', 176140000000000
 insert into sys_menu values(1761400000000000113, '缓存监控', 1761400000000000002, 5, 'cache', 'monitor/cache/index', '', 'N', 'Y', 'C', '0', '0', 'monitor:cache:list', 'redis', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '缓存监控菜单');
 insert into sys_menu values(1761400000000000115, '代码生成', 1761400000000000003, 2, 'gen', 'tool/gen/index', '', 'N', 'Y', 'C', '0', '0', 'tool:gen:list', 'code', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '代码生成菜单');
 insert into sys_menu values(1761400000000000123, '客户端管理', 1761400000000000001, 11, 'client', 'system/client/index', '', 'N', 'Y', 'C', '0', '0', 'system:client:list', 'international', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '客户端管理菜单');
+insert into sys_menu values(1761400000000000134, '产品用户', 1761400000000000007, 1, 'user', 'client/user/index', '', 'N', 'Y', 'C', '0', '0', 'client:user:list', 'user', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '产品用户管理菜单');
+insert into sys_menu values(1761400000000000135, '产品应用', 1761400000000000007, 2, 'application', 'client/application/index', '', 'N', 'Y', 'C', '0', '0', 'client:application:list', 'international', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '产品应用管理菜单');
 insert into sys_menu values(1761400000000000116, '修改生成配置', 1761400000000000003, 2, 'gen-edit/index/:tableId', 'tool/gen/editTable', '', 'N', 'N', 'C', '1', '0', 'tool:gen:edit', '#', '/tool/gen', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '');
 insert into sys_menu values(1761400000000000130, '分配用户', 1761400000000000001, 2, 'role-auth/user/:roleId', 'system/role/authUser', '', 'N', 'N', 'C', '1', '0', 'system:role:edit', '#', '/system/role', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '');
 insert into sys_menu values(1761400000000000131, '分配角色', 1761400000000000001, 1, 'user-auth/role/:userId', 'system/user/authRole', '', 'N', 'N', 'C', '1', '0', 'system:user:edit', '#', '/system/user', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '');
@@ -463,6 +466,17 @@ insert into sys_menu values(1761400000000001062, '客户端管理新增', 176140
 insert into sys_menu values(1761400000000001063, '客户端管理修改', 1761400000000000123, 3, '#', '', '', 'N', 'Y', 'F', '0', '0', 'system:client:edit', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '');
 insert into sys_menu values(1761400000000001064, '客户端管理删除', 1761400000000000123, 4, '#', '', '', 'N', 'Y', 'F', '0', '0', 'system:client:remove', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '');
 insert into sys_menu values(1761400000000001065, '客户端管理导出', 1761400000000000123, 5, '#', '', '', 'N', 'Y', 'F', '0', '0', 'system:client:export', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '');
+-- 产品运营按钮
+insert into sys_menu values(1761400000000001630, '产品用户查询', 1761400000000000134, 1, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:user:query', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '');
+insert into sys_menu values(1761400000000001631, '产品用户新增', 1761400000000000134, 2, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:user:add', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '');
+insert into sys_menu values(1761400000000001632, '产品用户修改', 1761400000000000134, 3, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:user:edit', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '');
+insert into sys_menu values(1761400000000001633, '产品用户删除', 1761400000000000134, 4, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:user:remove', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '');
+insert into sys_menu values(1761400000000001634, '产品用户导出', 1761400000000000134, 5, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:user:export', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '');
+insert into sys_menu values(1761400000000001635, '产品用户重置密码', 1761400000000000134, 6, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:user:resetPwd', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '');
+insert into sys_menu values(1761400000000001640, '产品应用查询', 1761400000000000135, 1, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:application:query', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '');
+insert into sys_menu values(1761400000000001641, '产品应用新增', 1761400000000000135, 2, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:application:add', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '');
+insert into sys_menu values(1761400000000001642, '产品应用修改', 1761400000000000135, 3, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:application:edit', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '');
+insert into sys_menu values(1761400000000001644, '产品应用导出', 1761400000000000135, 5, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:application:export', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '');
 -- 测试菜单
 insert into sys_menu values(1761400000000001500, '测试单表', 1761400000000000005, 1, 'demo', 'demo/demo/index', '', 'N', 'Y', 'C', '0', '0', 'demo:demo:list', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '测试单表菜单');
 insert into sys_menu values(1761400000000001501, '测试单表查询', 1761400000000001500, 1, '#', '', '', 'N', 'Y', 'F', '0', '0', 'demo:demo:query', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate, null, null, '');
@@ -622,6 +636,19 @@ insert into sys_role_menu values (1761300000000000003, 1761400000000011641);
 insert into sys_role_menu values (1761300000000000003, 1761400000000011642);
 insert into sys_role_menu values (1761300000000000003, 1761400000000011643);
 insert into sys_role_menu values (1761300000000000003, 1761400000000011701);
+insert into sys_role_menu values (1761300000000000003, 1761400000000000007);
+insert into sys_role_menu values (1761300000000000003, 1761400000000000134);
+insert into sys_role_menu values (1761300000000000003, 1761400000000000135);
+insert into sys_role_menu values (1761300000000000003, 1761400000000001630);
+insert into sys_role_menu values (1761300000000000003, 1761400000000001631);
+insert into sys_role_menu values (1761300000000000003, 1761400000000001632);
+insert into sys_role_menu values (1761300000000000003, 1761400000000001633);
+insert into sys_role_menu values (1761300000000000003, 1761400000000001634);
+insert into sys_role_menu values (1761300000000000003, 1761400000000001635);
+insert into sys_role_menu values (1761300000000000003, 1761400000000001640);
+insert into sys_role_menu values (1761300000000000003, 1761400000000001641);
+insert into sys_role_menu values (1761300000000000003, 1761400000000001642);
+insert into sys_role_menu values (1761300000000000003, 1761400000000001644);
 insert into sys_role_menu values (1761300000000000004, 1761400000000000005);
 insert into sys_role_menu values (1761300000000000004, 1761400000000001500);
 insert into sys_role_menu values (1761300000000000004, 1761400000000001501);
@@ -842,10 +869,15 @@ insert into sys_dict_data values(1761600000000000031, 0, '短信认证', 'sms', 
 insert into sys_dict_data values(1761600000000000032, 0, '邮件认证', 'email', 'sys_grant_type', '', 'default', 'N', 1761000000000000103, 1761100000000000001, sysdate, NULL, null, '邮件认证');
 insert into sys_dict_data values(1761600000000000033, 0, '小程序认证', 'xcx', 'sys_grant_type', '', 'default', 'N', 1761000000000000103, 1761100000000000001, sysdate, NULL, null, '小程序认证');
 insert into sys_dict_data values(1761600000000000034, 0, '三方登录认证', 'social', 'sys_grant_type', '', 'default', 'N', 1761000000000000103, 1761100000000000001, sysdate, NULL, null, '三方登录认证');
+insert into sys_dict_data values(1761600000000000060, 0, '手机号密码认证', 'phonePassword', 'sys_grant_type', '', 'default', 'N', 1761000000000000103, 1761100000000000001, sysdate, NULL, null, '手机号密码认证');
 insert into sys_dict_data values(1761600000000000035, 0, 'PC', 'pc', 'sys_device_type', '', 'default', 'N', 1761000000000000103, 1761100000000000001, sysdate, NULL, null, 'PC');
 insert into sys_dict_data values(1761600000000000036, 0, '安卓', 'android', 'sys_device_type', '', 'default', 'N', 1761000000000000103, 1761100000000000001, sysdate, NULL, null, '安卓');
 insert into sys_dict_data values(1761600000000000037, 0, 'iOS', 'ios', 'sys_device_type', '', 'default', 'N', 1761000000000000103, 1761100000000000001, sysdate, NULL, null, 'iOS');
 insert into sys_dict_data values(1761600000000000038, 0, '小程序', 'xcx', 'sys_device_type', '', 'default', 'N', 1761000000000000103, 1761100000000000001, sysdate, NULL, null, '小程序');
+insert into sys_dict_data values(1761600000000000061, 0, 'H5', 'h5', 'sys_device_type', '', 'default', 'N', 1761000000000000103, 1761100000000000001, sysdate, NULL, null, 'H5');
+insert into sys_dict_data values(1761600000000000062, 0, 'App', 'app', 'sys_device_type', '', 'default', 'N', 1761000000000000103, 1761100000000000001, sysdate, NULL, null, 'App');
+insert into sys_dict_data values(1761600000000000063, 0, '微信小程序', 'miniapp', 'sys_device_type', '', 'default', 'N', 1761000000000000103, 1761100000000000001, sysdate, NULL, null, '微信小程序');
+insert into sys_dict_data values(1761600000000000064, 0, 'HarmonyOS', 'harmony', 'sys_device_type', '', 'default', 'N', 1761000000000000103, 1761100000000000001, sysdate, NULL, null, 'HarmonyOS');
 
 
 -- ----------------------------
@@ -1245,7 +1277,184 @@ comment on column sys_client.update_by              is '更新者';
 comment on column sys_client.update_time            is '更新时间';
 
 insert into sys_client values (1762000000000000001, 'e5cd7e4891bf95d1d19206ce24a7b32e', 'pc', 'pc123', 'password,social', 'pc', null, null, 1800, 604800, 0, 0, 1761000000000000103, 1761100000000000001, sysdate, 1761100000000000001, sysdate);
-insert into sys_client values (1762000000000000002, '428a8310cd442757ae699df5d894f051', 'app', 'app123', 'password,sms,social', 'android', '/app/**', null, 1800, 604800, 0, 0, 1761000000000000103, 1761100000000000001, sysdate, 1761100000000000001, sysdate);
+
+-- ----------------------------
+-- 产品用户信息表
+-- ----------------------------
+create table client_user (
+  user_id           number(20)      not null,
+  user_name         varchar2(40)    not null,
+  nick_name         varchar2(40)    not null,
+  user_type         varchar2(10)    default 'app_user',
+  email             varchar2(50)    default '',
+  phone_number      varchar2(11)    default '',
+  gender            char(1)         default '0',
+  avatar            number(20)      default null,
+  password          varchar2(100)   default '',
+  credential_version number(10)     default 0,
+  status            char(1)         default '0',
+  del_flag          char(1)         default '0',
+  login_ip          varchar2(128)   default '',
+  login_date        date,
+  create_dept       number(20)      default null,
+  create_by         number(20)      default null,
+  create_time       date,
+  update_by         number(20)      default null,
+  update_time       date,
+  remark            varchar2(500)   default ''
+);
+
+alter table client_user add constraint pk_client_user primary key (user_id);
+
+create index idx_client_user_create_by on client_user (create_by);
+create unique index uk_client_user_user_name on client_user (user_name);
+create index idx_client_user_phone on client_user (phone_number);
+
+comment on table  client_user                    is '产品用户信息表';
+comment on column client_user.user_id            is '产品用户ID';
+comment on column client_user.user_name          is '用户账号';
+comment on column client_user.nick_name          is '用户昵称';
+comment on column client_user.user_type          is '用户类型（app_user产品用户）';
+comment on column client_user.email              is '用户邮箱';
+comment on column client_user.phone_number       is '手机号码';
+comment on column client_user.gender             is '用户性别（0男 1女 2未知）';
+comment on column client_user.avatar             is '头像路径';
+comment on column client_user.password           is '密码';
+comment on column client_user.credential_version is '凭证版本（重置密码后递增）';
+comment on column client_user.status             is '账号状态（0正常 1停用）';
+comment on column client_user.del_flag           is '删除标志（0代表存在 1代表删除）';
+comment on column client_user.login_ip           is '最后登录IP';
+comment on column client_user.login_date         is '最后登录时间';
+comment on column client_user.create_dept        is '创建部门';
+comment on column client_user.create_by          is '创建者';
+comment on column client_user.create_time        is '创建时间';
+comment on column client_user.update_by          is '更新者';
+comment on column client_user.update_time        is '更新时间';
+comment on column client_user.remark             is '备注';
+
+insert into client_user values (1763000000000000001, 'client', '示例产品用户', 'app_user', '', '13800138000', '0', null, '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', 0, '0', '0', '', null, null, null, sysdate, null, null, '默认产品用户');
+
+-- ----------------------------
+-- 用户端应用授权表
+-- ----------------------------
+create table client_application (
+    id                  number(20),
+    client_id           varchar2(64)   default '',
+    client_key          varchar2(32)   default '',
+    client_secret       varchar2(255)  default '',
+    grant_type          varchar2(255)  default '',
+    device_type         varchar2(32)   default '',
+    access_path         varchar2(2000) default '',
+    ip_whitelist        varchar2(1000) default '',
+    active_timeout      number(11)     default 1800,
+    timeout             number(11)     default 604800,
+    status              char(1)        default '0',
+    del_flag            char(1)        default '0',
+    create_dept         number(20),
+    create_by           number(20),
+    create_time         date,
+    update_by           number(20),
+    update_time         date,
+    remark              varchar2(500)  default ''
+);
+
+alter table client_application add constraint pk_client_application primary key (id);
+
+create unique index uk_client_app_client_id on client_application (client_id);
+create unique index uk_client_app_client_key on client_application (client_key);
+
+comment on table client_application                         is '用户端应用授权表';
+comment on column client_application.id                     is '主键';
+comment on column client_application.client_id              is '客户端id';
+comment on column client_application.client_key             is '客户端key';
+comment on column client_application.client_secret          is '客户端秘钥';
+comment on column client_application.grant_type             is '授权类型';
+comment on column client_application.device_type            is '设备类型';
+comment on column client_application.access_path            is '允许访问路径';
+comment on column client_application.ip_whitelist           is 'IP白名单';
+comment on column client_application.active_timeout         is 'token活跃超时时间';
+comment on column client_application.timeout                is 'token固定超时';
+comment on column client_application.status                 is '状态（0正常 1停用）';
+comment on column client_application.del_flag               is '删除标志（0代表存在 1代表删除）';
+comment on column client_application.create_dept            is '创建部门';
+comment on column client_application.create_by              is '创建者';
+comment on column client_application.create_time            is '创建时间';
+comment on column client_application.update_by              is '更新者';
+comment on column client_application.update_time            is '更新时间';
+comment on column client_application.remark                 is '备注';
+
+insert into client_application values (1763100000000000001, '8f6e7d5c4b3a2910fedcba9876543210', 'h5', 'h5123', 'password,sms', 'h5', '/client/**,/auth/logout', null, 1800, 604800, '0', '0', null, null, sysdate, null, null, 'H5客户端');
+insert into client_application values (1763100000000000002, '428a8310cd442757ae699df5d894f051', 'app', 'app123', 'phonePassword,sms', 'app', '/client/**,/auth/logout', null, 1800, 604800, '0', '0', null, null, sysdate, null, null, 'App客户端');
+insert into client_application values (1763100000000000003, '7f4c1e2d8a9b4c6f9012d3e4f5a6b7c8', 'miniapp', 'miniapp123', 'xcx', 'miniapp', '/client/**,/auth/logout', null, 1800, 604800, '0', '0', null, null, sysdate, null, null, '微信小程序客户端');
+insert into client_application values (1763100000000000004, '9c8b7a6d5e4f3210a1b2c3d4e5f60718', 'harmony', 'harmony123', 'password,sms', 'harmony', '/client/**,/auth/logout', null, 1800, 604800, '0', '0', null, null, sysdate, null, null, 'HarmonyOS客户端');
+
+-- ----------------------------
+-- 产品用户第三方身份表
+-- ----------------------------
+create table client_identity
+(
+    id                 number(20)        not null,
+    user_id            number(20)        not null,
+    auth_id            varchar2(255)     not null,
+    source             varchar2(255)     not null,
+    open_id            varchar2(255)     default null,
+    user_name          varchar2(30)      not null,
+    nick_name          varchar2(30)      default '',
+    email              varchar2(255)     default '',
+    avatar             varchar2(500)     default '',
+    access_token       varchar2(2000)    not null,
+    expire_in          number(20)        default null,
+    refresh_token      varchar2(2000)    default null,
+    access_code        varchar2(255)     default null,
+    union_id           varchar2(255)     default null,
+    scope              varchar2(255)     default null,
+    token_type         varchar2(255)     default null,
+    id_token           varchar2(2000)    default null,
+    mac_algorithm      varchar2(255)     default null,
+    mac_key            varchar2(255)     default null,
+    code               varchar2(255)     default null,
+    oauth_token        varchar2(255)     default null,
+    oauth_token_secret varchar2(255)     default null,
+    create_dept        number(20),
+    create_by          number(20),
+    create_time        date,
+    update_by          number(20),
+    update_time        date,
+    del_flag           char(1)           default '0'
+);
+
+alter table client_identity add constraint pk_client_identity primary key (id);
+create unique index uk_client_identity_auth_id on client_identity (auth_id);
+
+comment on table client_identity                         is '产品用户第三方身份表';
+comment on column client_identity.id                     is '主键';
+comment on column client_identity.user_id                is '产品用户ID';
+comment on column client_identity.auth_id                is '平台+平台唯一id';
+comment on column client_identity.source                 is '用户来源';
+comment on column client_identity.open_id                is '平台编号唯一id';
+comment on column client_identity.user_name              is '登录账号';
+comment on column client_identity.nick_name              is '用户昵称';
+comment on column client_identity.email                  is '用户邮箱';
+comment on column client_identity.avatar                 is '头像地址';
+comment on column client_identity.access_token           is '用户的授权令牌';
+comment on column client_identity.expire_in              is '用户的授权令牌的有效期，部分平台可能没有';
+comment on column client_identity.refresh_token          is '刷新令牌，部分平台可能没有';
+comment on column client_identity.access_code            is '平台的授权信息，部分平台可能没有';
+comment on column client_identity.union_id               is '用户的 unionid';
+comment on column client_identity.scope                  is '授予的权限，部分平台可能没有';
+comment on column client_identity.token_type             is '个别平台的授权信息，部分平台可能没有';
+comment on column client_identity.id_token               is 'id token，部分平台可能没有';
+comment on column client_identity.mac_algorithm          is '小米平台用户的附带属性，部分平台可能没有';
+comment on column client_identity.mac_key                is '小米平台用户的附带属性，部分平台可能没有';
+comment on column client_identity.code                   is '用户的授权code，部分平台可能没有';
+comment on column client_identity.oauth_token            is 'Twitter平台用户的附带属性，部分平台可能没有';
+comment on column client_identity.oauth_token_secret     is 'Twitter平台用户的附带属性，部分平台可能没有';
+comment on column client_identity.create_dept            is '创建部门';
+comment on column client_identity.create_by              is '创建者';
+comment on column client_identity.create_time            is '创建时间';
+comment on column client_identity.update_by              is '更新者';
+comment on column client_identity.update_time            is '更新时间';
+comment on column client_identity.del_flag               is '删除标志（0代表存在 1代表删除）';
 
 create table test_demo (
     id          number(20)      not null,
@@ -1350,4 +1559,3 @@ after logon on database
 begin
 execute immediate 'alter session set nls_date_format=''YYYY-MM-DD HH24:MI:SS''';
 end;
-
