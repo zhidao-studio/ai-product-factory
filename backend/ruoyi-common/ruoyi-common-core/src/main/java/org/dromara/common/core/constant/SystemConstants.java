@@ -85,7 +85,11 @@ public interface SystemConstants {
     /**
      * 排除敏感属性字段
      */
-    String[] EXCLUDE_PROPERTIES = {"password", "oldPassword", "newPassword", "confirmPassword"};
+    String[] EXCLUDE_PROPERTIES = {
+        "password", "oldPassword", "newPassword", "confirmPassword",
+        "Authorization", "authorization", "token", "accessToken", "access_token",
+        "clientSecret", "client_secret"
+    };
 
 
 }
