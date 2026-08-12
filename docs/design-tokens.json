@@ -1,0 +1,223 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "$description": "多端 UI/UX 设计系统 — 机器可读 Design Tokens 单源文件。供 LLM / 编码 Agent 直接 import，也兼容 Style Dictionary / Tokens Studio。权威文档见 docs/AI-设计系统上下文.md。版本 v1.1.0。",
+  "meta": {
+    "version": "1.2.0",
+    "techStack": "React/React Native + Ant Design 全家桶",
+    "primaryColor": "#1677FF",
+    "sourceOfTruth": "docs/AI-设计系统上下文.md",
+    "rules": {
+      "MUST": [
+        "所有颜色/间距/圆角/字号必须来自本文件 Token，禁止硬编码魔法值",
+        "主色固定 #1677FF；改色只改 colorPrimary，全链路自动派生",
+        "间距必须是 8 的倍数（4/8/12/16/20/24/32/48），圆角取自 {2,4,6,8}",
+        "文本对比度 >= 4.5:1（WCAG AA），大文本 >= 3:1",
+        "移动端触控目标 >= 44px（iOS）/ 48px（Android/HarmonyOS）",
+        "主操作每屏至多 1 个 primary 按钮；危险操作 danger + 二次确认",
+        "暗色模式用 darkAlgorithm 派生，禁止重配整套色",
+        "组件优先用 antd / antd-mobile / antd-mini 原组件"
+      ],
+      "NEVER": [
+        "禁止写死非 Token 色值（含 rgba(0,0,0,0.5)，用 colorTextSecondary 等派生）",
+        "禁止 3/5/7px 等非梯度间距与圆角",
+        "禁止用 Modal 展示可后台完成的轻提示（用 Toast / message）",
+        "禁止移动端用 Table（改用 List + 触底加载）",
+        "禁止 linear 缓动（加载旋转除外）",
+        "禁止占位符替代 Label",
+        "禁止单页 > 1 个加载动画、> 1 个主按钮、> 5 个底部 Tab",
+        "禁止自定义微信小程序右上角胶囊菜单",
+        "禁止业务代码 import antd 未导出内部 API"
+      ]
+    }
+  },
+
+  "color": {
+    "primary":         { "value": "#1677FF" },
+    "primary-hover":   { "value": "#4096FF" },
+    "primary-active":  { "value": "#0958D9" },
+    "success":         { "value": "#52C41A" },
+    "warning":         { "value": "#FAAD14" },
+    "error":           { "value": "#FF4D4F" },
+    "info":            { "value": "#1677FF" },
+    "text":            { "value": "rgba(0,0,0,0.88)" },
+    "text-secondary":  { "value": "rgba(0,0,0,0.65)" },
+    "text-tertiary":   { "value": "rgba(0,0,0,0.45)" },
+    "text-disabled":   { "value": "rgba(0,0,0,0.25)" },
+    "text-placeholder":{ "value": "rgba(0,0,0,0.25)" },
+    "border":          { "value": "#D9D9D9" },
+    "split":           { "value": "rgba(5,5,5,0.06)" },
+    "bg-layout":       { "value": "#F5F5F5" },
+    "bg-container":    { "value": "#FFFFFF" },
+    "bg-elevated":     { "value": "#FFFFFF" },
+    "bg-mask":         { "value": "rgba(0,0,0,0.45)" },
+    "link":            { "value": "#1677FF" },
+    "dark": {
+      "primary":       { "value": "#1668DC" },
+      "text":          { "value": "rgba(255,255,255,0.85)" },
+      "bg-layout":     { "value": "#000000" },
+      "bg-container":  { "value": "#1F1F1F" },
+      "bg-elevated":   { "value": "#262626" },
+      "border":        { "value": "#424242" },
+      "split":         { "value": "rgba(255,255,255,0.12)" }
+    }
+  },
+
+  "chart": {
+    "categorical": [
+      { "name": "C1", "light": "#1677FF", "dark": "#4096FF" },
+      { "name": "C2", "light": "#13C2C2", "dark": "#36CFC9" },
+      { "name": "C3", "light": "#52C41A", "dark": "#73D13D" },
+      { "name": "C4", "light": "#99CC33", "dark": "#B7E861" },
+      { "name": "C5", "light": "#FAAD14", "dark": "#FFC53D" },
+      { "name": "C6", "light": "#FA8C16", "dark": "#FFA940" },
+      { "name": "C7", "light": "#FF4D4F", "dark": "#FF7875" },
+      { "name": "C8", "light": "#722ED1", "dark": "#9254DE" },
+      { "name": "C9", "light": "#EB2F96", "dark": "#F759AB" },
+      { "name": "C10", "light": "#5B8FF9", "dark": "#85A5FF" }
+    ],
+    "sequential-blue": { "value": ["#E6F4FF", "#69B1FF", "#1677FF", "#0958D9"] },
+    "diverging-blue-red": { "value": ["#1677FF", "#F5F5F5", "#FF4D4F"] },
+    "axis": { "light": "rgba(5,5,5,0.06)", "dark": "rgba(255,255,255,0.12)" },
+    "rule": { "value": "数据色取分类色板，主色不独占类别；类别<=10；语义色仅用于状态；数值轴从0起；禁止3D与静默截断；light/dark双套" }
+  },
+
+  "font": {
+    "family":     { "value": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif" },
+    "size":       { "value": 14 },
+    "size-lg":    { "value": 16 },
+    "size-sm":    { "value": 12 },
+    "size-h1":    { "value": 38 },
+    "size-h2":    { "value": 30 },
+    "size-h3":    { "value": 24 },
+    "size-h4":    { "value": 20 },
+    "size-h5":    { "value": 16 },
+    "weight-regular": { "value": 400 },
+    "weight-medium":  { "value": 500 },
+    "weight-strong":  { "value": 600 },
+    "line-height": { "value": 1.571 }
+  },
+
+  "space": {
+    "xxs": { "value": 4 },
+    "xs":  { "value": 8 },
+    "sm":  { "value": 12 },
+    "base":{ "value": 16 },
+    "md":  { "value": 20 },
+    "lg":  { "value": 24 },
+    "xl":  { "value": 32 },
+    "xxl": { "value": 48 }
+  },
+
+  "radius": {
+    "xs":     { "value": 2 },
+    "sm":     { "value": 4 },
+    "base":   { "value": 6 },
+    "lg":     { "value": 8 },
+    "outer":  { "value": 4 },
+    "circle": { "value": "50%" },
+    "capsule":{ "value": "calc(100% / 2)" }
+  },
+
+  "size": {
+    "control-height":      { "value": 32 },
+    "control-height-lg":   { "value": 40 },
+    "control-height-sm":   { "value": 24 },
+    "line-width":          { "value": 1 },
+    "line-type":           { "value": "solid" },
+    "table-row-height":    { "value": 48 },
+    "touch-min-ios":       { "value": 44 },
+    "touch-min-android":   { "value": 48 },
+    "touch-min-harmony":   { "value": 48 },
+    "touch-min-h5":        { "value": 44 },
+    "touch-min-miniprogram": { "value": 44 }
+  },
+
+  "shadow": {
+    "tertiary": { "value": "0 1px 2px 0 rgba(0,0,0,0.05)" },
+    "default":  { "value": "0 6px 16px 0 rgba(0,0,0,0.08), 0 3px 6px -4px rgba(0,0,0,0.12), 0 9px 28px 8px rgba(0,0,0,0.05)" }
+  },
+
+  "motion": {
+    "duration-micro":  { "value": 100 },
+    "duration-small":  { "value": 200 },
+    "duration-page":   { "value": 300 },
+    "ease-in-out":     { "value": "cubic-bezier(0.645,0.045,0.355,1)" },
+    "ease-out":        { "value": "cubic-bezier(0.215,0.61,0.355,1)" },
+    "ease-out-back":   { "value": "cubic-bezier(0.12,0.4,0.29,1.46)" }
+  },
+
+  "z-index": {
+    "base":        { "value": 0 },
+    "sticky":      { "value": 10 },
+    "popup":       { "value": 1000 },
+    "modal":       { "value": 1000 },
+    "notification":{ "value": 2000 }
+  },
+
+  "breakpoint": {
+    "xs":   { "value": 480 },
+    "sm":   { "value": 576 },
+    "md":   { "value": 768 },
+    "lg":   { "value": 992 },
+    "xl":   { "value": 1200 },
+    "xxl":  { "value": 1600 },
+    "xxxl": { "value": 1920 }
+  },
+
+  "platform": {
+    "ios": {
+      "primary": { "value": "#1677FF" },
+      "touch-target": { "value": 44 },
+      "nav": { "value": "底部Tab + 右滑返回" },
+      "list-strategy": { "value": "List（禁用 Table）" },
+      "font-base": { "value": 16 },
+      "lib": { "value": "antd-mobile / React Native" },
+      "notes": { "value": "安全区 env(safe-area-inset-*)；Dynamic Type 支持；圆角偏大 10~16" }
+    },
+    "android": {
+      "primary": { "value": "#1677FF" },
+      "touch-target": { "value": 48 },
+      "nav": { "value": "底部Tab + 物理键" },
+      "list-strategy": { "value": "List（禁用 Table）" },
+      "font-base": { "value": 16 },
+      "lib": { "value": "antd-mobile / React Native" },
+      "notes": { "value": "Ripple、FAB 56dp、M3 Shape 圆角(4/8/12/16)" }
+    },
+    "harmonyos": {
+      "primary": { "value": "#1677FF" },
+      "touch-target": { "value": 48 },
+      "nav": { "value": "底部Tab" },
+      "list-strategy": { "value": "List（禁用 Table）" },
+      "font-base": { "value": 16 },
+      "lib": { "value": "antd-mobile" },
+      "notes": { "value": "24vp 图标规范；多设备断点(<600/600~840/840~1280/>1280)" }
+    },
+    "pc-web": {
+      "primary": { "value": "#1677FF" },
+      "touch-target": { "value": 32 },
+      "nav": { "value": "侧边 / 顶部 Menu" },
+      "list-strategy": { "value": "Table（行高 48，列 <= 12）" },
+      "font-base": { "value": 14 },
+      "lib": { "value": "antd" },
+      "notes": { "value": "圆角常用 6；栅格基于断点" }
+    },
+    "h5": {
+      "primary": { "value": "#1677FF" },
+      "touch-target": { "value": 44 },
+      "nav": { "value": "底部Tab" },
+      "list-strategy": { "value": "List（禁用 Table）" },
+      "font-base": { "value": 16 },
+      "lib": { "value": "antd-mobile" },
+      "notes": { "value": "输入框字号 >= 16px 防 iOS 缩放" }
+    },
+    "miniprogram": {
+      "primary": { "value": "#1677FF" },
+      "touch-target": { "value": 44 },
+      "nav": { "value": "底部Tab(<= 5) + 胶囊预留" },
+      "list-strategy": { "value": "List（禁用 Table）" },
+      "font-base": { "value": 28 },
+      "lib": { "value": "antd-mini / WeUI" },
+      "notes": { "value": "右上角胶囊 88x32px 不可自定义；rpx 单位(750rpx=屏宽)" }
+    }
+  }
+}

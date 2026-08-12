@@ -1,0 +1,68 @@
+# RuoYi-Vue-Plus 本地基础设施（macOS 上以 Docker 为载体，不污染本机）
+# 启动: docker compose -f infra/docker-compose.yml up -d
+# 停止: docker compose -f infra/docker-compose.yml down
+# 仅删容器保数据: docker compose -f infra/docker-compose.yml down
+# 删容器+数据:   docker compose -f infra/docker-compose.yml down -v
+#
+# 端口全部发布到宿主机 localhost，后端(跑在 macOS 本机)通过 localhost 直连。
+# 默认账号密码已与 backend 的 application-dev.yml 对齐:
+#   MySQL  root / root        (库 ry-vue)
+#   Redis  requirepass ruoyi123
+#
+# 说明: MinIO / Elasticsearch 在当前 dev 默认配置中未启用(文件用本地磁盘存储)，
+#       故未部署；如需对象存储或全文检索再追加对应 service。
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ruoyi-mysql
+    restart: unless-stopped
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-authentication-plugin=mysql_native_password
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ry-vue
+    ports:
+      - "23306:3306"
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d:ro
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - ruoyi-net
+
+  redis:
+    image: redis:7
+    container_name: ruoyi-redis
+    restart: unless-stopped
+    command: ["redis-server", "--requirepass", "ruoyi123", "--appendonly", "yes"]
+    environment:
+      TZ: Asia/Shanghai
+    ports:
+      - "16379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "ruoyi123", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - ruoyi-net
+
+volumes:
+  mysql-data:
+  redis-data:
+
+networks:
+  ruoyi-net:
+    driver: bridge

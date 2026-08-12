@@ -1,0 +1,13 @@
+{
+  "miniprogramRoot": "./dist/",
+  "projectname": "miniapp",
+  "description": "RuoYi多端小程序",
+  "appid": "touristappid",
+  "setting": {
+    "es6": true,
+    "postcss": true,
+    "minified": true,
+    "urlCheck": false
+  },
+  "compileType": "miniprogram"
+}

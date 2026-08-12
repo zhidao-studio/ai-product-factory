@@ -1,0 +1,54 @@
+/**
+ * antd-mobile 设计 Token → CSS 变量（单源：docs/design-tokens）
+ *
+ * antd-mobile v5 以 CSS 变量驱动主题，通过覆盖 --adm-* 实现换肤。
+ * 暗色模式由 <html data-theme="dark"> 切换到对应变量集（与 PC 端一致）。
+ */
+
+:root:root {
+  /* 品牌色 */
+  --adm-color-primary: #1677ff;
+  --adm-color-success: #52c41a;
+  --adm-color-warning: #faad14;
+  --adm-color-danger: #ff4d4f;
+  --adm-color-white: #ffffff;
+
+  /* 文本 */
+  --adm-color-text: rgba(0, 0, 0, 0.88);
+  --adm-color-text-secondary: rgba(0, 0, 0, 0.65);
+  --adm-color-text-placeholder: rgba(0, 0, 0, 0.25);
+  --adm-color-light: #c8c9cc;
+
+  /* 背景 / 边框 */
+  --adm-color-background: #f5f5f5;
+  --adm-color-border: #d9d9d9;
+  --adm-border-color: #d9d9d9;
+
+  /* 语义别名（业务自定义变量，驱动页面级样式） */
+  --color-bg-container: #ffffff;
+  --color-bg-layout: #f5f5f5;
+  --color-link: #1677ff;
+  --radius-base: 6px;
+  --font-size-base: 14px;
+}
+
+[data-theme='dark'] {
+  --adm-color-primary: #1668dc;
+  --adm-color-success: #52c41a;
+  --adm-color-warning: #faad14;
+  --adm-color-danger: #ff4d4f;
+  --adm-color-white: #1f1f1f;
+
+  --adm-color-text: rgba(255, 255, 255, 0.85);
+  --adm-color-text-secondary: rgba(255, 255, 255, 0.65);
+  --adm-color-text-placeholder: rgba(255, 255, 255, 0.25);
+  --adm-color-light: #3a3a3a;
+
+  --adm-color-background: #000000;
+  --adm-color-border: #424242;
+  --adm-border-color: #424242;
+
+  --color-bg-container: #1f1f1f;
+  --color-bg-layout: #000000;
+  --color-link: #1668dc;
+}

@@ -1,0 +1,39 @@
+# ============ OS / Editor ============
+.DS_Store
+.idea/
+*.iml
+*.ipr
+*.iws
+*.sw?
+.vscode/
+*.suo
+*.sln
+
+# ============ Logs ============
+*.log
+logs/
+
+# ============ Build artifacts (忽略各端构建产物与依赖) ============
+# 全局忽略，覆盖缺失 .gitignore 的子工程（如 web/miniapp）
+node_modules/
+dist/
+dist-ssr/
+build/
+target/
+.umi/
+.umi-production/
+src/.umi/
+src/.umi-production/
+.expo/
+coverage/
+Pods/
+*.jsbundle
+
+# ============ Local overrides ============
+# 注意：本脚手架刻意提交 .env / .env.development / .env.production（含 RuoYi 默认开发 RSA 密钥对），
+# 以保证开箱即用；如需生产隔离请自行改为 .env.example + 本地复制。
+
+# ============ Misc ============
+*.tmp
+*.bak
+.cache/
