@@ -1,27 +1,45 @@
-# 项目 UI 规范（AI 必读）
+# AGENTS.md
 
-本项目前端（React / React Native + Ant Design 全家桶）严格遵循一套**多端 UI/UX 设计规范**。
+Agent-facing summary for `ai-product-factory`. **For full detail, read
+[CLAUDE.md](./CLAUDE.md)** — this file is the quick orientation.
 
-## 生成任何 UI / 样式 / 高保真描述前，必须先读取并遵守：
+## What this repo is
+A multi-end engineering scaffold: one Spring Boot backend (RuoYi-Vue-Plus 6.x,
+JDK 21, port 8080) plus four frontends — PC admin (Umi+antd), H5
+(Vite+antd-mobile), native App (React Native), and mini-program/HarmonyOS (Taro)
+— all on React + Ant Design, with a shared design system in `docs/`.
 
-- **`docs/AI-设计系统上下文.md`** ← 硬约束（MUST / NEVER）、精确 Design Token、组件代码范式、跨端差异、反模式、生成前自检清单。**这是 AI 的"宪法"，所有 UI 生成以它为准。**
-- `docs/design-tokens.json` ← 机器可读 Token 单源（LLM 可直接 import，或贴进 prompt）
-- `docs/design-tokens.ts` ← 类型化绑定，直接喂 antd `ConfigProvider`
+## Critical rules (always follow)
+1. **UI follows the design system** — read `docs/AI-设计系统上下文.md` before
+   generating any UI/style. Tokens are the single source of truth.
+2. **Frontend follows the real backend contract** — integrate only against
+   `CLAUDE.md` §4. Read backend controllers; never invent paths/fields.
 
-## 分层原则（关键，避免把平台规则与通用规则搞混）
+## Where things live
+- Backend boot module: `backend/ruoyi-admin/` · business code: `backend/ruoyi-modules/`
+- Frontend request layer (all ends): `web/<end>/src/api/request.ts`
+- API contracts/types: `web/<end>/src/api/*.ts`
+- Infra: `infra/docker-compose.yml` (MySQL 3306 / Redis 6379)
+- Design system: `docs/` (tokens, platform adapters, component specs)
+- One-click dev: `scripts/start-dev.sh`, `scripts/stop-dev.sh`
 
-1. **通用层（全端一致）**：Token、设计原则、组件定义、UX 准则、图表规范、错误文案 —— 直接套，绝不按端分支。
-2. **平台层（仅对应端生效）**：导航范式、手势、安全区、小程序胶囊、断点、组件落地选型（Table→List、Select→Picker、Message→Toast），从 `docs/平台适配/<端>.md` 取。
-3. **页面模板 = 通用骨架 + 各端实例化**（PC 用 Table/Menu/Drawer，移动端用 List/NavBar+TabBar/全屏 Drawer）。
+## Backend contract at a glance
+- `R<T> = { code, msg, data }`; `code 200` = ok, `401` = auth, `500` = error.
+- Auth: `Authorization: Bearer <token>` **+ `clientid` header** on every request.
+- Login `POST /auth/login` body is AES+RSA encrypted; key in `encrypt-key` header.
+- Core: `GET /auth/code` (none), `POST /auth/login`, `GET /system/user/getInfo`
+  (auth+clientid). Default creds `admin / admin123`.
 
-## 硬约束速记（完整见上述文件）
+## Common tasks
+- **Run the stack**: `bash scripts/start-dev.sh` (Docker + backend).
+- **Add a backend feature**: new module under `backend/ruoyi-modules/` or use the
+  built-in code generator (System Tools → Code Gen).
+- **Add a frontend endpoint**: wrap it in `web/<end>/src/api/<module>.ts`,
+  returning `R<X>`; pages consume `data` only.
+- **Build UI**: start from design tokens; apply platform rules from
+  `docs/平台适配/<end>.md`.
 
-- 主色永远 `#1677FF`；改色只改 Seed `colorPrimary`。
-- 所有颜色/间距/圆角/字号来自 Token，禁止硬编码魔法值；间距为 8 的倍数。
-- 禁止移动端用 `Table`（改用 `List` + 触底加载）。
-- 主操作每屏至多 1 个 `primary`；危险操作 `danger` + 二次确认。
-- 暗色模式用 `theme.darkAlgorithm` 派生；组件优先用 antd / antd-mobile / antd-mini 原组件。
-
-> 任何业务需求与上述规范冲突时，**以规范为准**。
-
-完整规范索引：`docs/README.md`
+## Gotchas (see CLAUDE.md §7)
+Pin `--server.port=8080`; datasource `useSSL=false`; login needs a `User-Agent`
+header; protected calls need the `clientid` header; RSA keys must match between
+frontend `.env`/`env.ts` and backend `application.yml`.
