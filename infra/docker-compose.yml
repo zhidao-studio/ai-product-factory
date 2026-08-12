@@ -26,7 +26,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: ry-vue
     ports:
-      - "23306:3306"
+      - "3306:3306"
     volumes:
       - ./init:/docker-entrypoint-initdb.d:ro
       - mysql-data:/var/lib/mysql
@@ -47,7 +47,7 @@ services:
     environment:
       TZ: Asia/Shanghai
     ports:
-      - "16379:6379"
+      - "6379:6379"
     volumes:
       - redis-data:/data
     healthcheck:

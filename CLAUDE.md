@@ -18,7 +18,7 @@ ruoyi-plus-boot/
 │   ├── ruoyi-common/        # 公共（R 返回体、加密、Sa-Token 工具）
 │   └── ruoyi-extend/        # 扩展（monitor / snailjob / snail-ai）
 ├── infra/                   # Docker 基础设施
-│   └── docker-compose.yml   # MySQL→23306 / Redis→16379（避开本机 Homebrew 占用的 3306/6379）
+│   └── docker-compose.yml   # MySQL:3306 / Redis:6379（标准端口；本机已卸载本地 MySQL/Redis）
 ├── web/                     # 四端前端
 │   ├── admin/   # PC 后台（UmiJS 4 + antd，官方 plus-ui-react 6.x）
 │   ├── h5/      # H5 移动端（Vite + React 19 + antd-mobile）
@@ -101,22 +101,19 @@ ruoyi-plus-boot/
 ## 4. 一键跑通（前后端联调）
 
 > 后端为 Maven 多模块、需 JDK 21 与本地 Maven；本仓库 infra 仅提供 MySQL/Redis 容器。
-> **本机若已占用 3306/6379**（如 Homebrew 的 MySQL/Redis），docker-compose 已将映射改为 **23306/16379**，后端用环境变量连这两个空闲端口。
+> 后端默认连 `localhost:3306`（MySQL）/ `localhost:6379`（Redis）标准端口；本机已卸载本地 MySQL/Redis，端口空闲，docker-compose 直接映射标准端口即可。
 
 1. **启基础设施**（Docker，不污染本机）：
    ```bash
-   docker compose -f infra/docker-compose.yml up -d   # MySQL:23306(root/root, 库 ry-vue)  Redis:16379(ruoyi123)
+   docker compose -f infra/docker-compose.yml up -d   # MySQL:3306(root/root, 库 ry-vue)  Redis:6379(ruoyi123)
    ```
 2. **启后端**（JDK 21）：
    ```bash
    cd backend
    export JAVA_HOME=$(/usr/libexec/java_home)   # 须为 JDK 21
-   # 关键：用环境变量把数据源/Redis 指向 Docker 空闲端口，并锁定 8080
-   export SPRING_DATASOURCE_DYNAMIC_DATASOURCE_MASTER_URL='jdbc:mysql://127.0.0.1:23306/ry-vue?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true'
-   export SPRING_DATA_REDIS_HOST='127.0.0.1'
-   export SPRING_DATA_REDIS_PORT='16379'
-   # 打包（仅首次）后用 java -jar 运行；或 mvnw spring-boot:run
+   # 打包（仅首次）
    ./mvnw -pl ruoyi-admin -am package -DskipTests
+   # 直接运行：application-dev.yml 已内置 localhost:3306(useSSL=false) / localhost:6379，无需端口环境变量
    java -jar ruoyi-admin/target/ruoyi-admin.jar --server.port=8080 --captcha.enable=false
    ```
    - `--captcha.enable=false`：联调期关闭验证码（否则需识别图片 math 验证码）。生产保持开启。
@@ -147,10 +144,10 @@ ruoyi-plus-boot/
 
 ## 6. 已知事项 / 坑（踩坑记录）
 
-- **本机 MySQL/Redis 端口冲突（最常见）**：macOS 上若本机用 Homebrew 装过 MySQL/Redis，它们会占用 `localhost:3306/6379`，与 Docker 容器映射冲突。本仓库 docker-compose 已改映射为 **23306/16379** 规避；后端用环境变量 `SPRING_DATASOURCE_DYNAMIC_DATASOURCE_MASTER_URL` / `SPRING_DATA_REDIS_HOST/PORT` 连这两个空闲端口。
-- **localhost 走 Unix socket 陷阱**：MySQL JDBC 在 host=localhost 时会改走 **socket** 而非 TCP，连到本机 MySQL（密码不对）。务必用 `127.0.0.1`（TCP）指向 Docker。
+- **本机 MySQL/Redis 端口冲突（已规避）**：macOS 上若本机用 Homebrew 装过 MySQL/Redis，会占用 `localhost:3306/6379`。本机已卸载本地实例，docker-compose 直接用标准端口 `3306/6379`，后端 `application-dev.yml` 也用标准端口，无需环境变量覆盖。若日后本机重装 MySQL/Redis，需改 docker-compose 映射或后端 `spring.datasource` 配置。
+- **localhost 走 Unix socket 陷阱（已缓解）**：MySQL JDBC 在 `host=localhost` 时会优先走 Unix socket 而非 TCP。当前本机已卸载 MySQL、无 socket 文件，JDBC 自动回退到 TCP 连 `localhost:3306`（即 Docker 容器），可正常工作。若日后本机重装 MySQL，会重现该陷阱，届时将 `application-dev.yml` 数据源 host 改为 `127.0.0.1`。
 - **RuoYi 6.x 随机端口**：必须 `--server.port=8080` 锁定，否则前端代理（按 8080）连不上。
-- **MySQL `useSSL`**：连 Docker MySQL 时 `useSSL=true` 会 SSL 握手失败（`Communications link failure`），开发环境用 `useSSL=false`。
+- **MySQL `useSSL`**：连 Docker MySQL 时 `useSSL=true` 会 SSL 握手失败（`Communications link failure`）。已在 `application-dev.yml` 主数据源固定 `useSSL=false`，开箱即用无需额外参数。
 - **登录需 `User-Agent` 头**：后端 `LoginHelper.fillRequestContext` 解析 UA，缺失会 NPE（真实浏览器/移动端自带 UA，裸 `curl`/脚本必须补 `User-Agent`）。
 - **`clientid` 头必须带**：受保护接口（如 getInfo）若漏带 `clientid`，Sa-Token 报「客户端ID与Token不匹配」`401`。前端请求层默认带，勿删。
 - **admin 依赖未在本环境安装**（Umi 重型工程）。本机需 `pnpm install` 后 `pnpm lint`（=tsc）验证；请求层为官方代码，已与后端契约一致。
