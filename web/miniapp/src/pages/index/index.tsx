@@ -1,60 +1,55 @@
-import { View, Text, Input, Image, Button } from '@tarojs/components'
-import { useState, useEffect } from 'react'
+import { Button, Text, View } from '@tarojs/components'
+import { useEffect, useState } from 'react'
 import Taro from '@tarojs/taro'
-import { getCodeImg, login, logout, getInfo, type VerifyCodeResult, type UserInfo } from '../../api/auth'
-import { setToken, removeToken, getToken } from '../../utils/auth'
+import { getInfo, loginByWechat, logout, type UserInfo } from '../../api/auth'
+import { getToken, removeToken, setToken } from '../../utils/auth'
 import { useThemeMode } from '../../theme/ThemeProvider'
+import { colors } from '../../theme/tokens'
 import './index.scss'
 
 export default function Index() {
   const { resolvedMode, toggle } = useThemeMode()
-  const [captcha, setCaptcha] = useState<VerifyCodeResult | null>(null)
-  const [username, setUsername] = useState('admin')
-  const [password, setPassword] = useState('123456')
-  const [code, setCode] = useState('')
   const [loading, setLoading] = useState(false)
   const [user, setUser] = useState<UserInfo | null>(null)
 
-  const loadCaptcha = async () => {
-    try {
-      const res = await getCodeImg()
-      setCaptcha(res.data)
-    } catch {
-      // 错误已在请求层提示
-    }
-  }
-
   useEffect(() => {
-    loadCaptcha()
     if (getToken()) {
       getInfo()
-        .then((r) => setUser(r.data))
+        .then((response) => setUser(response.data))
         .catch(() => removeToken())
     }
   }, [])
 
-  const handleLogin = async () => {
+  const handleWechatLogin = async () => {
     setLoading(true)
     try {
-      const res = await login({ username, password, code, uuid: captcha?.uuid })
-      setToken(res.data.access_token)
-      Taro.showToast({ title: '登录成功', icon: 'success' })
+      const { code } = await Taro.login()
+      if (!code) throw new Error('未获取到微信授权码')
+      const response = await loginByWechat(code)
+      setToken(response.data.access_token)
       const info = await getInfo()
       setUser(info.data)
-      await loadCaptcha()
-      setCode('')
-    } catch {
-      await loadCaptcha()
+      Taro.showToast({ title: '登录成功', icon: 'success' })
+    } catch (error) {
+      if (error instanceof Error && error.message === '未获取到微信授权码') {
+        Taro.showToast({ title: error.message, icon: 'none' })
+      }
     } finally {
       setLoading(false)
     }
   }
 
   const handleLogout = async () => {
+    const { confirm } = await Taro.showModal({
+      title: '退出登录',
+      content: '确定退出当前产品用户账号吗？',
+      confirmColor: colors.colorError,
+    })
+    if (!confirm) return
     try {
       await logout()
     } catch {
-      // ignore
+      // 服务端会话已失效时仍需清理本地 Token。
     }
     removeToken()
     setUser(null)
@@ -62,31 +57,43 @@ export default function Index() {
   }
 
   return (
-    <View className='index'>
-      <Text className='title'>RuoYi 小程序首页</Text>
-      <Text className='theme-tip'>当前主题：{resolvedMode === 'dark' ? '深色' : '浅色'}</Text>
-      <Button onClick={toggle}>切换{resolvedMode === 'dark' ? '浅色' : '深色'}模式</Button>
+    <View className={`index theme-${resolvedMode}`}>
+      <View className='page-header'>
+        <Text className='title'>产品小程序</Text>
+        <Text className='subtitle'>微信用户端</Text>
+      </View>
+
+      <View className='card theme-card'>
+        <Text className='card-title'>外观</Text>
+        <Text className='secondary-text'>当前模式：{resolvedMode === 'dark' ? '深色' : '浅色'}</Text>
+        <Button className='action-button' onClick={toggle}>
+          切换{resolvedMode === 'dark' ? '浅色' : '深色'}模式
+        </Button>
+      </View>
 
       {user ? (
-        <View className='user-card'>
-          <Text>用户ID：{user.userId}</Text>
-          <Text>用户名：{user.userName}</Text>
-          <Text>昵称：{user.nickName}</Text>
-          <Text>角色：{(user.roles || []).join('、') || '-'}</Text>
-          <Button onClick={handleLogout}>退出登录</Button>
+        <View className='card user-card'>
+          <Text className='card-title'>当前产品用户</Text>
+          <View className='info-row'><Text className='info-label'>用户 ID</Text><Text>{String(user.userId)}</Text></View>
+          <View className='info-row'><Text className='info-label'>用户名</Text><Text>{user.userName}</Text></View>
+          <View className='info-row'><Text className='info-label'>昵称</Text><Text>{user.nickName}</Text></View>
+          <View className='info-row'><Text className='info-label'>设备类型</Text><Text>{user.deviceType}</Text></View>
+          <View className='info-row'><Text className='info-label'>角色</Text><Text>{user.roles.join('、') || '-'}</Text></View>
+          <Button className='action-button logout-button' type='warn' onClick={handleLogout}>退出登录</Button>
         </View>
       ) : (
-        <View className='login-card'>
-          <Input placeholder='用户名' value={username} onInput={(e) => setUsername(e.detail.value)} />
-          <Input placeholder='密码' password value={password} onInput={(e) => setPassword(e.detail.value)} />
-          <View className='captcha-row'>
-            <Input placeholder='验证码' value={code} onInput={(e) => setCode(e.detail.value)} />
-            {captcha?.captchaEnabled && captcha.img ? (
-              <Image src={captcha.img} className='captcha-img' onClick={() => loadCaptcha()} />
-            ) : null}
-          </View>
-          <Button loading={loading} onClick={handleLogin}>登录</Button>
-          <Text className='tip'>默认账号 admin / 123456（以后端初始化数据为准）</Text>
+        <View className='card login-card'>
+          <Text className='card-title'>微信授权登录</Text>
+          <Text className='secondary-text'>使用微信授权码完成产品用户身份认证。</Text>
+          <Button
+            className='action-button primary-button'
+            type='primary'
+            loading={loading}
+            disabled={loading}
+            onClick={handleWechatLogin}
+          >
+            微信快捷登录
+          </Button>
         </View>
       )}
     </View>

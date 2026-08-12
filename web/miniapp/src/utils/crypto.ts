@@ -5,20 +5,14 @@
  * 与 admin/h5 的 src/utils/crypto.ts 严格一致。
  */
 import * as CryptoJSModule from 'crypto-js';
+import Taro from '@tarojs/taro';
 
 const CryptoJS = ('default' in CryptoJSModule ? CryptoJSModule.default : CryptoJSModule) as typeof CryptoJSModule;
 
-function generateRandomString(): string {
-  const array = new Uint8Array(32);
-  crypto.getRandomValues(array);
-  return Array.from(array, (b) => b.toString(16).padStart(2, '0'))
-    .join('')
-    .slice(0, 32);
-}
-
-/** 生成 16 字节 AES 密钥（32 位 hex 字符串解析为 WordArray） */
-export function generateAesKey(): CryptoJSModule.lib.WordArray {
-  return CryptoJS.enc.Utf8.parse(generateRandomString());
+/** 使用微信小程序原生密码学安全随机数生成 16 字节 AES 密钥。 */
+export async function generateAesKey(): Promise<CryptoJSModule.lib.WordArray> {
+  const { randomValues } = await Taro.getRandomValues({ length: 16 });
+  return CryptoJS.lib.WordArray.create(randomValues);
 }
 
 export function encryptBase64(str: CryptoJSModule.lib.WordArray): string {

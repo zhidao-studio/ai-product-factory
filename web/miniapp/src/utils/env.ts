@@ -1,12 +1,12 @@
 /**
  * 前端运行环境配置（与后端 RuoYi-Vue-Plus 契约对齐）
- * Taro 默认不解析 .env，这里直接内置常量，值与 admin/.env.development、h5/.env 保持一致。
+ * Taro 微信小程序保留原工程的端内配置方式。
  */
 export const appEnv = {
-  /** 后端接口代理前缀（h5 平台经 devServer.proxy 转发到 http://localhost:8080） */
-  baseApi: '/dev-api',
-  /** 默认 Web 客户端 id（须与后端 sys_client 表一致） */
-  clientId: 'e5cd7e4891bf95d1d19206ce24a7b32e',
+  /** 由 Taro 构建配置静态注入，运行时不依赖 Node process。 */
+  baseApi: __CLIENT_API_BASE_URL__,
+  /** 微信小程序产品端 client id */
+  clientId: '7f4c1e2d8a9b4c6f9012d3e4f5a6b7c8',
   /** 是否开启登录/注册请求体加密（对应后端 @ApiEncrypt） */
   encryptEnabled: true,
   /** RSA 公钥：加密请求体 AES 密钥 */

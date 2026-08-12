@@ -1,7 +1,7 @@
-/** Token 持久化（Taro 跨端存储，键名与各端一致） */
+/** 微信小程序产品用户 Token，与其他端会话隔离。 */
 import Taro from '@tarojs/taro';
 
-const TOKEN_KEY = 'Admin-Token';
+const TOKEN_KEY = 'Client-Miniapp-Token';
 
 export function getToken(): string {
   return Taro.getStorageSync(TOKEN_KEY) || '';
