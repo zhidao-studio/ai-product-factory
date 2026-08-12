@@ -1,0 +1,9 @@
+proxy_http_version 1.1;
+proxy_set_header Host $host;
+proxy_set_header X-Real-IP $gateway_client_ip;
+proxy_set_header X-Forwarded-For $gateway_client_ip;
+proxy_set_header X-Forwarded-Host $host;
+proxy_set_header X-Forwarded-Proto $gateway_forwarded_proto;
+proxy_set_header X-Request-ID $request_id;
+proxy_connect_timeout 10s;
+proxy_send_timeout 60s;

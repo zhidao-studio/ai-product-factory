@@ -1,27 +1,40 @@
 #!/usr/bin/env bash
 #
-# 停止开发环境：终止后端进程 + 停止 Docker 中间件（保留数据卷）
+# 停止 Admin/Client 后端与 Docker 中间件（保留数据卷）。
 #
-# 用法: bash scripts/stop-dev.sh
+# 用法：bash scripts/stop-dev.sh
 #
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$ROOT"
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+BACKEND_DIR="$PROJECT_ROOT/backend"
+cd "$PROJECT_ROOT"
 
-PIDFILE="$ROOT/backend/ruoyi-admin.pid"
-if [ -f "$PIDFILE" ]; then
-  PID=$(cat "$PIDFILE")
-  if kill "$PID" 2>/dev/null; then
-    echo "已停止后端进程 $PID"
-  else
-    echo "后端进程 $PID 已不存在（可能已退出）"
+stop_backend() {
+  local service_name="$1"
+  local pid_file="$BACKEND_DIR/$service_name.pid"
+
+  if [ -f "$pid_file" ]; then
+    local service_pid
+    service_pid="$(<"$pid_file")"
+    if kill "$service_pid" 2>/dev/null; then
+      echo "已停止 $service_name（PID $service_pid）"
+    else
+      echo "$service_name 的 PID 已失效（$service_pid）"
+    fi
+    rm -f "$pid_file"
+    return
   fi
-  rm -f "$PIDFILE"
-else
-  echo "未发现后端 PID 文件，尝试按 jar 名结束进程..."
-  pkill -f "ruoyi-admin.jar" 2>/dev/null && echo "已 pkill ruoyi-admin.jar" || echo "无运行中的 ruoyi-admin.jar"
-fi
+
+  if pkill -f "$service_name.jar" 2>/dev/null; then
+    echo "已按进程名停止 $service_name"
+  else
+    echo "$service_name 未运行"
+  fi
+}
+
+stop_backend "ruoyi-admin"
+stop_backend "ruoyi-client"
 
 echo "停止基础设施（保留数据卷）..."
 docker compose -f infra/docker-compose.yml down
