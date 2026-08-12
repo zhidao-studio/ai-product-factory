@@ -149,6 +149,14 @@ AES+RSA encrypted per 4.5). Implemented in `web/app/src/api/auth.ts`
   as a JSON string (e.g. `SET global:captcha_codes:13800138000 '"1234"' EX 300`),
   not a bare string, or `getCacheObject` deserializes it to the wrong type.
 
+#### 4.6.1 App login UI (web/app)
+`App.tsx` uses `useAuth` (`src/auth/useAuth.ts`) as a **route guard**: unauthenticated
+→ `src/screens/LoginScreen.tsx` (phone+password / phone+SMS tabs, 60s resend
+countdown), authenticated → `src/screens/HomeScreen.tsx` (user info + theme toggle
++ logout). All screens pull colors/spacing from `src/theme/useThemeTokens.ts`
+(which switches light/dark token sets). No navigation library is added — the guard
+is a conditional render, by design (keep deps minimal).
+
 ## 5. Frontend conventions (consistent across all four ends)
 
 - **Request layer**: `src/api/request.ts` (admin uses the official impl; the
