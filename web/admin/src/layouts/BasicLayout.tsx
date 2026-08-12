@@ -411,6 +411,13 @@ export default function BasicLayout() {
         token: {
           colorPrimary: layoutSettings.theme,
           borderRadius: layoutSettings.radiusBase,
+          colorText: appColors.text,
+          colorTextSecondary: appColors.textSecondary,
+          colorTextTertiary: appColors.textMuted,
+          colorTextDisabled: appColors.textDisabled,
+          colorTextPlaceholder: appColors.textDisabled,
+          colorBorder: appColors.borderStrong,
+          colorSplit: appColors.borderSubtle,
           colorBgLayout: appColors.bg,
           colorBgContainer: appColors.surface,
           colorBgElevated: appColors.elevated
