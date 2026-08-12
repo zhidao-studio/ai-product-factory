@@ -1,0 +1,8 @@
+.hvigor/
+oh_modules/
+build/
+entry/build/
+entry/src/main/ets/
+entry/src/main/resources/rawfile/
+static/
+*.har
