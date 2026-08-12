@@ -37,3 +37,6 @@ Pods/
 *.tmp
 *.bak
 .cache/
+
+# ============ 启动脚本产物 ============
+backend/ruoyi-admin.pid

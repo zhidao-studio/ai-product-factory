@@ -3,7 +3,7 @@
 开箱即用的中型项目脚手架：后端 Spring Boot + 多端前端（PC 后台 / H5 / RN App / 小程序），统一 React + Ant Design 体系。
 
 ```
-ruoyi-plus-boot/
+ai-product-factory/
 ├── README.md                 # 本文件：总览与启动
 ├── backend/                  # RuoYi-Vue-Plus (6.X) 后端，Spring Boot 4 / JDK 21 / Sa-Token
 │   ├── ruoyi-admin/          # 启动模块（端口 8080）
@@ -18,7 +18,7 @@ ruoyi-plus-boot/
 │   ├── h5/                   # ✅ Vite + React + antd-mobile 移动端 H5
 │   ├── app/                  # ✅ React Native 原生 App（iOS/Android），@ant-design/react-native
 │   └── miniapp/              # ✅ Taro 小程序（微信/支付宝/... 可编译鸿蒙）
-└── docs/                     # 设计规范待另一会话产出
+└── docs/                     # 设计规范（设计系统 Token / 组件范式），前端以它为准
 ```
 
 ## 一、基础设施（Docker）
@@ -41,12 +41,17 @@ docker compose -f infra/docker-compose.yml up -d
 
 1. 先按上一步把 Docker 中间件跑起来。
 2. 后端 `application-dev.yml` 已对齐：MySQL `root/root`、Redis `ruoyi123`，无需改。
-3. 启动：
+3. 启动（推荐走脚本，见第五章）：
    ```bash
    cd backend
+   # 方式 A：打包后直接跑（联调期关闭验证码）
+   ./mvnw -pl ruoyi-admin -am package -DskipTests
+   java -jar ruoyi-admin/target/ruoyi-admin.jar --server.port=8080 --captcha.enable=false
+   # 方式 B：IDE / Maven 插件
    ./mvnw -pl ruoyi-admin -am spring-boot:run      # 或导入 IDE 跑 RuoYiApplication
    ```
 4. 默认账号：`admin / admin123`，接口根 `http://localhost:8080`。
+   > 后端 6.x 会随机分配端口，务必 `--server.port=8080` 锁定；联调期 `--captcha.enable=false` 关验证码。更多坑位见 `CLAUDE.md`。
 
 ## 三、前端各端
 
@@ -82,3 +87,21 @@ cd web/miniapp && pnpm dev:weapp     # 微信小程序（需微信开发者工�
 - 后端：在 `backend/ruoyi-modules/` 建模块，或用内置代码生成器（系统工具 → 代码生成）。
 - 前端：PC 端用 `web/admin/src/pages` 的 ProComponents 拼页；H5/App/小程序按端封装业务组件。
 - 设计规范（设计 token / 主题对齐）由另一会话统一产出，落于 `docs/`。
+
+## 五、一键脚本（推荐）
+
+仓库内置启动 / 停止脚本，免去逐条敲命令与端口、环境变量记忆：
+
+```bash
+bash scripts/start-dev.sh   # 启动 Docker 中间件 + 构建并后台启动后端，自动等待就绪
+bash scripts/stop-dev.sh    # 停止后端进程并停止 Docker（保留数据卷）
+```
+
+脚本会依次完成：
+
+1. `docker compose up -d` 起 MySQL(3306) / Redis(6379)，并等待 MySQL 健康；
+2. 若 `backend/ruoyi-admin/target/ruoyi-admin.jar` 不存在则自动 `./mvnw package -DskipTests`；
+3. 后台启动后端（`--server.port=8080 --captcha.enable=false`），日志写 `backend/ruoyi-admin.log`，PID 写 `backend/ruoyi-admin.pid`；
+4. 轮询 `GET /auth/code` 直至返回 200，打印前端各端启动命令与登录账号。
+
+> 更细的端口 / 配置 / 踩坑说明见 `CLAUDE.md`。
