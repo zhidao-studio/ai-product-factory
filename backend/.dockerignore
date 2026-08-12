@@ -1,0 +1,6 @@
+**/target
+.git
+.idea
+*.log
+ruoyi-admin.pid
+ruoyi-client.pid

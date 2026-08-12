@@ -40,3 +40,4 @@ Pods/
 
 # ============ 启动脚本产物 ============
 backend/ruoyi-admin.pid
+backend/ruoyi-client.pid

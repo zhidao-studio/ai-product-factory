@@ -10,7 +10,7 @@
 
     <name>RuoYi-Vue-Plus</name>
     <url>https://gitee.com/dromara/RuoYi-Vue-Plus</url>
-    <description>Dromara RuoYi-Vue-Plus后台管理系统</description>
+    <description>面向中大型多端产品的 Admin/Client 双入口工程脚手架</description>
 
     <properties>
         <!-- 项目基础配置 -->
@@ -74,7 +74,7 @@
         <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
         <!-- 统一版本号管理：Maven3.X需要，Maven4.0之后已原生支持 -->
         <flatten-maven-plugin.version>1.7.3</flatten-maven-plugin.version>
-        <!-- 打包默认跳过测试 -->
+        <!-- 打包默认跳过测试；测试体系在业务落地后按领域补充 -->
         <maven.test.skip>true</maven.test.skip>
     </properties>
 
@@ -450,6 +450,63 @@
                 <version>${revision}</version>
             </dependency>
 
+            <!-- Admin / Client 双入口、应用层、领域层与安全边界 -->
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-admin-api</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-client-api</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-admin-application</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-client-application</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-client-domain</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-business-domain</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-admin-security</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-client-security</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-client-persistence</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-client-wechat</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-client-sms</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
             <!--  api模块  -->
             <dependency>
                 <groupId>org.dromara</groupId>
@@ -461,14 +518,28 @@
     </dependencyManagement>
 
     <modules>
-        <!-- web服务入口 -->
+        <!-- Admin 后台管理入口 -->
         <module>ruoyi-admin</module>
+        <!-- Client 用户业务入口 -->
+        <module>ruoyi-client</module>
         <!-- common 通用模块 -->
         <module>ruoyi-common</module>
         <!-- 扩展模块 -->
         <module>ruoyi-extend</module>
-        <!-- 业务模块 -->
-        <module>ruoyi-modules</module>
+        <!-- Admin 平台能力模块 -->
+        <module>ruoyi-admin-modules</module>
+        <!-- 双端接口层 -->
+        <module>ruoyi-interfaces</module>
+        <!-- 双端应用层 -->
+        <module>ruoyi-applications</module>
+        <!-- 共享业务域与产品用户域 -->
+        <module>ruoyi-domains</module>
+        <!-- 双身份安全策略 -->
+        <module>ruoyi-security</module>
+        <!-- 持久化适配 -->
+        <module>ruoyi-infrastructure</module>
+        <!-- 外部平台集成 -->
+        <module>ruoyi-integrations</module>
         <!-- api模块 -->
         <module>ruoyi-api</module>
     </modules>

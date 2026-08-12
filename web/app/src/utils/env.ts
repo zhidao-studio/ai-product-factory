@@ -1,14 +1,19 @@
-/**
- * 前端运行环境配置（与后端 RuoYi-Vue-Plus 契约对齐）
- * RN 无 .env 解析，这里直接内置常量，值与 admin/.env.development、h5/.env 保持一致。
- */
+import { Platform } from 'react-native';
+
+const runtimeConfig = globalThis.__RUOYI_APP_CONFIG__;
+const developmentApi = Platform.select({
+  android: 'http://10.0.2.2:8082',
+  ios: 'http://127.0.0.1:8082',
+  default: 'http://127.0.0.1:8082'
+});
+
 export const appEnv = {
-  /** 后端接口代理前缀（调试时由 RN 端自行代理/指向 http://10.0.2.2:8080 等） */
-  baseApi: '/dev-api',
-  /** app 端客户端 id（须与后端 sys_client 表中 app 记录一致，已含 sms/phonePassword 授权） */
+  /** RN 不经过 Web 代理；生产构建必须由原生入口注入绝对 HTTPS 地址。 */
+  baseApi: runtimeConfig?.apiBaseUrl || (__DEV__ ? developmentApi : ''),
+  /** App 产品用户客户端 id（须与 client_application 表一致） */
   clientId: '428a8310cd442757ae699df5d894f051',
   /** 是否开启登录/注册请求体加密（对应后端 @ApiEncrypt） */
-  encryptEnabled: true,
+  encryptEnabled: runtimeConfig?.encryptEnabled ?? true,
   /** RSA 公钥：加密请求体 AES 密钥 */
   rsaPublicKey:
     'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDvEDuRIOM3oZPWj9Ukoc5pQklR4PFH6/clnjeFqjDLIgDyQvjxhgqAZQA+E9eD6qu6FsXPmK8djcL+nh3cFHz4pX473jDvO3Sve+8yL3VRQ0n2pRgQ2a01MJsy+WwTZCBYWf0VnLRIvANUoWQgy9vz94q7Va44dg7A1/3ICf+xAwIDAQAB',

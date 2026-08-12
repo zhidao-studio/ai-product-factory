@@ -1,35 +1,22 @@
-# web/miniapp —— 微信小程序 / 多端（Taro + React + TypeScript）
+# 微信小程序端独立工程 (WeChat Mini-Program)
 
-由 Taro v4 官方模板等价结构落地（React DSL，可一套代码编译到 微信/支付宝/百度/字节/QQ/京东 小程序、H5、React Native、以及鸿蒙 harmony-cpp）。
+Taro + React + TypeScript 独立工程，**仅构建微信小程序**。请求层直接使用 `Taro.request`，
+不依赖浏览器 Axios 适配器。本工程与 `web/harmony`（鸿蒙端）平级、完全独立、互不共享代码，
+符合「多端工程分开」的架构约定。
 
-> 说明：本环境无交互式 TTY，`taro init` 无法自动回答「框架选择」等交互问题，故按官方 `taro init` 产出结构手搭了完全等价的工程，可直接 `pnpm install` 运行。
-
-- 技术栈：Taro 4.2.1 + React 18 + TypeScript + Sass
-- 已包含平台：weapp / h5 / alipay / swan / tt / qq / jd / rn / harmony
-- 示范页：`src/pages/index`
-
-## 安装
+## 命令
 
 ```bash
-cd web/miniapp
 pnpm install
+pnpm type-check
+pnpm build:weapp   # 产出微信小程序工程 → dist/
+pnpm dev:weapp     # 监听构建
 ```
 
-## 开发
+## 环境变量
 
-```bash
-pnpm dev:weapp    # 微信小程序（用微信开发者工具打开 dist/ 目录）
-pnpm dev:h5       # H5
-pnpm dev:rn       # React Native
-pnpm dev:harmony  # 鸿蒙（需 @tarojs/plugin-platform-harmony-cpp，见 Taro 官方鸿蒙文档）
-```
+- `TARO_APP_API_BASE_URL`：小程序/生产环境的绝对 HTTPS API 域名。
+- `TARO_APP_WECHAT_APP_ID`：微信小程序 AppID。
 
-## 构建
-
-```bash
-pnpm build:weapp  # 产物在 dist/
-```
-
-## 对接后端
-
-在 `src/` 下封装请求层调用后端 `http://localhost:8080`（小程序建议用 `tarojs/axios` 或 `Taro.request`）。
+后端 `ruoyi-client` 需配置 `WECHAT_MINI_APP_ID` 和 `WECHAT_MINI_APP_SECRET`。微信登录身份写入
+`client_identity`，首次登录创建 `client_user`；不会读取 Admin 的 `sys_user/sys_social`。

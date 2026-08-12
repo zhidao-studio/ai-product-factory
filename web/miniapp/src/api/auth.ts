@@ -1,6 +1,5 @@
 /**
- * 认证相关接口（严格对齐后端 AuthController / CaptchaController）
- * 端点前缀 /auth、/system 等，h5 平台经 devServer.proxy 转发到后端 8080。
+ * 微信小程序 Client 产品用户认证接口。
  */
 import request, { type R } from '@/api/request';
 import { appEnv } from '@/utils/env';
@@ -34,12 +33,18 @@ export interface LoginParams {
   grantType?: string;
 }
 
+export interface MiniProgramLoginParams {
+  appid: string;
+  xcxCode: string;
+}
+
 /** 用户信息（SysUserVo 精简） */
 export interface UserInfo {
   userId: number | string;
   userName: string;
   nickName: string;
-  avatar: string;
+  channel: 'miniapp';
+  deviceType?: string;
   roles: string[];
   permissions: string[];
 }
@@ -47,7 +52,7 @@ export interface UserInfo {
 /** 获取图片验证码 */
 export function getCodeImg() {
   return request<R<VerifyCodeResult>>({
-    url: '/auth/code',
+    url: '/client-auth/code',
     method: 'get',
     headers: { isToken: false }
   });
@@ -56,7 +61,7 @@ export function getCodeImg() {
 /** 登录 */
 export function login(data: LoginParams) {
   return request<R<LoginResult>>({
-    url: '/auth/login',
+    url: '/client-auth/login',
     method: 'post',
     headers: {
       isToken: false,
@@ -71,10 +76,28 @@ export function login(data: LoginParams) {
   });
 }
 
+/** 使用微信 wx.login 换取的临时 code 登录。 */
+export function loginByMiniProgram(data: MiniProgramLoginParams) {
+  return request<R<LoginResult>>({
+    url: '/client-auth/login',
+    method: 'post',
+    headers: {
+      isToken: false,
+      isEncrypt: 'true',
+      repeatSubmit: false
+    },
+    data: {
+      ...data,
+      clientId: appEnv.clientId,
+      grantType: 'xcx'
+    }
+  });
+}
+
 /** 退出登录 */
 export function logout() {
   return request<R>({
-    url: '/auth/logout',
+    url: '/client-auth/logout',
     method: 'post'
   });
 }
@@ -82,7 +105,7 @@ export function logout() {
 /** 获取当前用户信息（需鉴权） */
 export function getInfo() {
   return request<R<UserInfo>>({
-    url: '/system/user/getInfo',
+    url: '/client-api/v1/session',
     method: 'get'
   });
 }

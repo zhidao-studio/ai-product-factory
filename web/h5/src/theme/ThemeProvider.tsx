@@ -7,25 +7,10 @@
  *  - 持久化偏好到 localStorage
  * 业务组件使用 CSS 变量即可自动换肤，零侵入。
  */
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-
-export type ThemeMode = 'light' | 'dark' | 'system';
+import { useEffect, useState, type ReactNode } from 'react';
+import { ThemeContext, type ThemeMode } from './themeContext';
 
 const STORAGE_KEY = 'ruoyi-h5-theme-mode';
-
-interface ThemeContextValue {
-  mode: ThemeMode;
-  resolvedMode: 'light' | 'dark';
-  setMode: (mode: ThemeMode) => void;
-  toggle: () => void;
-}
-
-const ThemeContext = createContext<ThemeContextValue>({
-  mode: 'system',
-  resolvedMode: 'light',
-  setMode: () => {},
-  toggle: () => {},
-});
 
 function getSystemMode(): 'light' | 'dark' {
   if (typeof window === 'undefined' || !window.matchMedia) return 'light';
@@ -68,8 +53,4 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       {children}
     </ThemeContext.Provider>
   );
-}
-
-export function useThemeMode() {
-  return useContext(ThemeContext);
 }

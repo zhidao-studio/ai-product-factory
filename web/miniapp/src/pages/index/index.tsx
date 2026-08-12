@@ -1,19 +1,20 @@
 import { View, Text, Input, Image, Button } from '@tarojs/components'
 import { useState, useEffect } from 'react'
 import Taro from '@tarojs/taro'
-import { getCodeImg, login, logout, getInfo, type VerifyCodeResult, type UserInfo } from '../../api/auth'
-import { setToken, removeToken, getToken } from '../../utils/auth'
+import { getCodeImg, type VerifyCodeResult } from '../../api/auth'
 import { useThemeMode } from '../../theme/ThemeProvider'
+import { useSession } from '../../stores/SessionContext'
+import { appEnv } from '../../utils/env'
 import './index.scss'
 
 export default function Index() {
   const { resolvedMode, toggle } = useThemeMode()
+  const { user, signIn, signInByMiniProgram, signOut } = useSession()
   const [captcha, setCaptcha] = useState<VerifyCodeResult | null>(null)
-  const [username, setUsername] = useState('admin')
-  const [password, setPassword] = useState('123456')
+  const [username, setUsername] = useState('client')
+  const [password, setPassword] = useState('admin123')
   const [code, setCode] = useState('')
   const [loading, setLoading] = useState(false)
-  const [user, setUser] = useState<UserInfo | null>(null)
 
   const loadCaptcha = async () => {
     try {
@@ -26,21 +27,13 @@ export default function Index() {
 
   useEffect(() => {
     loadCaptcha()
-    if (getToken()) {
-      getInfo()
-        .then((r) => setUser(r.data))
-        .catch(() => removeToken())
-    }
   }, [])
 
   const handleLogin = async () => {
     setLoading(true)
     try {
-      const res = await login({ username, password, code, uuid: captcha?.uuid })
-      setToken(res.data.access_token)
+      await signIn({ username, password, code, uuid: captcha?.uuid })
       Taro.showToast({ title: '登录成功', icon: 'success' })
-      const info = await getInfo()
-      setUser(info.data)
       await loadCaptcha()
       setCode('')
     } catch {
@@ -52,13 +45,26 @@ export default function Index() {
 
   const handleLogout = async () => {
     try {
-      await logout()
-    } catch {
-      // ignore
-    }
-    removeToken()
-    setUser(null)
+      await signOut()
+    } catch {}
     Taro.showToast({ title: '已退出登录', icon: 'none' })
+  }
+
+  const handleMiniProgramLogin = async () => {
+    if (!appEnv.wechatAppId) {
+      Taro.showToast({ title: '未配置微信小程序 AppID', icon: 'none' })
+      return
+    }
+    setLoading(true)
+    try {
+      const result = await Taro.login()
+      await signInByMiniProgram({ appid: appEnv.wechatAppId, xcxCode: result.code })
+      Taro.showToast({ title: '微信登录成功', icon: 'success' })
+    } catch {
+      // 请求层已统一呈现错误。
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -86,7 +92,10 @@ export default function Index() {
             ) : null}
           </View>
           <Button loading={loading} onClick={handleLogin}>登录</Button>
-          <Text className='tip'>默认账号 admin / 123456（以后端初始化数据为准）</Text>
+          {process.env.TARO_ENV === 'weapp' ? (
+            <Button loading={loading} onClick={handleMiniProgramLogin}>微信小程序登录</Button>
+          ) : null}
+          <Text className='tip'>默认产品用户 client / admin123</Text>
         </View>
       )}
     </View>

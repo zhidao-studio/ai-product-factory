@@ -1,0 +1,46 @@
+.index {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 0;
+  background-color: var(--color-bg-container, #ffffff);
+  color: var(--color-text, rgba(0, 0, 0, 0.88));
+
+  .title {
+    font-size: 32px;
+    margin-bottom: 24px;
+    color: var(--color-primary, #1677ff);
+  }
+
+  .theme-tip {
+    font-size: 24px;
+    color: var(--color-text-secondary, rgba(0, 0, 0, 0.65));
+    margin-bottom: 16px;
+  }
+
+  .login-card,
+  .user-card {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .captcha-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .captcha-img {
+    width: 200px;
+    height: 80px;
+    border: 1px solid var(--color-border, #d9d9d9);
+  }
+
+  .tip {
+    font-size: 20px;
+    color: var(--color-text-secondary, rgba(0, 0, 0, 0.65));
+  }
+}

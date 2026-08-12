@@ -1,0 +1,95 @@
+server:
+  port: 8082
+  servlet:
+    context-path: /
+  jetty:
+    max-http-form-post-size: -1
+    threads:
+      min: 8
+      max: 256
+
+spring:
+  application:
+    name: ai-product-client
+  profiles:
+    active: @profiles.active@
+  config:
+    import: classpath:client-api-encrypt.yml
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:ry-vue}?useUnicode=true&characterEncoding=utf8&useSSL=${DB_SSL:false}&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+  flyway:
+    enabled: ${FLYWAY_ENABLED:true}
+    locations: classpath:db/client
+    table: flyway_client_schema_history
+    baseline-on-migrate: true
+    baseline-version: 0
+    validate-on-migrate: true
+    clean-disabled: true
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      database: ${CLIENT_REDIS_DATABASE:1}
+      password: ${REDIS_PASSWORD:ruoyi123}
+      timeout: 10s
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+
+sa-token:
+  token-name: Authorization
+  token-prefix: Bearer
+  is-read-cookie: false
+  is-concurrent: true
+  is-share: false
+
+redisson:
+  keyPrefix: "client:"
+  threads: 4
+  nettyThreads: 8
+  singleServerConfig:
+    clientName: ai-product-client
+    connectionMinimumIdleSize: 4
+    connectionPoolSize: 16
+    idleConnectionTimeout: 10000
+    timeout: 3000
+    subscriptionConnectionPoolSize: 25
+
+client:
+  wechat:
+    app-id: ${WECHAT_MINI_APP_ID:}
+    app-secret: ${WECHAT_MINI_APP_SECRET:}
+  sms:
+    config-id: ${CLIENT_SMS_CONFIG_ID:config1}
+    template-id: ${CLIENT_SMS_TEMPLATE_ID:}
+    expiration-minutes: 5
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+logging:
+  level:
+    org.dromara: @logging.level@
+    org.springframework: warn
+
+springdoc:
+  api-docs:
+    enabled: true
+  info:
+    title: Client 用户业务接口
+    description: H5、App、微信小程序和 HarmonyOS 统一 API
+    version: ${project.version}

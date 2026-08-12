@@ -7,7 +7,7 @@
 
 ## 1. 项目定位
 
-`ai-product-factory` 是一个**开箱即用的中大型项目工程脚手架**：一套 Spring Boot 后端 + 四端前端（PC 后台 / H5 / 原生 App / 微信·鸿蒙小程序），统一 React + Ant Design 体系，设计系统 Token 已落地各端。
+`ai-product-factory` 是一个**开箱即用的中大型项目工程脚手架**：Admin/Client 双后端入口 + 五端前端（PC 后台 / H5 / 原生 App / 微信小程序 / 鸿蒙），统一 React + Ant Design 体系，设计系统 Token 已落地各端。
 
 **两条不可违背的铁律**（任何改动都不得违反）：
 
@@ -22,11 +22,11 @@
 | --- | --- | --- |
 | JDK | **21** | 后端基于 Spring Boot 4.1 / RuoYi 6.x，须 JDK 21 |
 | Node.js | ≥ 18 LTS | 前端构建运行时 |
-| pnpm | ≥ 8 | 四端包管理（RuoYi admin 亦用 pnpm） |
+| pnpm | ≥ 8 | Admin、H5、微信小程序和鸿蒙端包管理 |
 | Docker | 最新稳定版 | 提供 MySQL 8 / Redis 7 等中间件 |
 | Maven | 3.9+（或仓库内置 `mvnw`） | 后端构建 |
 
-> 端口约定：后端 `8080`、MySQL `3306`、Redis `6379`（均走 Docker，不污染本机）。
+> 端口约定：Admin `8080`、Client `8082`、MySQL `3306`、Redis `6379`。
 
 ---
 
@@ -36,17 +36,18 @@
 # 1. 一键启动（Docker 中间件 + 构建并后台启动后端 + 等待就绪）
 bash scripts/start-dev.sh
 
-# 2. 启动任意前端（任选其一，dev 模式已配 /dev-api 代理指向 localhost:8080）
+# 2. 启动任意前端（Admin 代理 8080，其余用户端代理/直连 8082）
 cd web/admin   && pnpm install && pnpm dev     # PC 后台 (antd)
 cd web/h5      && pnpm install && pnpm dev     # 移动 H5 (antd-mobile)
 cd web/app     && pnpm install && pnpm dev     # React Native App
-cd web/miniapp && pnpm install && pnpm dev     # 微信/鸿蒙小程序 (Taro)
+cd web/miniapp && pnpm install && pnpm dev:weapp # 微信小程序端 (Taro)
+cd web/harmony && pnpm install && pnpm dev:harmony # 鸿蒙端 (Taro)
 
 # 3. 停止
 bash scripts/stop-dev.sh
 ```
 
-默认账号：`admin / admin123`，接口根 `http://localhost:8080`。
+Admin 默认账号：`admin / admin123`；Client 默认账号：`client / admin123`（手机号 `13800138000`）。
 
 ---
 
@@ -54,12 +55,13 @@ bash scripts/stop-dev.sh
 
 ```
 ai-product-factory/
-├── backend/          # RuoYi-Vue-Plus Boot 6.x (Spring Boot 4.1 / JDK 21)
+├── backend/          # Admin/Client 双入口 + 共享业务域
 ├── web/
 │   ├── admin/        # PC 后台 (React + antd, Umi)
 │   ├── h5/           # 移动 H5 (React + antd-mobile)
 │   ├── app/          # 原生 App (React Native + antd-rn)
-│   └── miniapp/      # 微信/鸿蒙小程序 (Taro + antd-mobile)
+│   ├── miniapp/      # 微信小程序端 (Taro + antd-mobile)
+│   └── harmony/       # 鸿蒙端 (Taro → HarmonyOS)
 ├── infra/            # docker-compose (MySQL 8 / Redis 7)
 ├── docs/             # 设计系统 Token / 组件范式 / 平台适配
 ├── scripts/          # 一键启动/停止
@@ -106,7 +108,7 @@ ai-product-factory/
 示例：
 
 ```
-feat(web/h5): 新增登录页并接入 /auth/login 加密契约
+feat(web/h5): 新增登录页并接入 /client-auth/login 加密契约
 fix(backend): 修正 getInfo 缺失 clientid 头导致 401
 docs: 补充 CONTRIBUTING 协作规范
 ```
@@ -115,8 +117,8 @@ docs: 补充 CONTRIBUTING 协作规范
 
 ## 7. 编码约定
 
-- **后端**：遵循 RuoYi 分层（controller / service / mapper），统一返回 `R<T>`，新增接口默认需 Sa-Token 鉴权；登录等敏感接口使用 `@ApiEncrypt`。
-- **前端**：四端共用请求层 `src/api/request.ts`（解包 `R<T>`、注入 `Authorization`+`clientid`、AES+RSA 加密、401 重登）。新增接口请在 `src/api/` 下按模块组织，复用该请求层，禁止各端各写一套。
+- **后端**：遵循 `interfaces -> applications -> domains` 依赖方向，Admin/Client 身份隔离，统一返回 `R<T>`；登录等敏感接口使用 `@ApiEncrypt`。
+- **前端**：五端各自维护本工程的 `src/api/request.ts`，分别实现 `R<T>` 解包、`Authorization`+`clientid` 注入、AES+RSA 加密和 401 重登。新增接口在本端 `src/api/` 下按模块组织，禁止跨端引用源码或通过共享包复用请求层。
 - **设计系统**：颜色/间距/字体/圆角等一律引用 `docs/` Token，不得硬编码。
 - **密钥与配置**：`.env` 含 RuoYi 默认开发密钥，仅用于本地开发；正式环境须替换为独立密钥并通过 CI/密钥管理注入，**不要**把真实生产密钥提交入库。
 
@@ -134,7 +136,7 @@ docs: 补充 CONTRIBUTING 协作规范
 
 - **后端起不来 / 连不上库**：确认 `docker compose up -d` 已执行且 MySQL 健康（`mysqladmin ping`），端口应为标准 `3306/6379`。
 - **前端登录 401「客户端ID与Token不匹配」**：受保护接口必须带 `clientid` 请求头，确认请求层未被改掉。
-- **后端随机端口**：6.x 会随机分配端口，启动时显式锁定 `--server.port=8080`。
+- **后端端口**：Admin 固定 `8080`，Client 固定 `8082`。
 - **环境代理导致 `git push` 失败**：本仓库历史验证过用「去代理 + 强制 IPv4 直连」推送；如遇网络问题按该方式重试。
 
 更多排障与接口契约细节见 [`CLAUDE.md`](./CLAUDE.md)。

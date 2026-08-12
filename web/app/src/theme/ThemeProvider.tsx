@@ -5,7 +5,7 @@
  * - 默认跟随系统外观（useColorScheme），并支持手动切换 mode
  * - StatusBar 前景色随模式联动
  *
- * 持久化可后续接入 @react-native-async-storage/async-storage（本脚手架未默认引入）。
+ * Token 会话由 SessionContext 通过 AsyncStorage 独立持久化。
  */
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import { StatusBar, useColorScheme } from 'react-native';

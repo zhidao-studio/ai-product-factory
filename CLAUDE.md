@@ -1,240 +1,255 @@
 # CLAUDE.md
 
-Guide for AI coding agents working in this repository. This file is the single
-source of truth for the project's structure, how to run it, and the conventions
-to follow when making changes. Keep it accurate as the project evolves.
+本文件是仓库结构、运行方式和真实接口契约的主要事实来源。工程演进时必须同步维护。
 
-## 1. Project overview
+## 1. 项目定位
 
-`ai-product-factory` is a **multi-end engineering scaffold** for medium-to-large
-projects: one Spring Boot backend plus four frontends (PC admin, mobile H5,
-native App, WeChat/HarmonyOS mini-program), all on the React + Ant Design stack,
-with a shared design system wired into every end.
+`ai-product-factory` 是可复制的中大型多端产品脚手架，不是“AI 产品工厂”自身业务。复制后再由开发者或 AI 按具体产品填充共享业务域。
 
-Goal: a developer can clone the repo and run the full stack (infra + backend +
-any frontend) by following this guide, with frontend-to-backend data flow
-already verified end-to-end.
+系统的业务顺序是：**先有 Client 产品用户业务，再有围绕同一业务进行运营和管理的 Admin 后台。**
 
-Two non-negotiable rules (apply to every change):
+- Client 是业务发生端。
+- Admin 是业务管理端。
+- 两端接口、身份、Token、权限和 clientid 隔离。
+- 两端复用同一套业务领域规则和业务数据。
+- Admin 不是 Client 的上游运行依赖，Client 也不调用 Admin API。
 
-1. **UI follows the design system.** Before generating any interface or style,
-   read `docs/AI-设计系统上下文.md`. The design tokens are the single source of
-   truth; never hard-code colors/spacing/radii.
-2. **Frontend follows the real backend contract.** All API integration must match
-   the contract in section 4. Do not invent paths or fields. When in doubt, read
-   the backend controller source.
+五个前端完全独立，不共享运行时代码、源码包、依赖配置或锁文件：PC Admin、H5、原生 App、微信小程序和 HarmonyOS。
 
-## 2. Tech stack
+任何改动必须遵守：
 
-| Layer | Technology |
-|-------|------------|
-| Backend | RuoYi-Vue-Plus (Boot) 6.x · Spring Boot 4.1 · JDK 21 · Sa-Token · MyBatis-Plus · Jetty |
-| PC admin | UmiJS 4 + Ant Design · port 8000 |
-| H5 | Vite + React 19 + antd-mobile · port 8081 |
-| App | React Native CLI + @ant-design/react-native · iOS/Android |
-| Mini-program | Taro 4 (React DSL) · WeChat / HarmonyOS |
-| Infra | Docker: MySQL 8, Redis 7 |
-| Design | Design Tokens (DTCG) in `docs/` |
+1. **UI 遵循设计系统。** 修改界面或样式前阅读 `docs/AI-设计系统上下文.md`，Design Token 是唯一事实来源。
+2. **前端遵循真实后端契约。** 只接入本文件第 4 节及真实 Controller 已存在的路径和字段。
+3. **身份域不可混用。** `sys_user` 只代表管理员，`client_user` 只代表产品用户。
+4. **业务规则不可复制。** Admin/Client 对订单、内容等业务的操作必须进入同一个领域模块。
 
-## 3. Repository structure
+## 2. 技术栈
 
-```
+| 层级 | 技术 |
+| --- | --- |
+| 后端 | Spring Boot 4.1、JDK 21、Sa-Token、JDBC/MyBatis-Plus、Jetty |
+| Admin | UmiJS 4、React、Ant Design |
+| H5 | Vite、React 19、antd-mobile |
+| App | React Native CLI、Ant Design RN |
+| 微信小程序 | Taro 4、React DSL |
+| HarmonyOS | Taro 4、React DSL |
+| 基础设施 | MySQL 8、Redis 7、Nginx Gateway |
+
+## 3. 仓库结构
+
+```text
 ai-product-factory/
-├── backend/                 # RuoYi-Vue-Plus (Maven multi-module)
-│   ├── ruoyi-admin/         # Boot module (Auth/Captcha controllers), port 8080
-│   ├── ruoyi-modules/       # Business modules (system, etc.) — add features here
-│   ├── ruoyi-common/        # Shared: R wrapper, encryption, Sa-Token utils
-│   ├── ruoyi-extend/        # Extensions (monitor / snailjob / snail-ai)
-│   └── script/sql/          # Init SQL (ry-vue / ry-job / ry-workflow)
-├── web/                     # Four frontends (each its own package)
-│   ├── admin/               # PC admin (plus-ui-react 6.x)
-│   ├── h5/                  # Mobile H5 (Vite + antd-mobile)
-│   ├── app/                 # Native App (RN CLI)
-│   └── miniapp/             # Mini-program / HarmonyOS (Taro)
-├── infra/                   # Docker infrastructure
-│   ├── docker-compose.yml   # MySQL:3306 / Redis:6379 (standard ports)
-│   └── init/01-init.sql      # Create db ry-vue + import tables
-├── docs/                    # Design system (tokens / platform / components)
-├── scripts/                 # start-dev.sh / stop-dev.sh (one-click dev)
-├── README.md                # Overview & run steps
-├── AGENTS.md                # Agent-facing summary (see this file for detail)
-└── CLAUDE.md                # This file
+├── backend/
+│   ├── ruoyi-admin/              # Admin 启动入口，8080
+│   ├── ruoyi-client/             # Client 启动入口，8082
+│   ├── ruoyi-interfaces/         # Admin / Client HTTP 接口
+│   ├── ruoyi-applications/       # 管理用例 / 用户用例
+│   ├── ruoyi-domains/            # 产品用户域与共享产品业务域
+│   ├── ruoyi-security/           # Admin / Client 身份安全策略
+│   ├── ruoyi-admin-modules/      # system/workflow/gen/job/ai/demo
+│   ├── ruoyi-infrastructure/     # 数据库和中间件适配
+│   ├── ruoyi-integrations/       # 微信、短信等外部适配
+│   ├── ruoyi-common/             # 技术底座
+│   ├── ruoyi-api/                # RuoYi 现有内部 Java API/DTO
+│   └── ruoyi-extend/             # monitor/snailjob/snail-ai
+├── web/
+│   ├── admin/
+│   ├── h5/
+│   ├── app/
+│   ├── miniapp/
+│   └── harmony/
+├── infra/
+│   ├── gateway/                  # Admin / Client 两套 Nginx Gateway
+│   ├── init/01-init.sql
+│   ├── docker-compose.yml
+│   └── docker-compose.prod.yml
+├── docs/
+└── scripts/
 ```
 
-## 4. Backend API contract (frontend integration standard)
+不存在 `ruoyi-channel-admin/h5/app/miniapp/harmony`。Admin 本身就是管理接口入口；四个用户端统一使用 Client API。端差异进入认证策略和外部集成，不按前端技术栈复制后端模块。
 
-The frontend must integrate against this contract only.
+## 4. 后端真实契约
 
-### 4.1 Base path & port
-- Backend listens on `:8080` with `context-path: /`. **Always pin the port:**
-  `java -jar ruoyi-admin.jar --server.port=8080` (RuoYi 6.x otherwise assigns a
-  random port).
-- Frontends use the dev proxy prefix `/dev-api` → `http://localhost:8080`
-  (prefix stripped). Set `baseURL` to `/dev-api`; never hard-code `localhost:8080`
-  in app code. (RN has no proxy: point `baseApi` at a reachable address, e.g.
-  `http://10.0.2.2:8080/dev-api` on the Android emulator.)
+### 4.1 服务入口
 
-### 4.2 Unified response `R<T>`
+| 服务 | 本地地址 | 使用者 |
+| --- | --- | --- |
+| Admin | `http://localhost:8080` | 仅 `web/admin` |
+| Client | `http://localhost:8082` | H5、App、小程序、HarmonyOS |
+
+Admin Web 开发代理指向 `8080`；H5、Miniapp/Harmony H5 调试代理指向 `8082`；React Native 开发地址指向设备可访问的 `8082`。
+
+### 4.2 统一返回体
+
 ```jsonc
-{ "code": 200, "msg": "操作成功", "data": { } }
+{ "code": 200, "msg": "操作成功", "data": {} }
 ```
-- `code === 200` success; `401` unauthenticated/expired; `403` forbidden;
-  `500` server error; `601` warning.
-- The request layer unwraps uniformly: on success resolve `data`; otherwise
-  reject and surface `msg`.
 
-### 4.3 Authentication (Sa-Token)
-- After login, send `Authorization: Bearer <access_token>` on every request.
-- **Also send the `clientid` header** (must match the `sys_client` table). Sa-Token
-  rejects with `401 客户端ID与Token不匹配` if the header clientid and the token's
-  clientid differ. Known client IDs:
-  - Web/PC admin & H5: `e5cd7e4891bf95d1d19206ce24a7b32e`
-  - Native App: `428a8310cd442757ae699df5d894f051`
-  - The frontend pins its clientid in `src/utils/env.ts` (`VITE_APP_CLIENT_ID`);
-    the app end already uses the app clientid so phone-based grants work.
-- Missing/expired token on a protected endpoint → `401` → frontend clears token
-  and prompts re-login.
+- `200`：成功。
+- `401`：身份无效或 Token/clientid 不匹配。
+- `403`：没有访问权限。
+- `500`：业务或服务端错误。
 
-### 4.4 Core endpoints (already integrated)
-| Purpose | Method & path | Auth | Notes |
-|---------|---------------|------|-------|
-| Captcha | `GET /auth/code` | none | Returns `CaptchaVo{ captchaEnabled, uuid, img(base64) }` |
-| Login | `POST /auth/login` | none | Body AES+RSA encrypted (4.5); `grantType=password` (web/H5) |
-| SMS code | `GET /resource/sms/code` | none | Query `phoneNumber`; requires a configured sms4j `config1` |
-| Logout | `POST /auth/logout` | yes | |
-| User info | `GET /system/user/getInfo` | yes + clientid | Returns `UserInfoVo{ user, roles, permissions }` |
+各端请求层负责解包 `data`、展示 `msg`，并在 `401` 时清理本端 Token。
 
-#### 4.4.1 App login (phone-based) — see 4.6 for detail
-`/auth/login` routes by `grantType`. Beyond `password` (account + image captcha),
-the app client supports two phone-based grants. The app client's
-`grant_type` column is `password,sms,social,phonePassword` (no image captcha).
+### 4.3 Admin 契约
 
-Other business endpoints follow the same `R<T>` contract; read the corresponding
-`*Controller` source before integrating — do not guess paths.
+Admin 继续使用 RuoYi 管理员模型：
 
-### 4.5 Login/register encryption (`@ApiEncrypt`)
-For `/auth/login` and `/auth/register` the backend decrypts via an aspect. The
-frontend must:
-1. Generate a random 16-byte AES key (`crypto-js`, AES-**ECB**/Pkcs7).
-2. Encrypt the request body JSON with that AES key.
-3. Encrypt the AES key's Base64 with the **RSA public key**; put it in the
-   `encrypt-key` header.
-4. If a response carries `encrypt-key`, decrypt the body with RSA(priv)->AES.
+| 用途 | 方法与路径 | 鉴权 |
+| --- | --- | --- |
+| 图片验证码 | `GET /auth/code` | 无 |
+| 管理员登录 | `POST /auth/login` | 无，AES+RSA 请求体加密 |
+| 管理员退出 | `POST /auth/logout` | Admin Token |
+| 管理员信息 | `GET /system/user/getInfo` | Admin Token |
 
-RSA keys live in `.env` (`VITE_APP_RSA_PUBLIC_KEY` / `VITE_APP_RSA_PRIVATE_KEY`)
-and must match the backend `application.yml` `crypto` keypair. Gated by
-`VITE_APP_ENCRYPT=true`. Implemented in `src/utils/{crypto,jsencrypt}.ts`.
+- Admin `clientid`：`e5cd7e4891bf95d1d19206ce24a7b32e`。
+- 默认管理员：`admin / admin123`。
+- 管理员、角色、菜单、部门和数据权限由 `sys_*` 表及 `ruoyi-system` 管理。
 
-### 4.6 App login (phone number)
+### 4.4 Client 契约
 
-The app end (`web/app`) logs in by phone. It sends `clientid=428a8310…` (app
-client) and one of two `grantType` values to `POST /auth/login` (body still
-AES+RSA encrypted per 4.5). Implemented in `web/app/src/api/auth.ts`
-(`loginByPhone`, `loginBySms`, `getSmsCode`).
+四个用户端使用同一套产品用户 API：
 
-| Grant | `grantType` | Body fields | Backend strategy | Captcha |
-|-------|-------------|-------------|------------------|---------|
-| Phone + password | `phonePassword` | `username`(=phone), `password` | `PhonePasswordAuthStrategy` (new) | none |
-| Phone + SMS code | `sms` | `phoneNumber`, `smsCode` | `SmsAuthStrategy` | SMS code |
+| 用途 | 方法与路径 | 鉴权 |
+| --- | --- | --- |
+| 验证码能力声明 | `GET /client-auth/code` | 无；当前 `captchaEnabled=false` |
+| 产品用户登录 | `POST /client-auth/login` | 无，AES+RSA 请求体加密 |
+| 产品用户退出 | `POST /client-auth/logout` | Client Token |
+| 当前产品用户 | `GET /client-api/v1/session` | Client Token + clientid |
+| 获取短信码 | `GET /client-resource/sms/code?phoneNumber=...` | 无 |
 
-- **Phone + password**: `username` carries the phone number; the strategy looks
-  up `sys_user.phone_number`, BCrypt-checks the password. No image captcha.
-- **Phone + SMS code**: first `GET /resource/sms/code?phoneNumber=…` to send (or
-  stub) the code; the SMS code is cached in Redis as `global:captcha_codes:<phone>`
-  (JSON string, Jackson serialized). `SmsAuthStrategy` reads it via
-  `RedisUtils.getCacheObject` and compares. No image captcha.
-- **Note on Redis**: RuoYi caches `sys_client` in Redis; after editing the
-  `sys_client` table you must `redis-cli -a ruoyi123 FLUSHALL` (and restart is
-  harmless) for client/grant changes to take effect. The SMS code must be stored
-  as a JSON string (e.g. `SET global:captcha_codes:13800138000 '"1234"' EX 300`),
-  not a bare string, or `getCacheObject` deserializes it to the wrong type.
+Client 登录公共字段：
 
-#### 4.6.1 App login UI (web/app)
-`App.tsx` uses `useAuth` (`src/auth/useAuth.ts`) as a **route guard**: unauthenticated
-→ `src/screens/LoginScreen.tsx` (phone+password / phone+SMS tabs, 60s resend
-countdown), authenticated → `src/screens/HomeScreen.tsx` (user info + theme toggle
-+ logout). All screens pull colors/spacing from `src/theme/useThemeTokens.ts`
-(which switches light/dark token sets). No navigation library is added — the guard
-is a conditional render, by design (keep deps minimal).
+```jsonc
+{
+  "clientId": "本端 clientid",
+  "grantType": "password | phonePassword | sms | xcx"
+}
+```
 
-## 5. Frontend conventions (consistent across all four ends)
+授权方式附加字段：
 
-- **Request layer**: `src/api/request.ts` (admin uses the official impl; the
-  other three mirror it). Responsibilities: inject `Authorization`/`clientid`,
-  encrypt when `isEncrypt:'true'`, unwrap `R`, clear token on 401, toast `msg`.
-- **Types**: backend `R<T>` ↔ frontend `R<T>`; describe params/results as
-  interfaces in `src/api/*.ts`.
-- **Token storage**: `localStorage['Admin-Token']` (admin/h5), Taro `Storage`
-  (miniapp), RN `src/utils/auth.ts` (localStorage, fallback memory).
-- **Adding an endpoint**: wrap it in `src/api/<module>.ts` returning `R<X>`;
-  pages consume `data` only, never `code`/`msg`.
-- **Environment**: h5 uses Vite `.env`; app/miniapp keep constants in
-  `src/utils/env.ts` (`VITE_APP_BASE_API`, `VITE_APP_CLIENT_ID`,
-  `VITE_APP_ENCRYPT`, `VITE_APP_RSA_*`).
-- **RN note**: `jsencrypt` expects `window`/Web Crypto; polyfill on device.
-  Point `baseApi` at a reachable backend.
-- **Mini-program note**: the current request layer uses axios, which works on
-  h5/rn. For WeChat/Alipay, swap to a `Taro.request` adapter (scaffold reserves
-  the spot).
+| grantType | 字段 | 适用端 |
+| --- | --- | --- |
+| `password` | `username`, `password` | H5/App/小程序/HarmonyOS |
+| `phonePassword` | `username`（手机号）, `password` | H5/App/HarmonyOS |
+| `sms` | `phoneNumber`, `smsCode` | H5/App/HarmonyOS |
+| `xcx` | `appid`, `xcxCode` | 仅微信小程序 |
 
-## 6. Development workflow
+登录响应：
 
-### 6.1 Infrastructure (Docker)
+```jsonc
+{
+  "code": 200,
+  "data": {
+    "access_token": "...",
+    "expire_in": 604800,
+    "client_id": "..."
+  }
+}
+```
+
+会话响应 `data` 包含：`userId`、`userName`、`nickName`、`avatar`、`clientId`、`deviceType`、`roles`、`permissions`。`roles/permissions` 是产品用户业务授权扩展点，不代表 Admin RBAC。
+
+### 4.5 Client 应用配置
+
+| 前端 | clientid | deviceType | 默认授权 |
+| --- | --- | --- | --- |
+| H5 | `8f6e7d5c4b3a2910fedcba9876543210` | `h5` | password/sms/phonePassword |
+| App | `428a8310cd442757ae699df5d894f051` | `app` | password/sms/phonePassword |
+| 微信小程序 | `7f4c1e2d8a9b4c6f9012d3e4f5a6b7c8` | `miniapp` | password/xcx |
+| HarmonyOS | `9c8b7a6d5e4f3210a1b2c3d4e5f60718` | `harmony` | password/sms/phonePassword |
+
+默认产品用户：`client / admin123`，手机号 `13800138000`。它只存在于 `client_user`，不是管理员账号。
+
+App 使用 `AppNavigator + SessionContext` 作为登录态路由守卫。登录页保留手机号密码、手机号短信两种方式和 60 秒重发倒计时；登录成功后必须读取 Client 会话接口，不以本地 Token 存在与否代替服务端会话校验。
+
+### 4.6 Token 与加密
+
+- 受保护请求发送 `Authorization: Bearer <token>` 和 `clientid`。
+- Admin 使用默认 Sa-Token loginType；Client 使用 `loginType=client`。
+- Client Token 只能访问 `/client-api/**`，不能访问 Admin 接口；反之亦然。
+- Admin 与 Client 开发环境使用不同 Redis database/key prefix。
+- `@ApiEncrypt` 请求顺序仍为：随机 AES 密钥加密 JSON → RSA 公钥加密 AES 密钥 → 放入 `encrypt-key` 请求头。
+- Client 默认密钥在 `ruoyi-common-encrypt/src/main/resources/client-api-encrypt.yml`，生产环境必须通过环境变量替换。
+
+## 5. 后端分层规则
+
+依赖方向：
+
+```text
+interfaces -> applications -> domains
+security --------------------> domains
+infrastructure --------------> domains
+integrations ----------------> domains
+boot -> interfaces + security + infrastructure + integrations
+```
+
+- `ruoyi-domains` 不得依赖 Spring MVC、数据库实现、微信/SMS SDK或前端 DTO。
+- `ruoyi-applications` 只编排用例，不实现数据库和外部 HTTP。
+- `ruoyi-interfaces` 负责 HTTP 参数、返回 DTO 和协议适配。
+- `ruoyi-infrastructure` 实现领域仓储端口。
+- `ruoyi-integrations` 实现微信、短信、支付等外部端口。
+- `ruoyi-common` 只保存通用技术机制，禁止放 Admin/Client Principal 或产品业务 DTO。
+
+复制脚手架后新增订单、内容、商品等模块时，先在 `ruoyi-domains` 建立真实领域，再分别在 Admin/Client application 暴露管理用例和用户用例。
+
+## 6. 数据库与中间件
+
+开发环境使用同一 MySQL 实例和 `ry-vue` 数据库，但按表边界隔离：
+
+- Admin 身份：`sys_user`、`sys_role`、`sys_menu`、`sys_client` 等。
+- Client 身份：`client_user`、`client_identity`、`client_application`。
+- 产品业务：后续复制脚手架后新增的统一业务表。
+
+Admin Flyway 历史表使用默认配置；Client 使用 `flyway_client_schema_history` 和 `classpath:db/client`。Client Redis 默认 database `1`、key prefix `client:`；Admin 默认 database `0`。
+
+生产可拆分物理数据库/Redis，但不得在 Admin 和 Client 各保存一份订单等业务事实。
+
+## 7. Gateway
+
+生产参考包含两套基础设施 Gateway：
+
+- `infra/gateway/admin.nginx.conf`：转发到 `ruoyi-admin:8080`，适合内网、IP、MFA和审计策略。
+- `infra/gateway/client.nginx.conf`：只暴露 `/client-auth/**`、`/client-resource/**`、`/client-api/**`，带登录/API限流。
+
+生产编排不直接发布后端容器端口；Admin/H5 静态站点分别代理到对应 Gateway。Gateway 不承担用户权限、业务参数校验或 DTO 转换。
+
+## 8. 五端前端约定
+
+- 每端独立维护 `src/api/request.ts`、API 类型、Token 存储、环境变量、设计 Token 适配和锁文件。
+- 禁止跨端相对引用源码，禁止建立前端共享 workspace。
+- Admin 只能指向 Admin API；其余四端只能指向 Client API。
+- 微信平台差异只保留在 `web/miniapp`；HarmonyOS 不允许复用 `xcx`、微信 AppID或小程序 clientid。
+- 生产 App、小程序和 HarmonyOS 必须注入设备可访问的 HTTPS Client Gateway 地址。
+
+## 9. 启动
+
 ```bash
-docker compose -f infra/docker-compose.yml up -d      # MySQL:3306 / Redis:6379
-# down (keep data) / down -v (wipe data)
+bash scripts/start-dev.sh
 ```
-MySQL `root/root`, db `ry-vue` (auto-created + 58 tables on first start).
-Redis `requirepass ruoyi123`.
 
-### 6.2 Backend (JDK 21)
+脚本启动 MySQL、Redis、Admin `8080` 和 Client `8082`。停止并保留数据：
+
+```bash
+bash scripts/stop-dev.sh
+```
+
+单独编译双入口：
+
 ```bash
 cd backend
-./mvnw -pl ruoyi-admin -am package -DskipTests        # first time only
-java -jar ruoyi-admin/target/ruoyi-admin.jar --server.port=8080 --captcha.enable=false
-```
-`--captcha.enable=false` disables the captcha during local dev (keep it on in
-prod). Verify with `GET http://localhost:8080/auth/code` → `R<CaptchaVo>`.
-`application-dev.yml` already points at `localhost:3306` (useSSL=false) /
-`localhost:6379`, so no env-var overrides are needed.
-
-### 6.3 Frontend (pick one)
-```bash
-cd web/admin   && pnpm install && pnpm dev     # 8000
-cd web/h5      && pnpm install && pnpm dev     # 8081
-cd web/miniapp && pnpm install && pnpm dev:h5  # 10086
-cd web/app     && npm install && npm run ios   # needs Xcode/Android Studio
-```
-Login with `admin / admin123` (captcha off → leave blank) → `getInfo` returns
-`roles` containing `superadmin` ⇒ end-to-end data flow verified.
-
-### 6.4 One-click scripts
-```bash
-bash scripts/start-dev.sh   # docker up + build jar if missing + start backend + wait ready
-bash scripts/stop-dev.sh    # stop backend + docker down (keep volumes)
+./mvnw -B -pl ruoyi-admin,ruoyi-client -am -DskipTests compile
 ```
 
-## 7. Troubleshooting (known issues)
+五个前端仍在各自目录独立安装和启动。
 
-- **Random port**: RuoYi 6.x picks a random port unless you pass
-  `--server.port=8080`. The frontend proxies assume 8080.
-- **`useSSL`**: `useSSL=true` against Docker MySQL fails the SSL handshake; the
-  dev datasource is pinned to `useSSL=false`.
-- **`User-Agent` header**: the backend parses UA during login; a bare request
-  without UA throws NPE. Real browsers/mobile send it; scripts must add it.
-- **`clientid` header**: protected endpoints (e.g. `getInfo`) 401 with
-  "客户端ID与Token不匹配" if `clientid` is missing. The request layer sends it
-  by default — don't remove it.
-- **Default credentials**: `admin / admin123` (not `123456`).
-- **RSA keypair**: frontend `.env`/`env.ts` and backend `application.yml` must
-  stay in sync; changing one requires changing the other.
-- **admin deps not installed in this sandbox** (heavy Umi project). Locally run
-  `pnpm install` then `pnpm lint` (= tsc) to verify; its request layer is the
-  official code and already matches the contract.
-- **Mini-program non-h5 platforms**: need a `Taro.request` adapter (see 5).
+## 10. 参考
 
-## 8. References
-
-- Design system: `docs/AI-设计系统上下文.md`, `docs/design-tokens.json`,
-  `docs/design-tokens.ts`; full index `docs/README.md`.
-- Run steps: `README.md`. Agent summary: `AGENTS.md`.
+- 工程边界：`docs/工程架构基线.md`
+- 设计系统：`docs/AI-设计系统上下文.md`
+- 前端平台规则：`docs/平台适配/`
+- 后端说明：`backend/ARCHITECTURE.md`
+- 项目启动：`README.md`

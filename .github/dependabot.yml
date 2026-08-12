@@ -1,0 +1,38 @@
+version: 2
+updates:
+  - package-ecosystem: maven
+    directory: /backend
+    schedule: { interval: weekly }
+    open-pull-requests-limit: 5
+  - package-ecosystem: npm
+    directory: /web/admin
+    schedule: { interval: weekly }
+    open-pull-requests-limit: 3
+  - package-ecosystem: npm
+    directory: /web/h5
+    schedule: { interval: weekly }
+    open-pull-requests-limit: 3
+  - package-ecosystem: npm
+    directory: /web/app
+    schedule: { interval: weekly }
+    open-pull-requests-limit: 3
+  - package-ecosystem: npm
+    directory: /web/miniapp
+    schedule: { interval: weekly }
+    open-pull-requests-limit: 3
+  - package-ecosystem: npm
+    directory: /web/harmony
+    schedule: { interval: weekly }
+    open-pull-requests-limit: 3
+  - package-ecosystem: docker
+    directory: /backend/ruoyi-admin
+    schedule: { interval: weekly }
+  - package-ecosystem: docker
+    directory: /backend/ruoyi-client
+    schedule: { interval: weekly }
+  - package-ecosystem: docker
+    directory: /web/admin
+    schedule: { interval: weekly }
+  - package-ecosystem: docker
+    directory: /web/h5
+    schedule: { interval: weekly }

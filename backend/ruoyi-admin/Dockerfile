@@ -1,3 +1,9 @@
+FROM maven:3.9.11-eclipse-temurin-21-alpine AS build
+
+WORKDIR /workspace
+COPY . .
+RUN chmod +x mvnw && ./mvnw -B -pl ruoyi-admin -am package -DskipTests
+
 # 贝尔实验室 Spring 官方推荐镜像 JDK下载地址 https://bell-sw.com/pages/downloads/
 FROM bellsoft/liberica-openjdk-rocky:21.0.12-cds
 # FROM bellsoft/liberica-openjdk-rocky:25.0.4-cds
@@ -11,22 +17,13 @@ RUN mkdir -p /ruoyi/server/logs \
 
 WORKDIR /ruoyi/server
 
-ENV SERVER_PORT=8080 SNAIL_JOB_PORT=28080 SNAIL_AI_PORT=38080 LANG=C.UTF-8 LC_ALL=C.UTF-8 JAVA_OPTS=""
+ENV SERVER_PORT=8080 SNAIL_JOB_PORT=28080 SNAIL_AI_PORT=38080 LANG=C.UTF-8 LC_ALL=C.UTF-8 JAVA_OPTS="" SPRING_PROFILES_ACTIVE=prod
 
 EXPOSE ${SERVER_PORT}
 # 暴露 snail 客户端端口 用于定时任务调度中心通信
 EXPOSE ${SNAIL_JOB_PORT}
 EXPOSE ${SNAIL_AI_PORT}
 
-ADD ./target/ruoyi-admin.jar ./app.jar
+COPY --from=build /workspace/ruoyi-admin/target/ruoyi-admin.jar ./app.jar
 
-SHELL ["/bin/bash", "-c"]
-
-ENTRYPOINT java -Djava.security.egd=file:/dev/./urandom -Dserver.port=${SERVER_PORT} \
-           -Dsnail-job.port=${SNAIL_JOB_PORT} \
-           -Dsnail-ai.port=${SNAIL_AI_PORT} \
-           # 应用名称 如果想区分集群节点监控 改成不同的名称即可
-           #-Dskywalking.agent.service_name=ruoyi-server \
-           #-javaagent:/ruoyi/skywalking/agent/skywalking-agent.jar \
-           -XX:+HeapDumpOnOutOfMemoryError -XX:+UseZGC ${JAVA_OPTS} \
-           -jar app.jar
+ENTRYPOINT ["/bin/bash", "-c", "exec java -Djava.security.egd=file:/dev/./urandom -Dserver.port=${SERVER_PORT} -Dsnail-job.port=${SNAIL_JOB_PORT} -Dsnail-ai.port=${SNAIL_AI_PORT} -XX:+HeapDumpOnOutOfMemoryError -XX:+UseZGC ${JAVA_OPTS} -jar app.jar"]

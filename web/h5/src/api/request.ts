@@ -128,6 +128,7 @@ function showRelogin(): void {
   isRelogin.show = true;
   Toast.show({ content: '登录状态已过期，请重新登录', position: 'top' });
   removeToken();
+  window.dispatchEvent(new Event('ruoyi:unauthorized'));
   isRelogin.show = false;
 }
 

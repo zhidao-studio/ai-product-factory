@@ -1,39 +1,27 @@
-# web/app —— iOS / Android 原生 App（React Native + @ant-design/react-native）
+# App 独立工程
 
-由官方 `@react-native-community/cli init` 真实初始化的 React Native 工程。
+React Native iOS / Android 工程，包含独立的原生目录、npm 锁文件、请求层、持久化会话和导航。
 
-- 技术栈：React Native + TypeScript
-- UI 规范：`@ant-design/react-native`（Ant Design 官方 RN 实现，iOS/Android/Web 同源）
-- 工程已生成原生 `ios/`、`android/` 目录与 JS 入口
-
-## 已完成
-
-- `npx @react-native-community/cli init` 已生成项目骨架（位于 `web/app`）
-- 基础 JS 依赖已 `npm install`
-
-## 接入 Ant Design RN（待你本地执行）
+## 命令
 
 ```bash
-cd web/app
-npm install @ant-design/react-native react-native-vector-icons
-# RN 0.60+ 自动 link；若未自动，按官方文档手动 link
+npm install
+npm run type-check
+npm run lint
+npm run ios
+npm run android
 ```
 
-## 运行（需要本机原生工具链）
+iOS 首次运行前执行：
 
-> 当前容器/CI 环境未安装 Xcode 与 CocoaPods，故 iOS 原生依赖未安装，需你在本机完成：
-
-iOS：
 ```bash
-cd web/app/ios && bundle install && bundle exec pod install && cd ..
-npx react-native run-ios
-```
-Android：
-```bash
-# 需 Android SDK + 模拟器/真机
-npx react-native run-android
+cd ios && bundle install && bundle exec pod install && cd ..
 ```
 
-## 对接后端
+## API 环境
 
-在 `App.tsx` 中通过 `axios` 调用 `http://localhost:8080`（或 App 内网地址），建议封装到 `src/api/` 并复用与 h5 一致的拦截器逻辑。
+- iOS 模拟器开发默认：`http://127.0.0.1:8082`
+- Android 模拟器开发默认：`http://10.0.2.2:8082`
+- 生产必须在应用启动前注入 `global.__RUOYI_APP_CONFIG__ = { apiBaseUrl, encryptEnabled }`
+
+Token 通过 AsyncStorage 持久化，会话恢复和 401 回收由 `src/stores/SessionContext.tsx` 统一处理。本工程使用 npm，不保留第二套锁文件。

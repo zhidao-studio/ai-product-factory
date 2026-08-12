@@ -1,0 +1,8 @@
+{
+  "modelVersion": "5.0.0",
+  "description": "AI Product Factory HarmonyOS client",
+  "dependencies": {},
+  "devDependencies": {
+    "@ohos/hvigor-ohos-plugin": "5.0.0"
+  }
+}

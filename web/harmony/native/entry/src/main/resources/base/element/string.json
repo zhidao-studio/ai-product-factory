@@ -1,0 +1,7 @@
+{
+  "string": [
+    { "name": "module_desc", "value": "AI Product Factory client" },
+    { "name": "EntryAbility_desc", "value": "Client entry ability" },
+    { "name": "EntryAbility_label", "value": "AI Product Factory" }
+  ]
+}

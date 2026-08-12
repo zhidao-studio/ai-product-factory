@@ -10,6 +10,7 @@ import org.dromara.common.satoken.core.service.SaPermissionImpl;
 import org.dromara.common.satoken.handler.SaTokenExceptionHandler;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 
 /**
@@ -27,6 +28,7 @@ public class SaTokenConfig {
      * @return JWT 登录逻辑
      */
     @Bean
+    @Primary
     public StpLogic getStpLogicJwt() {
         // Sa-Token 整合 jwt (简单模式)
         return new StpLogicJwtForSimple();

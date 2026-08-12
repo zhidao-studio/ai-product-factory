@@ -1,6 +1,5 @@
 /**
- * 认证相关接口（严格对齐后端 AuthController / CaptchaController）
- * 端点前缀 /auth、/system 等，经 /dev-api 代理到后端 8080。
+ * Client 产品用户认证接口，经 /dev-api 代理到 ruoyi-client:8082。
  */
 import request, { type R } from '@/api/request';
 import { appEnv } from '@/utils/env';
@@ -39,7 +38,8 @@ export interface UserInfo {
   userId: number | string;
   userName: string;
   nickName: string;
-  avatar: string;
+  channel: 'h5';
+  deviceType?: string;
   roles: string[];
   permissions: string[];
 }
@@ -47,7 +47,7 @@ export interface UserInfo {
 /** 获取图片验证码 */
 export function getCodeImg() {
   return request<R<VerifyCodeResult>>({
-    url: '/auth/code',
+    url: '/client-auth/code',
     method: 'get',
     headers: { isToken: false }
   });
@@ -56,7 +56,7 @@ export function getCodeImg() {
 /** 登录 */
 export function login(data: LoginParams) {
   return request<R<LoginResult>>({
-    url: '/auth/login',
+    url: '/client-auth/login',
     method: 'post',
     headers: {
       isToken: false,
@@ -74,7 +74,7 @@ export function login(data: LoginParams) {
 /** 退出登录 */
 export function logout() {
   return request<R>({
-    url: '/auth/logout',
+    url: '/client-auth/logout',
     method: 'post'
   });
 }
@@ -82,7 +82,7 @@ export function logout() {
 /** 获取当前用户信息（需鉴权） */
 export function getInfo() {
   return request<R<UserInfo>>({
-    url: '/system/user/getInfo',
+    url: '/client-api/v1/session',
     method: 'get'
   });
 }

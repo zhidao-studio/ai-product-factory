@@ -1,5 +1,5 @@
 /**
- * 认证相关接口（严格对齐后端 AuthController / CaptchaController）
+ * Client 产品用户认证接口（ruoyi-client:8082）
  */
 import request, { type R } from './request';
 import { appEnv } from '../utils/env';
@@ -38,7 +38,8 @@ export interface UserInfo {
   userId: number | string;
   userName: string;
   nickName: string;
-  avatar: string;
+  channel: 'app';
+  deviceType?: string;
   roles: string[];
   permissions: string[];
 }
@@ -46,7 +47,7 @@ export interface UserInfo {
 /** 获取图片验证码 */
 export function getCodeImg() {
   return request<R<VerifyCodeResult>>({
-    url: '/auth/code',
+    url: '/client-auth/code',
     method: 'get',
     headers: { isToken: false }
   });
@@ -55,7 +56,7 @@ export function getCodeImg() {
 /** 登录 */
 export function login(data: LoginParams) {
   return request<R<LoginResult>>({
-    url: '/auth/login',
+    url: '/client-auth/login',
     method: 'post',
     headers: {
       isToken: false,
@@ -73,7 +74,7 @@ export function login(data: LoginParams) {
 /** 退出登录 */
 export function logout() {
   return request<R>({
-    url: '/auth/logout',
+    url: '/client-auth/logout',
     method: 'post'
   });
 }
@@ -81,15 +82,15 @@ export function logout() {
 /** 获取当前用户信息（需鉴权） */
 export function getInfo() {
   return request<R<UserInfo>>({
-    url: '/system/user/getInfo',
+    url: '/client-api/v1/session',
     method: 'get'
   });
 }
 
-/** 获取短信验证码（免鉴权）：GET /resource/sms/code?phoneNumber= */
+/** 获取 Client 短信验证码（免鉴权） */
 export function getSmsCode(phoneNumber: string) {
   return request<R>({
-    url: '/resource/sms/code',
+    url: '/client-resource/sms/code',
     method: 'get',
     headers: { isToken: false },
     params: { phoneNumber }
@@ -99,7 +100,7 @@ export function getSmsCode(phoneNumber: string) {
 /** 手机号 + 短信验证码登录（grantType=sms） */
 export function loginBySms(phoneNumber: string, smsCode: string) {
   return request<R<LoginResult>>({
-    url: '/auth/login',
+    url: '/client-auth/login',
     method: 'post',
     headers: { isToken: false, isEncrypt: 'true', repeatSubmit: false },
     data: { phoneNumber, smsCode, clientId: appEnv.clientId, grantType: 'sms' }
@@ -109,7 +110,7 @@ export function loginBySms(phoneNumber: string, smsCode: string) {
 /** 手机号 + 密码登录（grantType=phonePassword，免图形验证码） */
 export function loginByPhone(phoneNumber: string, password: string) {
   return request<R<LoginResult>>({
-    url: '/auth/login',
+    url: '/client-auth/login',
     method: 'post',
     headers: { isToken: false, isEncrypt: 'true', repeatSubmit: false },
     data: { username: phoneNumber, password, clientId: appEnv.clientId, grantType: 'phonePassword' }

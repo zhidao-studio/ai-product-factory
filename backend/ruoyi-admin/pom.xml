@@ -11,9 +11,7 @@
     <packaging>jar</packaging>
     <artifactId>ruoyi-admin</artifactId>
 
-    <description>
-        web服务入口
-    </description>
+    <description>Admin 后台管理系统启动与组装入口</description>
 
     <dependencies>
 
@@ -80,6 +78,20 @@
             <artifactId>ruoyi-system</artifactId>
         </dependency>
 
+        <!-- Admin 接口、应用与身份安全边界 -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-admin-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-admin-application</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-admin-security</artifactId>
+        </dependency>
+
         <!-- 调度任务模块 -->
         <dependency>
             <groupId>org.dromara</groupId>
@@ -104,10 +116,26 @@
             <artifactId>ruoyi-workflow</artifactId>
         </dependency>
 
+        <!-- 数据库版本迁移；现有全量 SQL 作为 baseline，后续变更只写增量迁移 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-flyway</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-mysql</artifactId>
+        </dependency>
+
         <!-- Spring Boot Admin 客户端 -->
         <dependency>
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-starter-client</artifactId>
+        </dependency>
+
+        <!-- Prometheus 指标导出，由 Actuator /actuator/prometheus 提供 -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
 
         <!-- 单元测试 -->

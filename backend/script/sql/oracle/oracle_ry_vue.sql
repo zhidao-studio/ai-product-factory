@@ -1245,7 +1245,6 @@ comment on column sys_client.update_by              is '更新者';
 comment on column sys_client.update_time            is '更新时间';
 
 insert into sys_client values (1762000000000000001, 'e5cd7e4891bf95d1d19206ce24a7b32e', 'pc', 'pc123', 'password,social', 'pc', null, null, 1800, 604800, 0, 0, 1761000000000000103, 1761100000000000001, sysdate, 1761100000000000001, sysdate);
-insert into sys_client values (1762000000000000002, '428a8310cd442757ae699df5d894f051', 'app', 'app123', 'password,sms,social', 'android', '/app/**', null, 1800, 604800, 0, 0, 1761000000000000103, 1761100000000000001, sysdate, 1761100000000000001, sysdate);
 
 create table test_demo (
     id          number(20)      not null,
@@ -1350,4 +1349,3 @@ after logon on database
 begin
 execute immediate 'alter session set nls_date_format=''YYYY-MM-DD HH24:MI:SS''';
 end;
-

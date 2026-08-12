@@ -63,6 +63,14 @@ spring:
     basename: i18n/messages
   profiles:
     active: @profiles.active@
+  flyway:
+    enabled: ${FLYWAY_ENABLED:true}
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 0
+    validate-on-migrate: true
+    clean-disabled: true
+
   # 文件上传
   servlet:
     multipart:
@@ -207,12 +215,17 @@ management:
   endpoints:
     web:
       exposure:
-        include: '*'
+        include: health,info,metrics,prometheus,loggers
   endpoint:
     health:
-      show-details: ALWAYS
+      show-details: WHEN_AUTHORIZED
+      probes:
+        enabled: true
     logfile:
       external-file: ./logs/sys-console.log
+  metrics:
+    tags:
+      application: ${spring.application.name}
 
 --- # 统一消息推送配置
 message:

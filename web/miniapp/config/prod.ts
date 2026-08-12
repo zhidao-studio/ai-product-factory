@@ -1,12 +1,10 @@
-import type { UserConfig } from '@tarojs/cli'
+import type { UserConfigExport } from '@tarojs/cli'
 
 export default {
-  mini: {
-    compress: true,
-  },
+  mini: {},
   h5: {
     /**
      * 生产环境可在 h5 下配置 publicPath / 路由等
      */
   },
-} as Partial<UserConfig>
+} satisfies UserConfigExport<'webpack5'>

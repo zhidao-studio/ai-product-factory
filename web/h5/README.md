@@ -1,29 +1,22 @@
-# web/h5 —— 移动端 H5（React + antd-mobile + Vite）
+# H5 独立工程
 
-开箱即用的移动端 H5 工程，已对接后端。
+React + Vite + antd-mobile 移动 H5。本工程不引用其他前端的代码或依赖。
 
-- 技术栈：React 19 + TypeScript + Vite + antd-mobile 5 + react-router-dom + axios
-- UI 规范：Ant Design Mobile（与 PC 端 antd 同源设计规范）
-- 已内置：`<NavBar>/<Card>/<Button>` 示范页 + 对接后端 `/captchaImage` 的 axios 封装（含 token 拦截、/dev-api 代理）
-
-## 开发
+## 命令
 
 ```bash
 pnpm install
-pnpm dev        # 默认 http://localhost:8081
+pnpm dev
+pnpm lint
+pnpm build
 ```
 
-Vite 已配置 `/dev-api` 代理到 `http://localhost:8080`（后端），与 `web/admin` 约定一致。
+## 结构
 
-## 构建
+- `src/api/`：H5 独立请求层，处理 `clientid`、Bearer Token 和接口加密。
+- `src/stores/`：会话状态和 401 失效处理。
+- `src/router/`：公开/受保护路由和页面级懒加载。
+- `src/features/`：按业务能力分组。
+- `src/theme/`：本端独立的设计 Token 适配。
 
-```bash
-pnpm build      # 产物在 dist/
-pnpm preview
-```
-
-## 对接后端
-
-- 接口 baseURL：`/dev-api`（见 `src/api/request.ts`）
-- 登录后把后端返回的 `token` 写入 `localStorage['token']`，请求拦截器自动携带 `Authorization: Bearer <token>`
-- 后端运行要求见根目录 `README.md` 与 `infra/docker-compose.yml`
+开发环境使用 `.env.development` 的 `/dev-api` 代理到 Client `8082`；生产环境使用 `.env.production` 的 `/prod-api` 经 Client Gateway 转发。

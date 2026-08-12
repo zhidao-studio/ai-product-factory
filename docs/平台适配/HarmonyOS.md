@@ -2,6 +2,8 @@
 
 > HarmonyOS 遵循官方设计指南，支持多设备协同。宇宙蓝主色 + 24vp 图标规范。
 
+> **工程位置**：`web/harmony`（Taro 独立工程，仅构建 HarmonyOS）。与 `web/miniapp`（微信小程序端）平级、代码不共享。构建：`pnpm build:harmony`（产物为 ArkUI 工程，导入 DevEco Studio 运行）。
+
 ---
 
 ## 1. 设计理念

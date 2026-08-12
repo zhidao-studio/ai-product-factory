@@ -1,107 +1,71 @@
-# RuoYi-Vue-Plus 多端工程脚手架（Boot 版）
+# AI 多端产品工程脚手架
 
-开箱即用的中型项目脚手架：后端 Spring Boot + 多端前端（PC 后台 / H5 / RN App / 小程序），统一 React + Ant Design 体系。
+面向中型及大型产品的工程基线：五个完全独立的前端、Admin/Client 两个后端入口、一套共享产品业务域。
 
+> Client 是业务发生端，Admin 是业务管理端；两端身份和接口隔离，核心业务规则与业务数据统一。
+
+## 工程组成
+
+| 工程 | 定位 | 默认入口 |
+| --- | --- | --- |
+| `backend/ruoyi-admin` | PC 后台的管理员认证、系统管理、运营和审核入口 | `8080` |
+| `backend/ruoyi-client` | H5、App、小程序、HarmonyOS 的产品用户业务入口 | `8082` |
+| `web/admin` | PC 管理后台（Umi + Ant Design） | `8000` |
+| `web/h5` | 移动 H5（Vite + antd-mobile） | `8081` |
+| `web/app` | iOS / Android（React Native） | 原生工具链 |
+| `web/miniapp` | 微信小程序（Taro） | 平台工具链 |
+| `web/harmony` | HarmonyOS（Taro） | 平台工具链 |
+
+五个前端不使用 workspace、monorepo 或共享源码包。每端独立维护 `package.json`、锁文件、请求层、状态层和构建流程；只共享设计规范和后端契约。
+
+## 后端关系
+
+```mermaid
+flowchart LR
+  A["Admin 前端"] --> AG["Admin Gateway"] --> AS["ruoyi-admin"]
+  C["H5 / App / 小程序 / HarmonyOS"] --> CG["Client Gateway"] --> CS["ruoyi-client"]
+  AS --> AD["Admin 管理用例"]
+  CS --> CD["Client 用户用例"]
+  AD --> D["共享产品业务域"]
+  CD --> D
+  D --> DB["统一业务数据"]
 ```
-ai-product-factory/
-├── README.md                 # 本文件：总览与启动
-├── backend/                  # RuoYi-Vue-Plus (6.X) 后端，Spring Boot 4 / JDK 21 / Sa-Token
-│   ├── ruoyi-admin/          # 启动模块（端口 8080）
-│   ├── ruoyi-modules/        # 业务模块（加功能的地方）
-│   ├── ruoyi-common/         # 公共封装
-│   └── script/sql/           # 初始化 SQL（ry_vue / ry_job / ry_workflow ...）
-├── infra/                    # 基础设施（Docker，不污染本机 macOS）
-│   ├── docker-compose.yml    # MySQL 8 + Redis 7
-│   └── init/01-init.sql       # 建库 ry-vue + 导入三套表/数据（utf8mb4）
-├── web/
-│   ├── admin/                # ✅ plus-ui-react (6.X-React) PC 管理后台，React+Ant Design Pro
-│   ├── h5/                   # ✅ Vite + React + antd-mobile 移动端 H5
-│   ├── app/                  # ✅ React Native 原生 App（iOS/Android），@ant-design/react-native
-│   └── miniapp/              # ✅ Taro 小程序（微信/支付宝/... 可编译鸿蒙）
-└── docs/                     # 设计规范（设计系统 Token / 组件范式），前端以它为准
-```
 
-## 一、基础设施（Docker）
+- 管理员使用 `sys_user/sys_role/sys_menu` 和 Admin Token。
+- 产品用户使用 `client_user/client_identity/client_application` 和 Client Token。
+- 两套 Token 的 Sa-Token loginType、Redis 空间、clientid 和接口路径均隔离。
+- 后续订单、内容、商品等业务表属于共享产品业务域，不为 Admin/Client 复制两份。
 
-中间件全部跑在 Docker 容器里，不在 macOS 本机安装。
+详细边界见 [工程架构基线](docs/工程架构基线.md)。
+
+## 本地启动
 
 ```bash
-# 启动 MySQL(3306) + Redis(6379)
-docker compose -f infra/docker-compose.yml up -d
-
-# 停止（保留数据）   docker compose -f infra/docker-compose.yml down
-# 停止并清数据        docker compose -f infra/docker-compose.yml down -v
+bash scripts/start-dev.sh
 ```
 
-- MySQL：`root / root`，库 `ry-vue`（首次启动自动建库并导入 58 张表）
-- Redis：`requirepass ruoyi123`（已与后端 `application-dev.yml` 对齐）
-- 如需对象存储/全文检索：当前 dev 默认未启用 MinIO / Elasticsearch，按需自行在 compose 追加
+脚本会启动 MySQL、Redis、Admin 服务和 Client 服务。
 
-## 二、后端（首次启动）
+- Admin：`http://localhost:8080`，默认 `admin / admin123`
+- Client：`http://localhost:8082`，默认 `client / admin123`，手机号 `13800138000`
 
-1. 先按上一步把 Docker 中间件跑起来。
-2. 后端 `application-dev.yml` 已对齐：MySQL `root/root`、Redis `ruoyi123`，无需改。
-3. 启动（推荐走脚本，见第五章）：
-   ```bash
-   cd backend
-   # 方式 A：打包后直接跑（联调期关闭验证码）
-   ./mvnw -pl ruoyi-admin -am package -DskipTests
-   java -jar ruoyi-admin/target/ruoyi-admin.jar --server.port=8080 --captcha.enable=false
-   # 方式 B：IDE / Maven 插件
-   ./mvnw -pl ruoyi-admin -am spring-boot:run      # 或导入 IDE 跑 RuoYiApplication
-   ```
-4. 默认账号：`admin / admin123`，接口根 `http://localhost:8080`。
-   > 后端 6.x 会随机分配端口，务必 `--server.port=8080` 锁定；联调期 `--captcha.enable=false` 关验证码。更多坑位见 `CLAUDE.md`。
-
-## 三、前端各端
-
-### PC 管理后台（web/admin）
-```bash
-cd web/admin && pnpm install && pnpm dev      # Vite，端口 8000，/dev-api 代理到 8080
-```
-
-### 移动端 H5（web/h5）
-```bash
-cd web/h5 && pnpm install && pnpm dev         # 端口 8081，含 antd-mobile 示范页
-```
-
-### iOS/Android 原生 App（web/app）
-官方 RN CLI 已初始化骨架；本机需装 Xcode/CocoaPods 或 Android SDK 才能运行：
-```bash
-cd web/app && npm install @ant-design/react-native react-native-vector-icons
-cd web/app/ios && bundle install && bundle exec pod install && cd ..
-npx react-native run-ios      # / run-android
-```
-详见 `web/app/README.md`。
-
-### 微信小程序 / 鸿蒙（web/miniapp）
-官方 Taro CLI 已初始化（React + TS + sass）：
-```bash
-cd web/miniapp && pnpm dev:weapp     # 微信小程序（需微信开发者工具）
-# pnpm dev:h5 / pnpm build:rn / 鸿蒙见 Taro 官方鸿蒙插件
-```
-详见 `web/miniapp/README.md`。
-
-## 四、加功能
-
-- 后端：在 `backend/ruoyi-modules/` 建模块，或用内置代码生成器（系统工具 → 代码生成）。
-- 前端：PC 端用 `web/admin/src/pages` 的 ProComponents 拼页；H5/App/小程序按端封装业务组件。
-- 设计规范（设计 token / 主题对齐）由另一会话统一产出，落于 `docs/`。
-
-## 五、一键脚本（推荐）
-
-仓库内置启动 / 停止脚本，免去逐条敲命令与端口、环境变量记忆：
+前端按需独立启动：
 
 ```bash
-bash scripts/start-dev.sh   # 启动 Docker 中间件 + 构建并后台启动后端，自动等待就绪
-bash scripts/stop-dev.sh    # 停止后端进程并停止 Docker（保留数据卷）
+cd web/admin && pnpm install && pnpm dev
+cd web/h5 && pnpm install && pnpm dev
+cd web/app && npm install && npm run ios
+cd web/miniapp && pnpm install && pnpm dev:weapp
+cd web/harmony && pnpm install && pnpm dev:harmony
 ```
 
-脚本会依次完成：
+## 生产参考
 
-1. `docker compose up -d` 起 MySQL(3306) / Redis(6379)，并等待 MySQL 健康；
-2. 若 `backend/ruoyi-admin/target/ruoyi-admin.jar` 不存在则自动 `./mvnw package -DskipTests`；
-3. 后台启动后端（`--server.port=8080 --captcha.enable=false`），日志写 `backend/ruoyi-admin.log`，PID 写 `backend/ruoyi-admin.pid`；
-4. 轮询 `GET /auth/code` 直至返回 200，打印前端各端启动命令与登录账号。
+- `infra/docker-compose.prod.yml`：Admin/Client 双服务和双 Gateway 参考编排。
+- `infra/gateway/admin.nginx.conf`：后台入口策略。
+- `infra/gateway/client.nginx.conf`：用户端限流、路由和后端隐藏策略。
+- `infra/init/01-init.sql`：Admin 身份、Client 身份和基础能力初始化。
+- Admin 增量迁移：`backend/ruoyi-admin/src/main/resources/db/migration/`。
+- Client 增量迁移：`backend/ruoyi-client/src/main/resources/db/client/`。
 
-> 更细的端口 / 配置 / 踩坑说明见 `CLAUDE.md`。
+真实前后端契约与开发约定见 [CLAUDE.md](CLAUDE.md)。

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.dromara</groupId>
+        <artifactId>ruoyi-applications</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <artifactId>ruoyi-admin-application</artifactId>
+    <description>围绕共享业务域的运营、审核、配置与管理用例</description>
+    <dependencies>
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-business-domain</artifactId>
+        </dependency>
+    </dependencies>
+</project>

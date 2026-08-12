@@ -1,11 +1,10 @@
-import { defineConfig } from '@tarojs/cli'
+import { defineConfig, type UserConfigExport } from '@tarojs/cli'
 import path from 'node:path'
 import devConfig from './dev'
 import prodConfig from './prod'
-import type { UserConfig } from '@tarojs/cli'
 
-export default defineConfig(async (merge, { command, mode }) => {
-  const baseConfig: UserConfig = {
+export default defineConfig<'webpack5'>(async (merge) => {
+  const baseConfig: UserConfigExport<'webpack5'> = {
     projectName: 'miniapp',
     date: '2026-8-11',
     designWidth: 750,
@@ -17,9 +16,6 @@ export default defineConfig(async (merge, { command, mode }) => {
     },
     sourceRoot: 'src',
     outputRoot: 'dist',
-    sass: {
-      implementation: 'sass',
-    },
     framework: 'react',
     compiler: 'webpack5',
     alias: {
@@ -30,17 +26,6 @@ export default defineConfig(async (merge, { command, mode }) => {
         autoprefixer: { enable: true },
         pxtransform: { enable: true },
       },
-    },
-    h5: {
-      publicPath: '/',
-      staticDirectory: 'static',
-      postcss: {
-        autoprefixer: { enable: true },
-        pxtransform: { enable: true },
-      },
-    },
-    rn: {
-      appName: 'miniapp',
     },
   }
 

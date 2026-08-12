@@ -1,9 +1,16 @@
-import type { UserConfig } from '@tarojs/cli'
+import type { UserConfigExport } from '@tarojs/cli'
 
 export default {
-  logger: {
-    quiet: false,
-  },
   mini: {},
-  h5: {},
-} as Partial<UserConfig>
+  h5: {
+    devServer: {
+      proxy: {
+        '/dev-api': {
+          target: 'http://localhost:8082',
+          changeOrigin: true,
+          pathRewrite: { '^/dev-api': '' },
+        },
+      },
+    },
+  },
+} satisfies UserConfigExport<'webpack5'>
