@@ -85,9 +85,13 @@ The frontend must integrate against this contract only.
 
 ### 4.3 Authentication (Sa-Token)
 - After login, send `Authorization: Bearer <access_token>` on every request.
-- **Also send the `clientid` header** (default web `e5cd7e4891bf95d1d19206ce24a7b32e`,
-  must match the `sys_client` table). Sa-Token rejects with `401 客户端ID与Token不匹配`
-  if the header clientid and the token's clientid differ.
+- **Also send the `clientid` header** (must match the `sys_client` table). Sa-Token
+  rejects with `401 客户端ID与Token不匹配` if the header clientid and the token's
+  clientid differ. Known client IDs:
+  - Web/PC admin & H5: `e5cd7e4891bf95d1d19206ce24a7b32e`
+  - Native App: `428a8310cd442757ae699df5d894f051`
+  - The frontend pins its clientid in `src/utils/env.ts` (`VITE_APP_CLIENT_ID`);
+    the app end already uses the app clientid so phone-based grants work.
 - Missing/expired token on a protected endpoint → `401` → frontend clears token
   and prompts re-login.
 
@@ -95,9 +99,15 @@ The frontend must integrate against this contract only.
 | Purpose | Method & path | Auth | Notes |
 |---------|---------------|------|-------|
 | Captcha | `GET /auth/code` | none | Returns `CaptchaVo{ captchaEnabled, uuid, img(base64) }` |
-| Login | `POST /auth/login` | none | Body AES+RSA encrypted (4.5); `grantType=password` |
+| Login | `POST /auth/login` | none | Body AES+RSA encrypted (4.5); `grantType=password` (web/H5) |
+| SMS code | `GET /resource/sms/code` | none | Query `phoneNumber`; requires a configured sms4j `config1` |
 | Logout | `POST /auth/logout` | yes | |
 | User info | `GET /system/user/getInfo` | yes + clientid | Returns `UserInfoVo{ user, roles, permissions }` |
+
+#### 4.4.1 App login (phone-based) — see 4.6 for detail
+`/auth/login` routes by `grantType`. Beyond `password` (account + image captcha),
+the app client supports two phone-based grants. The app client's
+`grant_type` column is `password,sms,social,phonePassword` (no image captcha).
 
 Other business endpoints follow the same `R<T>` contract; read the corresponding
 `*Controller` source before integrating — do not guess paths.
@@ -114,6 +124,30 @@ frontend must:
 RSA keys live in `.env` (`VITE_APP_RSA_PUBLIC_KEY` / `VITE_APP_RSA_PRIVATE_KEY`)
 and must match the backend `application.yml` `crypto` keypair. Gated by
 `VITE_APP_ENCRYPT=true`. Implemented in `src/utils/{crypto,jsencrypt}.ts`.
+
+### 4.6 App login (phone number)
+
+The app end (`web/app`) logs in by phone. It sends `clientid=428a8310…` (app
+client) and one of two `grantType` values to `POST /auth/login` (body still
+AES+RSA encrypted per 4.5). Implemented in `web/app/src/api/auth.ts`
+(`loginByPhone`, `loginBySms`, `getSmsCode`).
+
+| Grant | `grantType` | Body fields | Backend strategy | Captcha |
+|-------|-------------|-------------|------------------|---------|
+| Phone + password | `phonePassword` | `username`(=phone), `password` | `PhonePasswordAuthStrategy` (new) | none |
+| Phone + SMS code | `sms` | `phoneNumber`, `smsCode` | `SmsAuthStrategy` | SMS code |
+
+- **Phone + password**: `username` carries the phone number; the strategy looks
+  up `sys_user.phone_number`, BCrypt-checks the password. No image captcha.
+- **Phone + SMS code**: first `GET /resource/sms/code?phoneNumber=…` to send (or
+  stub) the code; the SMS code is cached in Redis as `global:captcha_codes:<phone>`
+  (JSON string, Jackson serialized). `SmsAuthStrategy` reads it via
+  `RedisUtils.getCacheObject` and compares. No image captcha.
+- **Note on Redis**: RuoYi caches `sys_client` in Redis; after editing the
+  `sys_client` table you must `redis-cli -a ruoyi123 FLUSHALL` (and restart is
+  harmless) for client/grant changes to take effect. The SMS code must be stored
+  as a JSON string (e.g. `SET global:captcha_codes:13800138000 '"1234"' EX 300`),
+  not a bare string, or `getCacheObject` deserializes it to the wrong type.
 
 ## 5. Frontend conventions (consistent across all four ends)
 

@@ -85,3 +85,33 @@ export function getInfo() {
     method: 'get'
   });
 }
+
+/** 获取短信验证码（免鉴权）：GET /resource/sms/code?phoneNumber= */
+export function getSmsCode(phoneNumber: string) {
+  return request<R>({
+    url: '/resource/sms/code',
+    method: 'get',
+    headers: { isToken: false },
+    params: { phoneNumber }
+  });
+}
+
+/** 手机号 + 短信验证码登录（grantType=sms） */
+export function loginBySms(phoneNumber: string, smsCode: string) {
+  return request<R<LoginResult>>({
+    url: '/auth/login',
+    method: 'post',
+    headers: { isToken: false, isEncrypt: 'true', repeatSubmit: false },
+    data: { phoneNumber, smsCode, clientId: appEnv.clientId, grantType: 'sms' }
+  });
+}
+
+/** 手机号 + 密码登录（grantType=phonePassword，免图形验证码） */
+export function loginByPhone(phoneNumber: string, password: string) {
+  return request<R<LoginResult>>({
+    url: '/auth/login',
+    method: 'post',
+    headers: { isToken: false, isEncrypt: 'true', repeatSubmit: false },
+    data: { username: phoneNumber, password, clientId: appEnv.clientId, grantType: 'phonePassword' }
+  });
+}

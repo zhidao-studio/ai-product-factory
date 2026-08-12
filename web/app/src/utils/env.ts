@@ -5,8 +5,8 @@
 export const appEnv = {
   /** 后端接口代理前缀（调试时由 RN 端自行代理/指向 http://10.0.2.2:8080 等） */
   baseApi: '/dev-api',
-  /** 默认 Web 客户端 id（须与后端 sys_client 表一致） */
-  clientId: 'e5cd7e4891bf95d1d19206ce24a7b32e',
+  /** app 端客户端 id（须与后端 sys_client 表中 app 记录一致，已含 sms/phonePassword 授权） */
+  clientId: '428a8310cd442757ae699df5d894f051',
   /** 是否开启登录/注册请求体加密（对应后端 @ApiEncrypt） */
   encryptEnabled: true,
   /** RSA 公钥：加密请求体 AES 密钥 */
