@@ -13,7 +13,7 @@
 - `ruoyi-common`：Common 总工程，只承载两侧可复用的技术能力。
 - `web/admin`、`web/h5`、`web/app`、`web/miniapp`、`web/harmony` 是五个独立工程，不共享运行时源码、依赖包或构建产物。
 
-Client 是客户端后台业务主体；Admin 是独立的运营管理后台。Admin 可以通过 Client 管理接口或独立的数据访问适配层管理 Client 数据，Client 不反向依赖 Admin。
+Client 是客户端后台业务主体；Admin 是独立的运营管理后台。Admin 默认通过 Client 私有管理接口管理 Client 数据，Client 不反向依赖 Admin；只有经过明确架构决策的特殊场景才增加 Admin 专属数据访问适配层。
 
 ### 1.1 两条不可违反的铁律
 
@@ -25,8 +25,10 @@ Client 是客户端后台业务主体；Admin 是独立的运营管理后台。A
 ```text
 PC Admin ── Admin Gateway ── ruoyi-admin-server:8080 ── sys_* 管理身份
                                       │
-                                      ├─ 调用 Client 管理接口
-                                      └─ 经独立适配层管理 Client 数据
+                                      └─ 私有管理 API（服务签名）
+                                                   │
+                                                   ▼
+                                      ruoyi-client-server:8082 ── app_*
 
 H5 / App / 微信小程序 / HarmonyOS
          └─ Client Gateway ── ruoyi-client-server:8082 ── Client API
@@ -52,13 +54,13 @@ Admin 管理员 Token 不能访问 Client 用户接口，Client Token 也不能�
 - 目标边界：Admin 与 Client 是两套工程，分别拥有身份、接口、业务模块和运行配置，不共享 Entity、Service、LoginUser 或安全会话模型。
 - `ruoyi-admin-api` 只承载 Admin 的 System、Workflow 与管理身份 Java 契约；`ruoyi-client-api` 只承载 Client 自己的会话和认证请求契约。
 - Common 不设 `common-api`：跨两侧复用的最小会话和数据权限技术接口属于既有 `ruoyi-common-core`，Common 不得定义 Admin/Client 业务契约，也不得依赖任一侧 API。
-- Admin 管理 Client 时，复杂业务操作调用 Client 管理接口；确需直接访问数据时，通过 Admin 专属适配层访问 Client 所拥有的表。
+- Admin 管理 Client 时默认调用 Client 私有管理接口；确需直接访问数据时，必须经过单独架构决策，并通过 Admin 专属适配层访问 Client 所拥有的表。
 - Client 模块由 Client 总工程聚合；`ruoyi-client-um` 位于 `backend/ruoyi-client/`，拥有应用用户、接入客户端和第三方身份的数据模型、Mapper 与 Service。既有 Admin 模块继续位于 `backend/ruoyi-modules/`，由 Admin 总工程聚合。
 - 不创建没有真实代码的 API、UM、微服务或分层空壳工程。
 
-当前已完成 Maven 所有权、Java API 和 Client UM 拆分：旧 `ruoyi-api` 已删除，Admin/Client 使用各自登录上下文，Common 不再依赖 System API。Client Server 使用 `ruoyi-client-um` 完成认证与身份管理；Admin Server 当前直接依赖该模块，对外提供应用用户和接入客户端运营接口。未来拆成独立部署服务时，Admin 应改为调用 Client 管理接口或使用 Admin 专属数据访问适配层，Client 始终不得反向依赖 Admin。
+当前已完成 Maven 所有权、Java API、Client UM 与运行边界拆分：旧 `ruoyi-api` 已删除，Admin/Client 使用各自登录上下文，Common 不再依赖 System API。Client Server 使用 `ruoyi-client-um` 完成认证与身份管理；Admin Server 只依赖 `ruoyi-client-api`，通过私有 HTTP 管理接口完成应用用户和接入客户端运营，不再装载 UM 实现。
 
-当前受支持的完整构建入口是 `backend/pom.xml`。Admin、Client、Common 的 POM 首先表达模块所有权；在 Admin 仍以模块依赖方式管理 Client 数据期间，不把三个子总工程宣称为可在全新 Maven 仓库中完全独立发布的发行单元。
+当前受支持的完整构建入口是 `backend/pom.xml`。Admin、Client、Common 的 POM 首先表达模块所有权；三个子总工程仍复用根工程的统一版本与构建治理，不宣称为可脱离根工程独立发布的发行单元。
 
 ## 3. 技术栈与目录
 
@@ -82,7 +84,7 @@ backend/
 │   └── ruoyi-admin-server/         # Admin Boot 与专属 Controller
 ├── ruoyi-client/                   # Client 总工程
 │   ├── pom.xml                     # 聚合 Client 所有模块
-│   ├── ruoyi-client-api/           # Client 会话与认证请求契约
+│   ├── ruoyi-client-api/           # Client 会话、认证请求与私有管理契约
 │   ├── ruoyi-client-um/            # 应用用户、接入客户端、第三方身份管理
 │   └── ruoyi-client-server/        # Client Boot、认证与专属 Controller
 ├── ruoyi-common/                   # Common 总工程，无业务 API 子工程
@@ -222,6 +224,16 @@ Client 登录成功只返回以下字段，禁止前端声明不存在的 refres
 
 脚手架只建立应用用户身份边界，不预设未来业务角色/权益模型，所以默认 roles/permissions 为空；复制后按真实业务补充。
 
+### 4.6 Admin 调用 Client 的内部管理边界
+
+- Admin 对浏览器继续暴露 `/client/user/**` 与 `/client/application/**`，权限、操作日志、防重复提交和响应脱敏均属于 Admin。
+- Admin 通过 `/internal/admin/v1/users/**`、`/internal/admin/v1/clients/**` 调用 Client；这些路径不是前端契约，不进入 OpenAPI，也不得经过 Admin Gateway 或 Client Gateway。
+- `ruoyi-client-api` 只放真实跨应用使用的管理命令、查询和响应，不放 Entity、Mapper、Service、Excel 或脱敏注解。
+- Client 负责唯一性校验、密码哈希、授权类型规则、乐观锁和 `app_*` 写入；Admin 不复制这些业务规则。
+- 内部请求使用独立共享密钥完成 HMAC-SHA256 签名，并校验时间戳、nonce 和请求体摘要；nonce 由 Client Redis 防重放。禁止转发浏览器的 Authorization、clientid 或 Admin Token。
+- Admin 操作人 ID 与部门 ID 包含在签名范围内，由 Client 写入七要素审计字段；不能通过构造 Client 登录态模拟管理员。
+- 内部共享密钥不得进入前端、Gateway、日志或数据库。跨主机部署时，除服务签名外还必须使用内部 HTTPS 或 mTLS。
+
 ## 5. 编码规范
 
 ### 5.1 后端
@@ -231,6 +243,7 @@ Client 登录成功只返回以下字段，禁止前端声明不存在的 refres
 - Controller 统一返回 `R<T>` 或 `PageResult<T>`，列表、导出、权限、日志注解参照现有 `SysUserController`/`SysClientController`。
 - 登录策略参照原 `IAuthStrategy` 的 Bean 路由写法，不自建另一套框架级安全上下文。
 - 公共技术模块 `ruoyi-common` 不放 Client 密钥、微信 AppID 或业务常量。
+- Admin Controller 不得直接注入 Client UM Service；管理调用必须经过 `ruoyi-client-api` 契约和 Admin HTTP 适配层。
 - 新模块必须包含真实能力；没有业务代码时不要建立 package-info 空壳。
 - 新模块必须使用真实业务域名称，禁止使用没有明确职责的泛化占位名称。
 
@@ -294,6 +307,7 @@ cd web/harmony && pnpm install && pnpm dev:harmony
 
 - 使用 `infra/docker-compose.prod.yml`，仅 `admin-gateway`、`client-gateway` 发布宿主机端口。
 - `admin-backend:8080`、`client-backend:8082`、MySQL 和 Redis 只在容器网络内可见。
+- `admin-backend` 通过仅两个 Backend 加入的 `admin-client-internal` 网络直连 Client；两个 Gateway 对 `/internal/**` 和 `/prod-api/internal/**` 固定返回 404。
 - 浏览器生产请求通过 `/prod-api/**` 进入对应 Gateway，转发到后端前必须去掉 `/prod-api`；Client 去前缀后仍执行显式白名单与限流。
 - 仓库内 Gateway 只监听 HTTP，TLS 在外部可信入口终止；不要将明文 Gateway 端口直接开放到公网。
 - 生产启动、必需环境变量与 TLS 边界以 `infra/README.md` 为准。
