@@ -1,5 +1,7 @@
 # RuoYi-React-Plus
 
+> **注意：本文件下方保留的是上游前端资料。** 当前 `web/admin` 只对接 Admin Backend `8080`，不直接调用 Client Backend，也不复用 Client 身份。请先阅读根目录 [工程现状](../../docs/工程现状.md) 和 [CLAUDE](../../CLAUDE.md)。
+
 ## 平台简介
 
 - 本仓库为前端技术栈 [React](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) + [Ant Design](https://ant.design/) + [Umi Max](https://umijs.org/) + [Vite](https://vitejs.dev/)。

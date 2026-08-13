@@ -1,6 +1,6 @@
 {
   "$schema": "https://design-tokens.github.io/community-group/format/",
-  "$description": "多端 UI/UX 设计系统 — 机器可读 Design Tokens 单源文件。供 LLM / 编码 Agent 直接 import，也兼容 Style Dictionary / Tokens Studio。权威文档见 docs/AI-设计系统上下文.md。版本 v1.1.0。",
+  "$description": "多端 UI/UX 设计系统 — 机器可读 Design Tokens 规范单源。五端不共享运行包，各端镜像需保持一致。权威文档见 docs/AI-设计系统上下文.md。版本 v1.2.0。",
   "meta": {
     "version": "1.2.0",
     "techStack": "React/React Native + Ant Design 全家桶",

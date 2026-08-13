@@ -1,3 +1,6 @@
+> **注意：本文件保留的是上游 RuoYi-Vue-Plus 框架资料，不是本仓库当前架构入口。**
+> 本项目已经拆分为 Admin/Client 双后端。请先阅读根目录 [README](../README.md)、[工程现状](../docs/工程现状.md) 和 [CLAUDE](../CLAUDE.md)，不要根据本页的上游项目结构生成代码。
+
 <img src="https://foruda.gitee.com/images/1679673773341074847/178e8451_1766278.png" width="50%" height="50%">
 <div style="height: 10px; clear: both;"></div>
 

@@ -1,6 +1,6 @@
 # AGENTS.md
 
-本文是 `ai-product-factory` 的 Agent 快速入口。完整工程约束、接口契约和运行说明见 [CLAUDE.md](./CLAUDE.md)。
+本文是 `ai-product-factory` 的 Agent 快速入口。完整工程约束、接口契约和运行说明见 [CLAUDE.md](./CLAUDE.md)；当前完成度、业务留白与角色化阅读路径见 [docs/工程现状.md](./docs/工程现状.md)。
 
 ## 项目定位
 
