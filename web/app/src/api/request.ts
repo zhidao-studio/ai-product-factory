@@ -20,7 +20,7 @@ import {
   decryptWithAes,
   encryptBase64,
   encryptWithAes,
-  generateAesKey
+  generateAesKey,
 } from '../utils/crypto';
 import { decrypt, encrypt } from '../utils/jsencrypt';
 
@@ -28,6 +28,8 @@ const SUCCESS = 200;
 const encryptHeader = 'encrypt-key';
 
 export interface RequestConfig<D = unknown> extends AxiosRequestConfig<D> {
+  /** 后台最佳努力请求可关闭全局 Toast，但仍会正常 reject。 */
+  silent?: boolean;
   headers?: AxiosRequestConfig<D>['headers'] & {
     isToken?: false;
     isEncrypt?: 'true' | 'false' | boolean;
@@ -44,6 +46,7 @@ export interface R<T = unknown> {
 export const isRelogin = { show: false };
 
 type HandledRequestError = Error & { isHandled?: boolean };
+type AuthRequestMetadata = { authTokenSnapshot?: string };
 
 function createHandledError(message: string): HandledRequestError {
   const error = new Error(message) as HandledRequestError;
@@ -60,25 +63,35 @@ const service = axios.create({
   timeout: 50000,
   headers: {
     'Content-Type': 'application/json;charset=utf-8',
-    clientid: appEnv.clientId
-  }
+    clientid: appEnv.clientId,
+  },
 });
 
-service.interceptors.request.use((config) => {
+service.interceptors.request.use(config => {
   const isToken = config.headers?.isToken === false;
-  const isEncrypt = config.headers?.isEncrypt === 'true' || config.headers?.isEncrypt === true;
+  const isEncrypt =
+    config.headers?.isEncrypt === 'true' || config.headers?.isEncrypt === true;
+  const token = getToken();
 
-  if (getToken() && !isToken) {
-    config.headers.set('Authorization', `Bearer ${getToken()}`);
+  if (token && !isToken) {
+    config.headers.set('Authorization', `Bearer ${token}`);
+    (config as typeof config & AuthRequestMetadata).authTokenSnapshot = token;
   }
 
-  if (appEnv.encryptEnabled && isEncrypt && (config.method === 'post' || config.method === 'put')) {
+  if (
+    appEnv.encryptEnabled &&
+    isEncrypt &&
+    (config.method === 'post' || config.method === 'put')
+  ) {
     const aesKey = generateAesKey();
     const encryptedKey = encrypt(encryptBase64(aesKey));
     if (encryptedKey) {
       config.headers.set(encryptHeader, encryptedKey);
     }
-    const data = typeof config.data === 'object' ? JSON.stringify(config.data) : String(config.data ?? '');
+    const data =
+      typeof config.data === 'object'
+        ? JSON.stringify(config.data)
+        : String(config.data ?? '');
     config.data = encryptWithAes(data, aesKey);
   }
 
@@ -92,11 +105,14 @@ function normalizeErrorMessage(message?: string): string | undefined {
   if (!message) return undefined;
   if (message === 'Network Error') return '后端接口连接异常';
   if (message.includes('timeout')) return '系统接口请求超时';
-  if (message.includes('Request failed with status code')) return `系统接口${message.slice(-3)}异常`;
+  if (message.includes('Request failed with status code'))
+    return `系统接口${message.slice(-3)}异常`;
   return message;
 }
 
-async function parseResponseErrorData(data: unknown): Promise<string | undefined> {
+async function parseResponseErrorData(
+  data: unknown,
+): Promise<string | undefined> {
   if (!data) return undefined;
   if (typeof data === 'string') {
     const text = data.trim();
@@ -116,23 +132,38 @@ async function parseResponseErrorData(data: unknown): Promise<string | undefined
 
 async function getErrorMessage(error: AxiosError): Promise<string> {
   const responseMessage = await parseResponseErrorData(error.response?.data);
-  return responseMessage || normalizeErrorMessage(error.message) || '系统未知错误';
+  return (
+    responseMessage || normalizeErrorMessage(error.message) || '系统未知错误'
+  );
 }
 
 function showRequestError(content: string): void {
   Toast.show({ content });
 }
 
-function showRelogin(): void {
+function getAuthTokenSnapshot(config: AxiosRequestConfig): string | undefined {
+  return (config as AxiosRequestConfig & AuthRequestMetadata).authTokenSnapshot;
+}
+
+function isSilentRequest(config?: AxiosRequestConfig): boolean {
+  return Boolean((config as RequestConfig | undefined)?.silent);
+}
+
+async function showRelogin(expectedToken: string): Promise<void> {
+  // 旧请求的迟到 401 不能清除用户刚刚获得的新 Token。
+  if (expectedToken !== getToken()) return;
   if (isRelogin.show) return;
   isRelogin.show = true;
   Toast.show({ content: '登录状态已过期，请重新登录' });
-  removeToken();
-  isRelogin.show = false;
+  try {
+    await removeToken();
+  } finally {
+    isRelogin.show = false;
+  }
 }
 
 service.interceptors.response.use(
-  (response) => {
+  async response => {
     const keyStr = response.headers[encryptHeader];
     if (appEnv.encryptEnabled && keyStr) {
       const base64Str = decrypt(keyStr);
@@ -146,30 +177,44 @@ service.interceptors.response.use(
     const msg = response.data?.msg || '系统未知错误';
 
     if (code === 401) {
-      showRelogin();
-      return Promise.reject(createHandledError('无效的会话，或者会话已过期，请重新登录。'));
+      const expectedToken = getAuthTokenSnapshot(response.config);
+      if (expectedToken) {
+        await showRelogin(expectedToken);
+        return Promise.reject(
+          createHandledError('无效的会话，或者会话已过期，请重新登录。'),
+        );
+      }
+      if (!isSilentRequest(response.config)) showRequestError(msg);
+      return Promise.reject(createHandledError(msg));
     }
 
     if (code !== SUCCESS) {
-      showRequestError(msg);
+      if (!isSilentRequest(response.config)) showRequestError(msg);
       return Promise.reject(createHandledError(msg));
     }
 
     return response.data;
   },
-  async (error) => {
+  async error => {
     if (axios.isAxiosError(error) && error.response?.status === 401) {
-      showRelogin();
-      return Promise.reject(createHandledError('无效的会话，或者会话已过期，请重新登录。'));
+      const expectedToken = getAuthTokenSnapshot(error.config ?? {});
+      if (expectedToken) {
+        await showRelogin(expectedToken);
+        return Promise.reject(
+          createHandledError('无效的会话，或者会话已过期，请重新登录。'),
+        );
+      }
     }
     const msg = axios.isAxiosError(error)
       ? await getErrorMessage(error)
       : normalizeErrorMessage(error?.message) || '系统未知错误';
-    showRequestError(msg);
+    if (!isSilentRequest(error?.config)) showRequestError(msg);
     return Promise.reject(createHandledError(msg));
-  }
+  },
 );
 
-export default function request<T = unknown, D = unknown>(config: RequestConfig<D>): Promise<T> {
+export default function request<T = unknown, D = unknown>(
+  config: RequestConfig<D>,
+): Promise<T> {
   return service.request(config) as unknown as Promise<T>;
 }

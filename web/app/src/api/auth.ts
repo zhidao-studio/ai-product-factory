@@ -23,11 +23,17 @@ export interface UserInfo {
   permissions: string[];
 }
 
-/** 退出登录 */
-export function logout() {
+/** 退出登录：显式使用点击退出时捕获的 Token，不受本地即时清理影响。 */
+export function logout(accessToken: string) {
   return request<R>({
     url: '/auth/logout',
-    method: 'post'
+    method: 'post',
+    timeout: 5000,
+    silent: true,
+    headers: {
+      isToken: false,
+      Authorization: `Bearer ${accessToken}`,
+    },
   });
 }
 
@@ -35,7 +41,7 @@ export function logout() {
 export function getInfo() {
   return request<R<UserInfo>>({
     url: '/client/user/info',
-    method: 'get'
+    method: 'get',
   });
 }
 
@@ -45,7 +51,7 @@ export function getSmsCode(phoneNumber: string) {
     url: '/resource/sms/code',
     method: 'get',
     headers: { isToken: false },
-    params: { phoneNumber }
+    params: { phoneNumber },
   });
 }
 
@@ -55,7 +61,7 @@ export function loginBySms(phoneNumber: string, smsCode: string) {
     url: '/auth/login',
     method: 'post',
     headers: { isToken: false, isEncrypt: 'true' },
-    data: { phoneNumber, smsCode, clientId: appEnv.clientId, grantType: 'sms' }
+    data: { phoneNumber, smsCode, clientId: appEnv.clientId, grantType: 'sms' },
   });
 }
 
@@ -65,6 +71,11 @@ export function loginByPhone(phoneNumber: string, password: string) {
     url: '/auth/login',
     method: 'post',
     headers: { isToken: false, isEncrypt: 'true' },
-    data: { username: phoneNumber, password, clientId: appEnv.clientId, grantType: 'phonePassword' }
+    data: {
+      username: phoneNumber,
+      password,
+      clientId: appEnv.clientId,
+      grantType: 'phonePassword',
+    },
   });
 }

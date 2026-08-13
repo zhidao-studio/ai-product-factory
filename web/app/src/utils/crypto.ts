@@ -6,7 +6,9 @@
  */
 import * as CryptoJSModule from 'crypto-js';
 
-const CryptoJS = ('default' in CryptoJSModule ? CryptoJSModule.default : CryptoJSModule) as typeof CryptoJSModule;
+const CryptoJS = (
+  'default' in CryptoJSModule ? CryptoJSModule.default : CryptoJSModule
+) as typeof CryptoJSModule;
 
 interface SecureRandomRuntime {
   crypto?: {
@@ -19,12 +21,18 @@ interface SecureRandomRuntime {
 function getSecureRandomValues(array: Uint8Array): Uint8Array {
   const runtime = globalThis as SecureRandomRuntime;
   const isChromeRemoteDebugger =
-    __DEV__ && runtime.RN$Bridgeless !== true && typeof runtime.nativeCallSyncHook === 'undefined';
+    __DEV__ &&
+    runtime.RN$Bridgeless !== true &&
+    typeof runtime.nativeCallSyncHook === 'undefined';
   if (isChromeRemoteDebugger) {
-    throw new Error('远程浏览器调试无法使用 React Native 原生安全随机数，已拒绝发送加密登录请求');
+    throw new Error(
+      '远程浏览器调试无法使用 React Native 原生安全随机数，已拒绝发送加密登录请求',
+    );
   }
   if (typeof runtime.crypto?.getRandomValues !== 'function') {
-    throw new Error('React Native 原生安全随机数未完成注册，已拒绝发送加密登录请求');
+    throw new Error(
+      'React Native 原生安全随机数未完成注册，已拒绝发送加密登录请求',
+    );
   }
   return runtime.crypto.getRandomValues(array);
 }
@@ -32,7 +40,7 @@ function getSecureRandomValues(array: Uint8Array): Uint8Array {
 function generateRandomString(): string {
   const array = new Uint8Array(32);
   getSecureRandomValues(array);
-  return Array.from(array, (b) => b.toString(16).padStart(2, '0'))
+  return Array.from(array, b => b.toString(16).padStart(2, '0'))
     .join('')
     .slice(0, 32);
 }
@@ -50,17 +58,23 @@ export function decryptBase64(str: string): CryptoJSModule.lib.WordArray {
   return CryptoJS.enc.Base64.parse(str);
 }
 
-export function encryptWithAes(message: string, aesKey: CryptoJSModule.lib.WordArray): string {
+export function encryptWithAes(
+  message: string,
+  aesKey: CryptoJSModule.lib.WordArray,
+): string {
   return CryptoJS.AES.encrypt(message, aesKey, {
     mode: CryptoJS.mode.ECB,
-    padding: CryptoJS.pad.Pkcs7
+    padding: CryptoJS.pad.Pkcs7,
   }).toString();
 }
 
-export function decryptWithAes(message: string, aesKey: CryptoJSModule.lib.WordArray): string {
+export function decryptWithAes(
+  message: string,
+  aesKey: CryptoJSModule.lib.WordArray,
+): string {
   const decrypted = CryptoJS.AES.decrypt(message, aesKey, {
     mode: CryptoJS.mode.ECB,
-    padding: CryptoJS.pad.Pkcs7
+    padding: CryptoJS.pad.Pkcs7,
   });
   return decrypted.toString(CryptoJS.enc.Utf8);
 }

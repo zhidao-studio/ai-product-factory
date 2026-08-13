@@ -12,11 +12,13 @@
 
 ## 技术栈
 
-- React 19 + TypeScript
-- Umi Max 4
-- Ant Design 6 + ProComponents
+- Node.js 24.19.0 LTS + pnpm 11.21.0
+- React 19.2.8 + TypeScript 7.0.2
+- Umi Max 4.7.5
+- Ant Design 6.6.0 + ProComponents
 - ahooks、TanStack Query、Zustand
-- pnpm
+
+项目源码由 TypeScript 7.0.2 和 `tsconfig.typecheck.json` 检查。Umi 4.7.5 的生成器仍调用旧版编译器 API，并生成 TypeScript 7 已移除的 `baseUrl` 配置，因此 `typescript` 包名暂时映射到官方 `@typescript/typescript6` 兼容包供 Umi 使用；`@typescript/native` 提供 TypeScript 7 的 `tsc`。不得手工修改 `src/.umi`，也不得绕过 `pnpm typecheck`。
 
 ## 运行与验证
 

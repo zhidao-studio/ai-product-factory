@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2017",
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "strict": true,
     "esModuleInterop": true,
@@ -10,12 +10,10 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
     "rootDir": ".",
     "paths": {
       "@/*": ["./src/*"]
     },
-    "typeRoots": ["node_modules/@types"],
     "types": ["@tarojs/taro", "node"]
   },
   "include": ["./src", "./types", "./config"],

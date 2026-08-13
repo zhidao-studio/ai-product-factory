@@ -2,11 +2,15 @@
   "name": "miniapp",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "pnpm@11.21.0",
+  "engines": {
+    "node": ">=24.19.0 <25"
+  },
   "description": "微信小程序独立工程 (Taro React)",
   "template": "default",
   "scripts": {
     "build:weapp": "taro build --type weapp",
-    "dev:weapp": "npm run build:weapp -- --watch",
+    "dev:weapp": "taro build --type weapp --watch",
     "type-check": "tsc --noEmit"
   },
   "browserslist": [
@@ -16,30 +20,30 @@
   ],
   "dependencies": {
     "@babel/runtime": "^7.24.0",
-    "@tarojs/components": "^4.2.1",
-    "@tarojs/helper": "^4.2.1",
-    "@tarojs/plugin-framework-react": "^4.2.1",
-    "@tarojs/plugin-platform-weapp": "^4.2.1",
-    "@tarojs/react": "^4.2.1",
-    "@tarojs/runtime": "^4.2.1",
-    "@tarojs/shared": "^4.2.1",
-    "@tarojs/taro": "^4.2.1",
+    "@tarojs/components": "4.2.1",
+    "@tarojs/helper": "4.2.1",
+    "@tarojs/plugin-framework-react": "4.2.1",
+    "@tarojs/plugin-platform-weapp": "4.2.1",
+    "@tarojs/react": "4.2.1",
+    "@tarojs/runtime": "4.2.1",
+    "@tarojs/shared": "4.2.1",
+    "@tarojs/taro": "4.2.1",
     "crypto-js": "^4.2.0",
     "jsencrypt": "^3.3.2",
-    "react": "^18.3.1"
+    "react": "18.3.1"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.28.5",
-    "@tarojs/cli": "^4.2.1",
-    "@tarojs/webpack5-runner": "^4.2.1",
+    "@tarojs/cli": "4.2.1",
+    "@tarojs/webpack5-runner": "4.2.1",
     "@types/crypto-js": "^4.2.2",
     "@types/node": "^24.0.0",
     "@types/react": "^18.3.0",
     "@types/webpack-env": "^1.18.0",
-    "babel-preset-taro": "^4.2.1",
+    "babel-preset-taro": "4.2.1",
     "postcss": "^8.4.0",
     "sass": "^1.77.0",
-    "typescript": "^5.6.0",
+    "typescript": "7.0.2",
     "webpack": "5.91.0"
   }
 }

@@ -1,0 +1,292 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-08-14",
+  "reviewIntervalDays": 31,
+  "policy": {
+    "runtime": "latest-lts-patch",
+    "frameworkAndCompiler": "latest-ga-compatible",
+    "allowPrerelease": false
+  },
+  "allowedPrereleases": [
+    {
+      "file": "web/admin/package.json",
+      "path": "dependencies.@ant-design/pro-components",
+      "equals": "3.1.12-0",
+      "reason": "Ant Design 6 requires the ProComponents 3 line; no 3.x stable release exists yet"
+    }
+  ],
+  "packageFamilyAssertions": [
+    {
+      "file": "web/miniapp/package.json",
+      "prefix": "@tarojs/",
+      "equals": "4.2.1"
+    },
+    {
+      "file": "web/harmony/package.json",
+      "prefix": "@tarojs/",
+      "equals": "4.2.1"
+    }
+  ],
+  "textAssertions": [
+    {
+      "file": ".java-version",
+      "equals": "25.0.4"
+    },
+    {
+      "file": "backend/pom.xml",
+      "contains": "<java.version>25</java.version>"
+    },
+    {
+      "file": "backend/pom.xml",
+      "contains": "<version>[25.0.4]</version>"
+    },
+    {
+      "file": "backend/pom.xml",
+      "contains": "<version>[3.9.16]</version>"
+    },
+    {
+      "file": "backend/pom.xml",
+      "contains": "<revision>6.0.0</revision>"
+    },
+    {
+      "file": "backend/pom.xml",
+      "contains": "<spring-boot.version>4.1.0</spring-boot.version>"
+    },
+    {
+      "file": "backend/.mvn/wrapper/maven-wrapper.properties",
+      "contains": "maven-3/3.9.16/"
+    },
+    {
+      "file": "backend/ruoyi-admin/ruoyi-admin-server/Dockerfile",
+      "contains": "liberica-openjdk-rocky:25.0.4-cds"
+    },
+    {
+      "file": "backend/ruoyi-client/ruoyi-client-server/Dockerfile",
+      "contains": "liberica-openjdk-rocky:25.0.4-cds"
+    },
+    {
+      "file": "backend/ruoyi-extend/ruoyi-monitor-admin/Dockerfile",
+      "contains": "liberica-openjdk-rocky:25.0.4-cds"
+    },
+    {
+      "file": "backend/ruoyi-extend/ruoyi-snailai-server/Dockerfile",
+      "contains": "liberica-openjdk-rocky:25.0.4-cds"
+    },
+    {
+      "file": "backend/ruoyi-extend/ruoyi-snailjob-server/Dockerfile",
+      "contains": "liberica-openjdk-rocky:25.0.4-cds"
+    },
+    {
+      "file": "web/admin/.node-version",
+      "equals": "24.19.0"
+    },
+    {
+      "file": "web/h5/.node-version",
+      "equals": "24.19.0"
+    },
+    {
+      "file": "web/app/.node-version",
+      "equals": "24.19.0"
+    },
+    {
+      "file": "web/miniapp/.node-version",
+      "equals": "24.19.0"
+    },
+    {
+      "file": "web/harmony/.node-version",
+      "equals": "24.19.0"
+    }
+  ],
+  "jsonAssertions": [
+    {
+      "file": "web/admin/package.json",
+      "path": "packageManager",
+      "equals": "pnpm@11.21.0"
+    },
+    {
+      "file": "web/admin/package.json",
+      "path": "engines.node",
+      "equals": ">=24.19.0 <25"
+    },
+    {
+      "file": "web/admin/package.json",
+      "path": "dependencies.@umijs/max",
+      "equals": "4.7.5"
+    },
+    {
+      "file": "web/admin/package.json",
+      "path": "devDependencies.@umijs/lint",
+      "equals": "4.7.5"
+    },
+    {
+      "file": "web/admin/package.json",
+      "path": "devDependencies.@typescript/native",
+      "equals": "npm:typescript@7.0.2"
+    },
+    {
+      "file": "web/admin/package.json",
+      "path": "devDependencies.typescript",
+      "equals": "npm:@typescript/typescript6@6.0.2"
+    },
+    {
+      "file": "web/admin/package.json",
+      "path": "dependencies.react",
+      "equals": "19.2.8"
+    },
+    {
+      "file": "web/admin/package.json",
+      "path": "dependencies.antd",
+      "equals": "6.6.0"
+    },
+    {
+      "file": "web/h5/package.json",
+      "path": "packageManager",
+      "equals": "pnpm@11.21.0"
+    },
+    {
+      "file": "web/h5/package.json",
+      "path": "engines.node",
+      "equals": ">=24.19.0 <25"
+    },
+    {
+      "file": "web/h5/package.json",
+      "path": "dependencies.react",
+      "equals": "19.2.8"
+    },
+    {
+      "file": "web/h5/package.json",
+      "path": "dependencies.antd-mobile",
+      "equals": "5.42.3"
+    },
+    {
+      "file": "web/h5/package.json",
+      "path": "devDependencies.vite",
+      "equals": "8.2.1"
+    },
+    {
+      "file": "web/h5/package.json",
+      "path": "devDependencies.@vitejs/plugin-react",
+      "equals": "6.0.5"
+    },
+    {
+      "file": "web/h5/package.json",
+      "path": "devDependencies.typescript",
+      "equals": "7.0.2"
+    },
+    {
+      "file": "web/app/package.json",
+      "path": "packageManager",
+      "equals": "npm@12.0.2"
+    },
+    {
+      "file": "web/app/package.json",
+      "path": "engines.node",
+      "equals": ">=24.19.0 <25"
+    },
+    {
+      "file": "web/app/package.json",
+      "path": "dependencies.react",
+      "equals": "19.2.8"
+    },
+    {
+      "file": "web/app/package.json",
+      "path": "dependencies.react-native",
+      "equals": "0.86.2"
+    },
+    {
+      "file": "web/app/package.json",
+      "path": "dependencies.@ant-design/react-native",
+      "equals": "5.4.3"
+    },
+    {
+      "file": "web/app/package.json",
+      "path": "dependencies.react-native-reanimated",
+      "equals": "4.5.3"
+    },
+    {
+      "file": "web/app/package.json",
+      "path": "dependencies.react-native-worklets",
+      "equals": "0.11.4"
+    },
+    {
+      "file": "web/app/package.json",
+      "path": "dependencies.react-native-gesture-handler",
+      "equals": "2.32.0"
+    },
+    {
+      "file": "web/app/package.json",
+      "path": "devDependencies.react-test-renderer",
+      "equals": "19.2.8"
+    },
+    {
+      "file": "web/app/package.json",
+      "path": "devDependencies.@typescript/native",
+      "equals": "npm:typescript@7.0.2"
+    },
+    {
+      "file": "web/app/package.json",
+      "path": "devDependencies.typescript",
+      "equals": "npm:@typescript/typescript6@6.0.2"
+    },
+    {
+      "file": "web/miniapp/package.json",
+      "path": "packageManager",
+      "equals": "pnpm@11.21.0"
+    },
+    {
+      "file": "web/miniapp/package.json",
+      "path": "engines.node",
+      "equals": ">=24.19.0 <25"
+    },
+    {
+      "file": "web/miniapp/package.json",
+      "path": "dependencies.@tarojs/taro",
+      "equals": "4.2.1"
+    },
+    {
+      "file": "web/miniapp/package.json",
+      "path": "dependencies.react",
+      "equals": "18.3.1"
+    },
+    {
+      "file": "web/miniapp/package.json",
+      "path": "devDependencies.webpack",
+      "equals": "5.91.0"
+    },
+    {
+      "file": "web/miniapp/package.json",
+      "path": "devDependencies.typescript",
+      "equals": "7.0.2"
+    },
+    {
+      "file": "web/harmony/package.json",
+      "path": "packageManager",
+      "equals": "pnpm@11.21.0"
+    },
+    {
+      "file": "web/harmony/package.json",
+      "path": "engines.node",
+      "equals": ">=24.19.0 <25"
+    },
+    {
+      "file": "web/harmony/package.json",
+      "path": "dependencies.@tarojs/taro",
+      "equals": "4.2.1"
+    },
+    {
+      "file": "web/harmony/package.json",
+      "path": "dependencies.react",
+      "equals": "18.3.1"
+    },
+    {
+      "file": "web/harmony/package.json",
+      "path": "devDependencies.vite",
+      "equals": "4.5.14"
+    },
+    {
+      "file": "web/harmony/package.json",
+      "path": "devDependencies.typescript",
+      "equals": "7.0.2"
+    }
+  ]
+}

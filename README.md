@@ -2,7 +2,7 @@
 
 面向中大型项目的可复制工程脚手架：Admin 后台与 Client 客户端后台双入口，配套五个互不共享源码的前端工程。
 
-开始开发前先阅读 [工程现状与开发导航](./docs/工程现状.md)，了解当前已经完成的能力、业务留白、工程边界和新成员阅读路径；稳定编码约束见 [CLAUDE.md](./CLAUDE.md)。
+开始开发前先阅读 [工程现状与开发导航](./docs/工程现状.md)，了解当前已经完成的能力、业务留白、工程边界和新成员阅读路径；稳定编码约束见 [CLAUDE.md](./CLAUDE.md)，精确运行时、主框架和语言版本见 [工程版本基线](./docs/工程版本基线.md)。
 
 ```text
 ai-product-factory/
@@ -69,7 +69,7 @@ bash scripts/start-dev.sh
 脚本会启动 MySQL/Redis，构建并运行：
 
 - Admin：`http://localhost:8080`，开发账号 `admin / admin123`
-- Client：`http://localhost:8082`，开发账号 `client / admin123`
+- Client：`http://localhost:8082`，种子用户为用户名 `client`、手机号 `13800138000`、密码 `admin123`；App 登录使用手机号
 
 停止并保留数据卷：
 

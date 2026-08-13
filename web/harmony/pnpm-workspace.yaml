@@ -6,3 +6,5 @@ allowBuilds:
   core-js: true
   core-js-pure: true
   esbuild: true
+patchedDependencies:
+  '@tarojs/vite-runner@4.2.1': patches/@tarojs__vite-runner@4.2.1.patch

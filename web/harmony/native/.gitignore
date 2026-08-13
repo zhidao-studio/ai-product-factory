@@ -2,6 +2,7 @@
 oh_modules/
 build/
 entry/build/
+entry/oh-package-lock.json5
 entry/src/main/ets/
 entry/src/main/resources/rawfile/
 static/

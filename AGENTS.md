@@ -22,6 +22,7 @@
 5. 新增模块必须加入其所属总工程的 `pom.xml`；不要提前创建无实现的 API、UM 或微服务空壳。
 6. 新增 Client 表统一使用 `app_*`；表七要素固定为 `id`、`valid_flag`、`del_flag`、`create_by`、`create_time`、`update_by`、`update_time`，不含部门和通用乐观锁版本。Admin 的 `sys_*` 表继续沿用原 RuoYi 字段，两套表允许存在结构差异。
 7. Admin 调用 Client 的 `/internal/admin/**` 只允许后端私有网络访问，必须使用独立服务签名与防重放校验；内部审计只传并签名操作人 ID，不传 Admin 部门 ID，禁止经过任一 Gateway 或转发浏览器 Token。
+8. 主运行时、主框架和主语言版本必须遵循 [`docs/工程版本基线.md`](./docs/工程版本基线.md)：生产运行时采用最新 LTS 补丁，框架/编译器采用最新 GA；上游尚未兼容时只能采用有依据、可复核的最新兼容稳定版，禁止预发布版本和机械追 `latest`。
 
 ## 关键目录
 
@@ -35,6 +36,7 @@
 - 各端请求层：`web/<端>/src/api/request.ts`
 - 初始化 SQL：`infra/init/01-init.sql`；多数据库脚本：`backend/script/sql/`
 - 设计系统：`docs/`
+- 版本基线：`docs/工程版本基线.md`；本地校验：`node scripts/verify-version-baseline.mjs`
 - 一键开发：`scripts/start-dev.sh`、`scripts/stop-dev.sh`
 
 ## 契约速览
@@ -44,7 +46,7 @@
 - 登录 `POST /auth/login` 使用 AES+RSA 请求体加密，请求头为 `encrypt-key`。
 - Admin 当前用户：`GET /system/user/getInfo`。
 - Client 当前用户：`GET /client/user/info`。
-- Admin 开发账号：`admin / admin123`；Client 开发账号：`client / admin123`。
+- Admin 开发账号：`admin / admin123`。Client 种子用户为用户名 `client`、手机号 `13800138000`、密码 `admin123`；App 使用手机号登录，不能填写用户名。
 
 ## 常见任务
 

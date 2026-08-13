@@ -1,6 +1,6 @@
 # 后端工程
 
-本目录是基于 RuoYi-Vue-Plus 6.x、Spring Boot 4.1 和 JDK 21 改造的双后端工程，不是上游单一 Admin 工程的原样镜像。
+本目录是基于 RuoYi-Vue-Plus 6.0、Spring Boot 4.1 和 JDK 25 LTS 改造的双后端工程，不是上游单一 Admin 工程的原样镜像。
 
 开发前先阅读根目录 [工程现状](../docs/工程现状.md) 和 [CLAUDE.md](../CLAUDE.md)。本文只说明后端快速入口。
 
