@@ -70,6 +70,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// 主题 Hook 与 Provider 共用同一 Context，保持在同一模块避免暴露可变内部状态。
+// oxlint-disable-next-line react/only-export-components
 export function useThemeMode() {
   return useContext(ThemeContext);
 }

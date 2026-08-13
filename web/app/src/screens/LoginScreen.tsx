@@ -8,7 +8,8 @@
  * 样式统一取自设计系统 Token（src/theme/tokens），随主题模式切换浅色/深色。
  */
 import { useEffect, useRef, useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Card, Text, Toast } from '@ant-design/react-native';
 import { useThemeTokens } from '../theme/useThemeTokens';
 import { getSmsCode, loginByPhone, loginBySms } from '../api/auth';
@@ -20,6 +21,7 @@ const COUNTDOWN_SECS = 60;
 
 export default function LoginScreen({ onLogin }: { onLogin: (token: string) => void }) {
   const { colors, spacing, radius, sizes, font } = useThemeTokens();
+  const touchHeight = Platform.OS === 'ios' ? sizes.touchMinIos : sizes.touchMinAndroid;
 
   const [mode, setMode] = useState<LoginMode>('password');
   const [phone, setPhone] = useState('');
@@ -85,40 +87,69 @@ export default function LoginScreen({ onLogin }: { onLogin: (token: string) => v
   };
 
   const inputStyle = {
-    height: sizes.controlHeightLG,
+    height: touchHeight,
     borderWidth: sizes.lineWidth,
     borderColor: colors.colorBorder,
     borderRadius: radius.base,
     paddingHorizontal: spacing.sm,
     color: colors.colorText,
     backgroundColor: colors.colorBgContainer,
+    fontSize: font.fontSizeLG,
+  } as const;
+
+  const labelStyle = {
+    color: colors.colorText,
     fontSize: font.fontSize,
+    fontWeight: font.fontWeightMedium,
+    marginBottom: spacing.xs,
   } as const;
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.colorBgLayout, padding: spacing.base }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.colorBgLayout, padding: spacing.base }]}>
       <Card style={{ backgroundColor: colors.colorBgContainer }}>
         <Card.Header title="手机号登录" />
         <Card.Body>
-          <View style={styles.segment}>
-            <Button
-              size="small"
-              type={mode === 'password' ? 'primary' : 'ghost'}
+          <View style={[styles.segment, { gap: spacing.xs, marginBottom: spacing.sm }]}>
+            <TouchableOpacity
+              accessibilityRole="tab"
+              accessibilityState={{ selected: mode === 'password' }}
+              style={[
+                styles.segmentItem,
+                {
+                  minHeight: touchHeight,
+                  borderWidth: sizes.lineWidth,
+                  borderColor: mode === 'password' ? colors.colorPrimary : colors.colorBorder,
+                  backgroundColor: colors.colorBgContainer,
+                  borderRadius: radius.lg,
+                },
+              ]}
               onPress={() => setMode('password')}
             >
-              密码登录
-            </Button>
-            <Button
-              size="small"
-              type={mode === 'sms' ? 'primary' : 'ghost'}
+              <Text style={{ color: mode === 'password' ? colors.colorPrimary : colors.colorTextSecondary }}>密码登录</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              accessibilityRole="tab"
+              accessibilityState={{ selected: mode === 'sms' }}
+              style={[
+                styles.segmentItem,
+                {
+                  minHeight: touchHeight,
+                  borderWidth: sizes.lineWidth,
+                  borderColor: mode === 'sms' ? colors.colorPrimary : colors.colorBorder,
+                  backgroundColor: colors.colorBgContainer,
+                  borderRadius: radius.lg,
+                },
+              ]}
               onPress={() => setMode('sms')}
             >
-              验证码登录
-            </Button>
+              <Text style={{ color: mode === 'sms' ? colors.colorPrimary : colors.colorTextSecondary }}>验证码登录</Text>
+            </TouchableOpacity>
           </View>
 
+          <Text style={labelStyle}>手机号</Text>
           <TextInput
-            style={[styles.input, inputStyle]}
+            accessibilityLabel="手机号"
+            style={[inputStyle, { marginBottom: spacing.sm }]}
             placeholder="请输入手机号"
             placeholderTextColor={colors.colorTextPlaceholder}
             value={phone}
@@ -129,41 +160,55 @@ export default function LoginScreen({ onLogin }: { onLogin: (token: string) => v
           />
 
           {mode === 'password' ? (
-            <View style={styles.inputWrap}>
-              <TextInput
-                style={[styles.input, inputStyle, { flex: 1 }]}
-                placeholder="请输入密码"
-                placeholderTextColor={colors.colorTextPlaceholder}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showPassword}
-                autoCapitalize="none"
-              />
-              <TouchableOpacity onPress={() => setShowPassword((v) => !v)}>
-                <Text style={{ color: colors.colorPrimary, fontSize: font.fontSizeSM }}>
-                  {showPassword ? '隐藏' : '显示'}
-                </Text>
-              </TouchableOpacity>
+            <View>
+              <Text style={labelStyle}>密码</Text>
+              <View style={[styles.inputWrap, { gap: spacing.xs, marginBottom: spacing.sm }]}>
+                <TextInput
+                  accessibilityLabel="密码"
+                  style={[inputStyle, styles.flexInput]}
+                  placeholder="请输入密码"
+                  placeholderTextColor={colors.colorTextPlaceholder}
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!showPassword}
+                  autoCapitalize="none"
+                />
+                <TouchableOpacity
+                  accessibilityRole="button"
+                  accessibilityLabel={showPassword ? '隐藏密码' : '显示密码'}
+                  style={[styles.passwordToggle, { minHeight: touchHeight, minWidth: touchHeight }]}
+                  onPress={() => setShowPassword((v) => !v)}
+                >
+                  <Text style={{ color: colors.colorPrimary, fontSize: font.fontSizeSM }}>
+                    {showPassword ? '隐藏' : '显示'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           ) : (
-            <View style={styles.inputWrap}>
-              <TextInput
-                style={[styles.input, inputStyle, { flex: 1 }]}
-                placeholder="请输入短信验证码"
-                placeholderTextColor={colors.colorTextPlaceholder}
-                value={smsCode}
-                onChangeText={setSmsCode}
-                keyboardType="number-pad"
-                maxLength={6}
-              />
-              <Button
-                size="small"
-                type="ghost"
-                disabled={countdown > 0}
-                onPress={handleSendSms}
-              >
-                {countdown > 0 ? `${countdown}s 后重发` : '获取验证码'}
-              </Button>
+            <View>
+              <Text style={labelStyle}>短信验证码</Text>
+              <View style={[styles.inputWrap, { gap: spacing.xs, marginBottom: spacing.sm }]}>
+                <TextInput
+                  accessibilityLabel="短信验证码"
+                  style={[inputStyle, styles.flexInput]}
+                  placeholder="请输入短信验证码"
+                  placeholderTextColor={colors.colorTextPlaceholder}
+                  value={smsCode}
+                  onChangeText={setSmsCode}
+                  keyboardType="number-pad"
+                  maxLength={6}
+                />
+                <Button
+                  size="small"
+                  type="ghost"
+                  disabled={countdown > 0}
+                  onPress={handleSendSms}
+                  style={{ minHeight: touchHeight }}
+                >
+                  {countdown > 0 ? `${countdown}s 后重发` : '获取验证码'}
+                </Button>
+              </View>
             </View>
           )}
 
@@ -171,13 +216,13 @@ export default function LoginScreen({ onLogin }: { onLogin: (token: string) => v
             type="primary"
             loading={loading}
             onPress={handleLogin}
-            style={{ marginTop: spacing.sm }}
+            style={{ marginTop: spacing.sm, minHeight: touchHeight }}
           >
             登录
           </Button>
         </Card.Body>
       </Card>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -188,16 +233,21 @@ const styles = StyleSheet.create({
   },
   segment: {
     flexDirection: 'row',
-    gap: 8,
-    marginBottom: 12,
   },
-  input: {
-    marginBottom: 12,
+  segmentItem: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   inputWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginBottom: 12,
+  },
+  flexInput: {
+    flex: 1,
+  },
+  passwordToggle: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

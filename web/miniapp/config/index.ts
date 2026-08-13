@@ -2,10 +2,10 @@ import { defineConfig } from '@tarojs/cli'
 import path from 'node:path'
 import devConfig from './dev'
 import prodConfig from './prod'
-import type { UserConfig } from '@tarojs/cli'
 
-export default defineConfig(async (merge, { command, mode }) => {
-  const baseConfig: UserConfig = {
+export default defineConfig(async (merge) => {
+  const clientApiBaseUrl = process.env.TARO_APP_API_BASE_URL || 'http://localhost:8082'
+  const baseConfig = {
     projectName: 'miniapp',
     date: '2026-8-11',
     designWidth: 750,
@@ -25,22 +25,14 @@ export default defineConfig(async (merge, { command, mode }) => {
     alias: {
       '@': path.resolve(process.cwd(), 'src')
     },
+    defineConstants: {
+      __CLIENT_API_BASE_URL__: JSON.stringify(clientApiBaseUrl),
+    },
     mini: {
       postcss: {
         autoprefixer: { enable: true },
         pxtransform: { enable: true },
       },
-    },
-    h5: {
-      publicPath: '/',
-      staticDirectory: 'static',
-      postcss: {
-        autoprefixer: { enable: true },
-        pxtransform: { enable: true },
-      },
-    },
-    rn: {
-      appName: 'miniapp',
     },
   }
 

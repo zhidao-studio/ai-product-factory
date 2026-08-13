@@ -1,0 +1,208 @@
+# 生产部署拓扑：仅两个 Gateway 发布宿主机端口，后端、MySQL 与 Redis 只在容器网络内可见。
+# 使用前先构建两个后端 JAR，并通过 --env-file 加载生产环境变量。
+
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-authentication-plugin=mysql_native_password
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?请设置 MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ry-vue
+      MYSQL_USER: ${DB_USERNAME:?请设置 DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?请设置 DB_PASSWORD}
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d:ro
+      - mysql-prod-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$${MYSQL_ROOT_PASSWORD}\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    networks:
+      - admin-data
+      - client-data
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?请设置 REDIS_PASSWORD}
+    command:
+      - sh
+      - -c
+      - exec redis-server --appendonly yes --requirepass "$${REDIS_PASSWORD}"
+    volumes:
+      - redis-prod-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$${REDIS_PASSWORD}\" ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    networks:
+      - admin-data
+      - client-data
+
+  admin-backend:
+    image: ai-product-factory/ruoyi-admin:${APP_VERSION:-local}
+    build:
+      context: ../backend/ruoyi-admin/ruoyi-admin-server
+      dockerfile: Dockerfile
+    init: true
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      SERVER_PORT: 8080
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_DYNAMIC_DATASOURCE_MASTER_URL: jdbc:mysql://mysql:3306/ry-vue?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
+      SPRING_DATASOURCE_DYNAMIC_DATASOURCE_MASTER_USERNAME: ${DB_USERNAME:?请设置 DB_USERNAME}
+      SPRING_DATASOURCE_DYNAMIC_DATASOURCE_MASTER_PASSWORD: ${DB_PASSWORD:?请设置 DB_PASSWORD}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_DATABASE: 0
+      SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD:?请设置 REDIS_PASSWORD}
+      REDISSON_KEYPREFIX: admin
+      CLIENT_MANAGEMENT_BASE_URL: http://client-backend:8082
+      CLIENT_MANAGEMENT_SHARED_SECRET: ${ADMIN_CLIENT_SHARED_SECRET:?请设置 ADMIN_CLIENT_SHARED_SECRET}
+      JAVA_OPTS: >-
+        ${ADMIN_JAVA_OPTS:--Xms512m -Xmx1024m}
+        -Dsa-token.jwt-secret-key=${ADMIN_JWT_SECRET:?请设置 ADMIN_JWT_SECRET}
+        -Dapi-decrypt.publicKey=${ADMIN_API_DECRYPT_PUBLIC_KEY:?请设置 ADMIN_API_DECRYPT_PUBLIC_KEY}
+        -Dapi-decrypt.privateKey=${ADMIN_API_DECRYPT_PRIVATE_KEY:?请设置 ADMIN_API_DECRYPT_PRIVATE_KEY}
+    expose:
+      - "8080"
+    volumes:
+      - admin-logs:/ruoyi/server/logs
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/8080'"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 90s
+    networks:
+      - admin-data
+      - admin-edge
+      - admin-client-internal
+
+  client-backend:
+    image: ai-product-factory/ruoyi-client:${APP_VERSION:-local}
+    build:
+      context: ../backend/ruoyi-client/ruoyi-client-server
+      dockerfile: Dockerfile
+    init: true
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      SERVER_PORT: 8082
+      SPRING_PROFILES_ACTIVE: prod
+      CLIENT_DB_URL: jdbc:mysql://mysql:3306/ry-vue?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
+      CLIENT_DB_USERNAME: ${DB_USERNAME:?请设置 DB_USERNAME}
+      CLIENT_DB_PASSWORD: ${DB_PASSWORD:?请设置 DB_PASSWORD}
+      CLIENT_REDIS_HOST: redis
+      CLIENT_REDIS_PORT: 6379
+      CLIENT_REDIS_PASSWORD: ${REDIS_PASSWORD:?请设置 REDIS_PASSWORD}
+      SPRING_SERVLET_MULTIPART_LOCATION: /ruoyi/client/temp
+      CLIENT_JWT_SECRET: ${CLIENT_JWT_SECRET:?请设置 CLIENT_JWT_SECRET}
+      CLIENT_API_DECRYPT_PUBLIC_KEY: ${CLIENT_API_DECRYPT_PUBLIC_KEY:?请设置 CLIENT_API_DECRYPT_PUBLIC_KEY}
+      CLIENT_API_DECRYPT_PRIVATE_KEY: ${CLIENT_API_DECRYPT_PRIVATE_KEY:?请设置 CLIENT_API_DECRYPT_PRIVATE_KEY}
+      CLIENT_INTERNAL_ADMIN_SHARED_SECRET: ${ADMIN_CLIENT_SHARED_SECRET:?请设置 ADMIN_CLIENT_SHARED_SECRET}
+      CLIENT_SMS_ENABLED: ${CLIENT_SMS_ENABLED:-false}
+      CLIENT_SMS_SUPPLIER: ${CLIENT_SMS_SUPPLIER:-alibaba}
+      CLIENT_SMS_ACCESS_KEY_ID: ${CLIENT_SMS_ACCESS_KEY_ID:-}
+      CLIENT_SMS_ACCESS_KEY_SECRET: ${CLIENT_SMS_ACCESS_KEY_SECRET:-}
+      CLIENT_SMS_SIGNATURE: ${CLIENT_SMS_SIGNATURE:-}
+      CLIENT_SMS_SDK_APP_ID: ${CLIENT_SMS_SDK_APP_ID:-}
+      CLIENT_WECHAT_MINIAPP_APP_ID: ${CLIENT_WECHAT_MINIAPP_APP_ID:-}
+      CLIENT_WECHAT_MINIAPP_APP_SECRET: ${CLIENT_WECHAT_MINIAPP_APP_SECRET:-}
+      JAVA_OPTS: ${CLIENT_JAVA_OPTS:--Xms512m -Xmx1024m}
+    expose:
+      - "8082"
+    volumes:
+      - client-logs:/ruoyi/client/logs
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/8082'"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 90s
+    networks:
+      - client-data
+      - client-edge
+      - admin-client-internal
+
+  admin-gateway:
+    image: nginx:1.27-alpine
+    init: true
+    restart: unless-stopped
+    ports:
+      - "${ADMIN_GATEWAY_BIND:-127.0.0.1}:${ADMIN_GATEWAY_PORT:-8080}:80"
+    volumes:
+      - ./gateway/admin.nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./gateway/proxy_params:/etc/nginx/proxy_params:ro
+    depends_on:
+      admin-backend:
+        condition: service_healthy
+        restart: true
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1/gateway/health | grep -q '^ok$'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - admin-edge
+
+  client-gateway:
+    image: nginx:1.27-alpine
+    init: true
+    restart: unless-stopped
+    ports:
+      - "${CLIENT_GATEWAY_BIND:-127.0.0.1}:${CLIENT_GATEWAY_PORT:-8082}:80"
+    volumes:
+      - ./gateway/client.nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./gateway/proxy_params:/etc/nginx/proxy_params:ro
+    depends_on:
+      client-backend:
+        condition: service_healthy
+        restart: true
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1/gateway/health | grep -q '^ok$'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - client-edge
+
+volumes:
+  mysql-prod-data:
+  redis-prod-data:
+  admin-logs:
+  client-logs:
+
+networks:
+  admin-data:
+    internal: true
+  client-data:
+    internal: true
+  admin-client-internal:
+    internal: true
+  admin-edge:
+  client-edge:

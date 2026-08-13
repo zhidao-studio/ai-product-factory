@@ -1,11 +1,18 @@
+import { Platform } from 'react-native';
+
 /**
  * 前端运行环境配置（与后端 RuoYi-Vue-Plus 契约对齐）
- * RN 无 .env 解析，这里直接内置常量，值与 admin/.env.development、h5/.env 保持一致。
+ * RN 无 .env 解析，这里保留原工程的端内配置方式。
  */
+const developmentBaseApi = Platform.OS === 'android' ? 'http://10.0.2.2:8082' : 'http://localhost:8082';
+
+/** 复制脚手架后替换为目标应用的 Client Gateway HTTPS 域名。 */
+const productionBaseApi = 'https://client-api.example.com';
+
 export const appEnv = {
-  /** 后端接口代理前缀（调试时由 RN 端自行代理/指向 http://10.0.2.2:8080 等） */
-  baseApi: '/dev-api',
-  /** app 端客户端 id（须与后端 sys_client 表中 app 记录一致，已含 sms/phonePassword 授权） */
+  /** 开发直连 Client；生产只访问 Client Gateway。 */
+  baseApi: __DEV__ ? developmentBaseApi : productionBaseApi,
+  /** App 客户端 client id */
   clientId: '428a8310cd442757ae699df5d894f051',
   /** 是否开启登录/注册请求体加密（对应后端 @ApiEncrypt） */
   encryptEnabled: true,

@@ -1,46 +1,87 @@
 .index {
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding: 32px;
+  padding-bottom: calc(32px + env(safe-area-inset-bottom));
+  background: var(--color-bg-layout);
+  color: var(--color-text);
+}
+
+.page-header {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 32px 0;
-  background-color: var(--color-bg-container);
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.title {
   color: var(--color-text);
+  font-size: 44px;
+  font-weight: 600;
+}
 
-  .title {
-    font-size: 32px;
-    margin-bottom: 24px;
-    color: var(--color-primary);
-  }
+.subtitle,
+.secondary-text,
+.info-label {
+  color: var(--color-text-secondary);
+}
 
-  .theme-tip {
-    font-size: 24px;
-    color: var(--color-text-secondary);
-    margin-bottom: 16px;
-  }
+.subtitle,
+.secondary-text,
+.info-row {
+  font-size: 28px;
+}
 
-  .login-card,
-  .user-card {
-    display: flex;
-    flex-direction: column;
-    width: 80%;
-    gap: 16px;
-    margin-top: 24px;
-  }
+.card {
+  box-sizing: border-box;
+  width: 100%;
+  margin-bottom: 24px;
+  padding: 32px;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: var(--color-bg-container);
+}
 
-  .captcha-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+.card-title {
+  display: block;
+  margin-bottom: 16px;
+  color: var(--color-text);
+  font-size: 34px;
+  font-weight: 600;
+}
 
-  .captcha-img {
-    width: 200px;
-    height: 80px;
-    border: 1px solid var(--color-border);
-  }
+.secondary-text {
+  display: block;
+  margin-bottom: 24px;
+  line-height: 1.571;
+}
 
-  .tip {
-    font-size: 20px;
-    color: var(--color-text-secondary);
-  }
+.action-button {
+  display: flex;
+  min-height: 88px;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  border-radius: 16px;
+  font-size: 30px;
+  line-height: 1.571;
+}
+
+.primary-button {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+.info-row {
+  display: flex;
+  min-height: 88px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--color-split);
+}
+
+.logout-button {
+  margin-top: 24px;
 }

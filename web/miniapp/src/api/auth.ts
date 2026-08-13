@@ -1,74 +1,27 @@
 /**
  * 认证相关接口（严格对齐后端 AuthController / CaptchaController）
- * 端点前缀 /auth、/system 等，h5 平台经 devServer.proxy 转发到后端 8080。
+ * 端点前缀 /auth、/client 等，对接 Client 后端 8082。
  */
 import request, { type R } from '@/api/request';
 import { appEnv } from '@/utils/env';
 
-/** 图片验证码返回（CaptchaVo） */
-export interface VerifyCodeResult {
-  captchaEnabled: boolean;
-  uuid: string;
-  /** Base64 图片（含 data:image/png;base64, 前缀） */
-  img: string;
-}
-
 /** 登录成功返回（LoginVo） */
 export interface LoginResult {
   access_token: string;
-  refresh_token: string;
   expire_in: number;
-  refresh_expire_in: number;
   client_id: string;
-  scope: string;
-  openid: string;
 }
 
-/** 登录入参 */
-export interface LoginParams {
-  username: string;
-  password: string;
-  code?: string;
-  uuid?: string;
-  clientId?: string;
-  grantType?: string;
-}
-
-/** 用户信息（SysUserVo 精简） */
+/** 应用用户信息 */
 export interface UserInfo {
   userId: number | string;
   userName: string;
   nickName: string;
-  avatar: string;
+  avatar: string | null;
+  clientId: string;
+  deviceType: string;
   roles: string[];
   permissions: string[];
-}
-
-/** 获取图片验证码 */
-export function getCodeImg() {
-  return request<R<VerifyCodeResult>>({
-    url: '/auth/code',
-    method: 'get',
-    headers: { isToken: false }
-  });
-}
-
-/** 登录 */
-export function login(data: LoginParams) {
-  return request<R<LoginResult>>({
-    url: '/auth/login',
-    method: 'post',
-    headers: {
-      isToken: false,
-      isEncrypt: 'true',
-      repeatSubmit: false
-    },
-    data: {
-      ...data,
-      clientId: data.clientId || appEnv.clientId,
-      grantType: data.grantType || 'password'
-    }
-  });
 }
 
 /** 退出登录 */
@@ -82,7 +35,17 @@ export function logout() {
 /** 获取当前用户信息（需鉴权） */
 export function getInfo() {
   return request<R<UserInfo>>({
-    url: '/system/user/getInfo',
+    url: '/client/user/info',
     method: 'get'
+  });
+}
+
+/** 微信授权码登录（wx.login / Taro.login） */
+export function loginByWechat(xcxCode: string) {
+  return request<R<LoginResult>>({
+    url: '/auth/login',
+    method: 'post',
+    headers: { isToken: false, isEncrypt: 'true' },
+    data: { xcxCode, clientId: appEnv.clientId, grantType: 'xcx' }
   });
 }

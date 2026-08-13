@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.dromara</groupId>
-        <artifactId>ruoyi-modules</artifactId>
+        <artifactId>ruoyi-admin</artifactId>
         <version>${revision}</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../ruoyi-admin/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -78,10 +78,10 @@
             <artifactId>ruoyi-common-security</artifactId>
         </dependency>
 
-        <!-- api模块 -->
+        <!-- Admin 契约模块 -->
         <dependency>
             <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-api</artifactId>
+            <artifactId>ruoyi-admin-api</artifactId>
         </dependency>
 
         <!-- Warm-Flow 工作流引擎 -->

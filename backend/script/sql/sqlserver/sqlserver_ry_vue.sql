@@ -982,6 +982,8 @@ INSERT sys_dict_data VALUES (1761600000000000033, 0, N'小程序认证', N'xcx',
 GO
 INSERT sys_dict_data VALUES (1761600000000000034, 0, N'三方登录认证', N'social', N'sys_grant_type', N'', N'default', N'N', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'三方登录认证')
 GO
+INSERT sys_dict_data VALUES (1761600000000000060, 0, N'手机号密码认证', N'phonePassword', N'sys_grant_type', N'', N'default', N'N', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'手机号密码认证')
+GO
 INSERT sys_dict_data VALUES (1761600000000000035, 0, N'PC', N'pc', N'sys_device_type', N'', N'default', N'N', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'PC')
 GO
 INSERT sys_dict_data VALUES (1761600000000000036, 0, N'安卓', N'android', N'sys_device_type', N'', N'default', N'N', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'安卓')
@@ -989,6 +991,14 @@ GO
 INSERT sys_dict_data VALUES (1761600000000000037, 0, N'iOS', N'ios', N'sys_device_type', N'', N'default', N'N', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'iOS')
 GO
 INSERT sys_dict_data VALUES (1761600000000000038, 0, N'小程序', N'xcx', N'sys_device_type', N'', N'default', N'N', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'小程序')
+GO
+INSERT sys_dict_data VALUES (1761600000000000061, 0, N'H5', N'h5', N'sys_device_type', N'', N'default', N'N', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'H5')
+GO
+INSERT sys_dict_data VALUES (1761600000000000062, 0, N'App', N'app', N'sys_device_type', N'', N'default', N'N', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'App')
+GO
+INSERT sys_dict_data VALUES (1761600000000000063, 0, N'微信小程序', N'miniapp', N'sys_device_type', N'', N'default', N'N', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'微信小程序')
+GO
+INSERT sys_dict_data VALUES (1761600000000000064, 0, N'HarmonyOS', N'harmony', N'sys_device_type', N'', N'default', N'N', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'HarmonyOS')
 GO
 
 CREATE TABLE sys_dict_type
@@ -1371,6 +1381,8 @@ insert into sys_menu values(1761400000000000003, N'系统工具', 0, 4, N'tool',
 GO
 insert into sys_menu values(1761400000000000005, N'测试菜单', 0, 5, N'demo', NULL, N'', N'N', N'Y', N'M', N'0', N'0', NULL, N'star', N'', N'', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'');
 GO
+insert into sys_menu values(1761400000000000007, N'产品运营', 0, 6, N'client', NULL, N'', N'N', N'Y', N'M', N'0', N'0', N'', N'peoples', N'', N'', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'产品运营目录');
+GO
 insert into sys_menu values(1761400000000000006, N'AI会话',  0, 8, N'aichat', N'ai/chat/index', N'', N'N', N'Y', N'C', N'0', N'0', N'', N'checkbox', N'', N'', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'AI聊天菜单');
 GO
 insert into sys_menu values(1761400000000000004, N'PLUS官网', 0, 9, N'https://gitee.com/dromara/RuoYi-Vue-Plus', null, N'', N'Y', N'Y', N'M', N'0', N'0', N'', N'guide', N'', N'', 1761000000000000103, 1761100000000000001, getdate(), null, null, N'RuoYi-Vue-Plus官网地址');
@@ -1400,6 +1412,10 @@ GO
 insert into sys_menu values(1761400000000000115, N'代码生成', 1761400000000000003, 2, N'gen', N'tool/gen/index', N'', N'N', N'Y', N'C', N'0', N'0', N'tool:gen:list', N'code', N'', N'', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'代码生成菜单');
 GO
 insert into sys_menu values(1761400000000000123, N'客户端管理', 1761400000000000001, 11, N'client', N'system/client/index', N'', N'N', N'Y', N'C', N'0', N'0', N'system:client:list', N'international', N'', N'', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'客户端管理菜单');
+GO
+insert into sys_menu values(1761400000000000134, N'应用用户', 1761400000000000007, 1, N'user', N'client/user/index', N'', N'N', N'Y', N'C', N'0', N'0', N'client:user:list', N'user', N'', N'', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'应用用户管理菜单');
+GO
+insert into sys_menu values(1761400000000000135, N'接入应用', 1761400000000000007, 2, N'application', N'client/application/index', N'', N'N', N'Y', N'C', N'0', N'0', N'client:application:list', N'international', N'', N'', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'接入应用管理菜单');
 GO
 insert into sys_menu values(1761400000000000116, N'修改生成配置', 1761400000000000003, 2, N'gen-edit/index/:tableId', N'tool/gen/editTable', N'', N'N', N'N', N'C', N'1', N'0', N'tool:gen:edit', N'#', N'/tool/gen', N'', 1761000000000000103, 1761100000000000001, getdate(), null, null, N'');
 GO
@@ -1559,6 +1575,28 @@ GO
 insert into sys_menu values(1761400000000001064, N'客户端管理删除', 1761400000000000123, 4, N'#', N'', N'', N'N', N'Y', N'F', N'0', N'0', N'system:client:remove', N'#', N'', N'', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'');
 GO
 insert into sys_menu values(1761400000000001065, N'客户端管理导出', 1761400000000000123, 5, N'#', N'', N'', N'N', N'Y', N'F', N'0', N'0', N'system:client:export', N'#', N'', N'', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'');
+GO
+-- 产品运营按钮
+insert into sys_menu values(1761400000000001630, N'应用用户查询', 1761400000000000134, 1, N'#', N'', N'', N'N', N'Y', N'F', N'0', N'0', N'client:user:query', N'#', N'', N'', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'');
+GO
+insert into sys_menu values(1761400000000001631, N'应用用户新增', 1761400000000000134, 2, N'#', N'', N'', N'N', N'Y', N'F', N'0', N'0', N'client:user:add', N'#', N'', N'', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'');
+GO
+insert into sys_menu values(1761400000000001632, N'应用用户修改', 1761400000000000134, 3, N'#', N'', N'', N'N', N'Y', N'F', N'0', N'0', N'client:user:edit', N'#', N'', N'', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'');
+GO
+insert into sys_menu values(1761400000000001633, N'应用用户删除', 1761400000000000134, 4, N'#', N'', N'', N'N', N'Y', N'F', N'0', N'0', N'client:user:remove', N'#', N'', N'', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'');
+GO
+insert into sys_menu values(1761400000000001634, N'应用用户导出', 1761400000000000134, 5, N'#', N'', N'', N'N', N'Y', N'F', N'0', N'0', N'client:user:export', N'#', N'', N'', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'');
+GO
+insert into sys_menu values(1761400000000001635, N'应用用户重置密码', 1761400000000000134, 6, N'#', N'', N'', N'N', N'Y', N'F', N'0', N'0', N'client:user:resetPwd', N'#', N'', N'', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'');
+GO
+insert into sys_menu values(1761400000000001640, N'接入应用查询', 1761400000000000135, 1, N'#', N'', N'', N'N', N'Y', N'F', N'0', N'0', N'client:application:query', N'#', N'', N'', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'');
+GO
+insert into sys_menu values(1761400000000001641, N'接入应用新增', 1761400000000000135, 2, N'#', N'', N'', N'N', N'Y', N'F', N'0', N'0', N'client:application:add', N'#', N'', N'', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'');
+GO
+insert into sys_menu values(1761400000000001642, N'接入应用修改', 1761400000000000135, 3, N'#', N'', N'', N'N', N'Y', N'F', N'0', N'0', N'client:application:edit', N'#', N'', N'', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'');
+GO
+GO
+insert into sys_menu values(1761400000000001644, N'接入应用导出', 1761400000000000135, 5, N'#', N'', N'', N'N', N'Y', N'F', N'0', N'0', N'client:application:export', N'#', N'', N'', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'');
 GO
 -- 测试菜单
 insert into sys_menu values(1761400000000001500, N'测试单表', 1761400000000000005, 1, N'demo', N'demo/demo/index', N'', N'N', N'Y', N'C', N'0', N'0', N'demo:demo:list', N'#', N'', N'', 1761000000000000103, 1761100000000000001, getdate(), NULL, NULL, N'测试单表菜单');
@@ -2520,6 +2558,33 @@ INSERT sys_role_menu VALUES (1761300000000000003, 1761400000000011643);
 GO
 INSERT sys_role_menu VALUES (1761300000000000003, 1761400000000011701);
 GO
+INSERT sys_role_menu VALUES (1761300000000000003, 1761400000000000007);
+GO
+INSERT sys_role_menu VALUES (1761300000000000003, 1761400000000000134);
+GO
+INSERT sys_role_menu VALUES (1761300000000000003, 1761400000000000135);
+GO
+INSERT sys_role_menu VALUES (1761300000000000003, 1761400000000001630);
+GO
+INSERT sys_role_menu VALUES (1761300000000000003, 1761400000000001631);
+GO
+INSERT sys_role_menu VALUES (1761300000000000003, 1761400000000001632);
+GO
+INSERT sys_role_menu VALUES (1761300000000000003, 1761400000000001633);
+GO
+INSERT sys_role_menu VALUES (1761300000000000003, 1761400000000001634);
+GO
+INSERT sys_role_menu VALUES (1761300000000000003, 1761400000000001635);
+GO
+INSERT sys_role_menu VALUES (1761300000000000003, 1761400000000001640);
+GO
+INSERT sys_role_menu VALUES (1761300000000000003, 1761400000000001641);
+GO
+INSERT sys_role_menu VALUES (1761300000000000003, 1761400000000001642);
+GO
+GO
+INSERT sys_role_menu VALUES (1761300000000000003, 1761400000000001644);
+GO
 INSERT sys_role_menu VALUES (1761300000000000004, 1761400000000000005);
 GO
 INSERT sys_role_menu VALUES (1761300000000000004, 1761400000000001500);
@@ -3066,7 +3131,7 @@ CREATE TABLE sys_client
     create_by           bigint                              NULL,
     create_time         datetime2(7)                        NULL,
     update_by           bigint                              NULL,
-    update_time         datetime2(7)                        NULL
+    update_time         datetime2(7)                        NULL,
     CONSTRAINT PK__sys_client___BFBDE87009ED2882 PRIMARY KEY CLUSTERED (id)
         WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
         ON [PRIMARY]
@@ -3184,7 +3249,544 @@ GO
 
 INSERT INTO sys_client VALUES (1762000000000000001, N'e5cd7e4891bf95d1d19206ce24a7b32e', N'pc', N'pc123', N'password,social', N'pc', N'', N'', 1800, 604800, N'0', N'0', 1761000000000000103, 1761100000000000001, getdate(), 1761100000000000001, getdate());
 GO
-INSERT INTO sys_client VALUES (1762000000000000002, N'428a8310cd442757ae699df5d894f051', N'app', N'app123', N'password,sms,social', N'android', N'/app/**', N'', 1800, 604800, N'0', N'0', 1761000000000000103, 1761100000000000001, getdate(), 1761100000000000001, getdate());
+
+CREATE TABLE app_user
+(
+    id           bigint                              NOT NULL,
+    user_name    nvarchar(30)                        NOT NULL,
+    nick_name    nvarchar(30)                        NOT NULL,
+    user_type    nvarchar(10)  DEFAULT ('app_user')  NULL,
+    email        nvarchar(50)  DEFAULT ''            NULL,
+    phone_number nvarchar(11)  DEFAULT ''            NULL,
+    gender       nchar(1)      DEFAULT ('0')         NULL,
+    avatar       bigint                              NULL,
+    password     nvarchar(100) DEFAULT ''            NULL,
+    credential_version int       DEFAULT 0             NULL,
+    login_ip     nvarchar(128) DEFAULT ''            NULL,
+    login_date   datetime2(7)                        NULL,
+    remark       nvarchar(500)                       NULL,
+    valid_flag   nchar(1)      DEFAULT ('1')         NOT NULL,
+    del_flag     nchar(1)      DEFAULT ('0')         NOT NULL,
+    create_by    bigint                              NULL,
+    create_time  datetime2(7)                        NULL,
+    update_by    bigint                              NULL,
+    update_time  datetime2(7)                        NULL,
+    CONSTRAINT PK__app_user PRIMARY KEY CLUSTERED (id)
+)
+ON [PRIMARY]
+GO
+
+CREATE NONCLUSTERED INDEX idx_app_user_create_by ON app_user (create_by)
+GO
+CREATE UNIQUE NONCLUSTERED INDEX uk_app_user_user_name ON app_user (user_name)
+GO
+CREATE NONCLUSTERED INDEX idx_app_user_phone ON app_user (phone_number)
+GO
+
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'主键',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user',
+    'COLUMN', N'id'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'用户账号',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user',
+    'COLUMN', N'user_name'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'用户昵称',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user',
+    'COLUMN', N'nick_name'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'用户类型（app_user应用用户）',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user',
+    'COLUMN', N'user_type'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'用户邮箱',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user',
+    'COLUMN', N'email'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'手机号码',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user',
+    'COLUMN', N'phone_number'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'用户性别（0男 1女 2未知）',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user',
+    'COLUMN', N'gender'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'头像地址',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user',
+    'COLUMN', N'avatar'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'密码',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user',
+    'COLUMN', N'password'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'凭证版本（重置密码后递增）',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user',
+    'COLUMN', N'credential_version'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'最后登录IP',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user',
+    'COLUMN', N'login_ip'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'最后登录时间',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user',
+    'COLUMN', N'login_date'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'备注',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user',
+    'COLUMN', N'remark'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'有效标志（1有效 0无效）',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user',
+    'COLUMN', N'valid_flag'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'删除标志（0存在 1删除）',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user',
+    'COLUMN', N'del_flag'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'创建者',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user',
+    'COLUMN', N'create_by'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'创建时间',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user',
+    'COLUMN', N'create_time'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'更新者',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user',
+    'COLUMN', N'update_by'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'更新时间',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user',
+    'COLUMN', N'update_time'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'应用用户信息表',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user'
+GO
+
+INSERT INTO app_user (
+    id, user_name, nick_name, user_type, email, phone_number, gender, avatar, password,
+    credential_version, login_ip, login_date, remark,
+    valid_flag, del_flag, create_by, create_time, update_by, update_time
+) VALUES (
+    1763000000000000001, N'client', N'示例应用用户', N'app_user', N'', N'13800138000', N'0', NULL,
+    N'$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', 0, N'', NULL, N'默认应用用户',
+    N'1', N'0', NULL, getdate(), NULL, NULL
+);
+GO
+
+CREATE TABLE app_client
+(
+    id                  bigint                               NOT NULL,
+    client_id           nvarchar(64)   DEFAULT ''            NULL,
+    client_key          nvarchar(32)   DEFAULT ''            NULL,
+    client_secret       nvarchar(255)  DEFAULT ''            NULL,
+    grant_type          nvarchar(255)  DEFAULT ''            NULL,
+    device_type         nvarchar(32)   DEFAULT ''            NULL,
+    access_path         nvarchar(2000) DEFAULT ''            NULL,
+    ip_whitelist        nvarchar(1000) DEFAULT ''            NULL,
+    active_timeout      int            DEFAULT ((1800))      NULL,
+    timeout             int            DEFAULT ((604800))    NULL,
+    remark              nvarchar(500)                        NULL,
+    valid_flag          nchar(1)       DEFAULT ('1')         NOT NULL,
+    del_flag            nchar(1)       DEFAULT ('0')         NOT NULL,
+    create_by           bigint                               NULL,
+    create_time         datetime2(7)                         NULL,
+    update_by           bigint                               NULL,
+    update_time         datetime2(7)                         NULL,
+    CONSTRAINT PK__app_client PRIMARY KEY CLUSTERED (id)
+)
+ON [PRIMARY]
+GO
+
+CREATE UNIQUE NONCLUSTERED INDEX uk_app_client_client_id ON app_client (client_id)
+GO
+
+CREATE UNIQUE NONCLUSTERED INDEX uk_app_client_client_key ON app_client (client_key)
+GO
+
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'主键',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_client',
+    'COLUMN', N'id'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'客户端id',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_client',
+    'COLUMN', N'client_id'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'客户端key',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_client',
+    'COLUMN', N'client_key'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'客户端秘钥',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_client',
+    'COLUMN', N'client_secret'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'授权类型',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_client',
+    'COLUMN', N'grant_type'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'设备类型',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_client',
+    'COLUMN', N'device_type'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'允许访问路径',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_client',
+    'COLUMN', N'access_path'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'IP白名单',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_client',
+    'COLUMN', N'ip_whitelist'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'token活跃超时时间',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_client',
+    'COLUMN', N'active_timeout'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'token固定超时',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_client',
+    'COLUMN', N'timeout'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'备注',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_client',
+    'COLUMN', N'remark'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'有效标志（1有效 0无效）',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_client',
+    'COLUMN', N'valid_flag'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'删除标志（0存在 1删除）',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_client',
+    'COLUMN', N'del_flag'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'创建者',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_client',
+    'COLUMN', N'create_by'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'创建时间',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_client',
+    'COLUMN', N'create_time'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'更新者',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_client',
+    'COLUMN', N'update_by'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'更新时间',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_client',
+    'COLUMN', N'update_time'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'接入应用授权表',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_client'
+GO
+
+INSERT INTO app_client (
+    id, client_id, client_key, client_secret, grant_type, device_type, access_path, ip_whitelist,
+    active_timeout, timeout, remark,
+    valid_flag, del_flag, create_by, create_time, update_by, update_time
+) VALUES (1763100000000000001, N'8f6e7d5c4b3a2910fedcba9876543210', N'h5', N'h5123', N'password,sms', N'h5', N'/client/**,/auth/logout', NULL, 1800, 604800, N'H5客户端', N'1', N'0', NULL, getdate(), NULL, NULL);
+GO
+INSERT INTO app_client (
+    id, client_id, client_key, client_secret, grant_type, device_type, access_path, ip_whitelist,
+    active_timeout, timeout, remark,
+    valid_flag, del_flag, create_by, create_time, update_by, update_time
+) VALUES (1763100000000000002, N'428a8310cd442757ae699df5d894f051', N'app', N'app123', N'phonePassword,sms', N'app', N'/client/**,/auth/logout', NULL, 1800, 604800, N'App客户端', N'1', N'0', NULL, getdate(), NULL, NULL);
+GO
+INSERT INTO app_client (
+    id, client_id, client_key, client_secret, grant_type, device_type, access_path, ip_whitelist,
+    active_timeout, timeout, remark,
+    valid_flag, del_flag, create_by, create_time, update_by, update_time
+) VALUES (1763100000000000003, N'7f4c1e2d8a9b4c6f9012d3e4f5a6b7c8', N'miniapp', N'miniapp123', N'xcx', N'miniapp', N'/client/**,/auth/logout', NULL, 1800, 604800, N'微信小程序客户端', N'1', N'0', NULL, getdate(), NULL, NULL);
+GO
+INSERT INTO app_client (
+    id, client_id, client_key, client_secret, grant_type, device_type, access_path, ip_whitelist,
+    active_timeout, timeout, remark,
+    valid_flag, del_flag, create_by, create_time, update_by, update_time
+) VALUES (1763100000000000004, N'9c8b7a6d5e4f3210a1b2c3d4e5f60718', N'harmony', N'harmony123', N'password,sms', N'harmony', N'/client/**,/auth/logout', NULL, 1800, 604800, N'HarmonyOS客户端', N'1', N'0', NULL, getdate(), NULL, NULL);
+GO
+
+CREATE TABLE app_user_identity
+(
+    id                 bigint            NOT NULL,
+    user_id            bigint            NOT NULL,
+    auth_id            nvarchar(255)     NOT NULL,
+    source             nvarchar(255)     NOT NULL,
+    open_id            nvarchar(255)     NULL,
+    user_name          nvarchar(30)      NOT NULL,
+    nick_name          nvarchar(30)      DEFAULT ('') NULL,
+    email              nvarchar(255)     DEFAULT ('') NULL,
+    avatar             nvarchar(500)     DEFAULT ('') NULL,
+    access_token       nvarchar(2000)    NOT NULL,
+    expire_in          int               NULL,
+    refresh_token      nvarchar(2000)    NULL,
+    access_code        nvarchar(255)     NULL,
+    union_id           nvarchar(255)     NULL,
+    scope              nvarchar(255)     NULL,
+    token_type         nvarchar(255)     NULL,
+    id_token           nvarchar(2000)    NULL,
+    mac_algorithm      nvarchar(255)     NULL,
+    mac_key            nvarchar(255)     NULL,
+    code               nvarchar(255)     NULL,
+    oauth_token        nvarchar(255)     NULL,
+    oauth_token_secret nvarchar(255)     NULL,
+    valid_flag         nchar(1)         DEFAULT ('1') NOT NULL,
+    del_flag           nchar(1)         DEFAULT ('0') NOT NULL,
+    create_by          bigint            NULL,
+    create_time        datetime2(7)      NULL,
+    update_by          bigint            NULL,
+    update_time        datetime2(7)      NULL,
+    CONSTRAINT PK__app_user_identity PRIMARY KEY CLUSTERED (id)
+)
+ON [PRIMARY]
+GO
+
+CREATE UNIQUE NONCLUSTERED INDEX uk_app_user_identity_auth_id ON app_user_identity (auth_id)
+GO
+
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'主键',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'id'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'应用用户ID',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'user_id'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'平台+平台唯一id',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'auth_id'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'用户来源',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'source'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'平台编号唯一id',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'open_id'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'登录账号',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'user_name'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'用户昵称',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'nick_name'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'用户邮箱',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'email'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'头像地址',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'avatar'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'用户的授权令牌',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'access_token'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'用户的授权令牌的有效期，部分平台可能没有',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'expire_in'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'刷新令牌，部分平台可能没有',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'refresh_token'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'平台的授权信息，部分平台可能没有',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'access_code'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'用户的 unionid',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'union_id'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'授予的权限，部分平台可能没有',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'scope'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'个别平台的授权信息，部分平台可能没有',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'token_type'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'id token，部分平台可能没有',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'id_token'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'小米平台用户的附带属性，部分平台可能没有',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'mac_algorithm'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'小米平台用户的附带属性，部分平台可能没有',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'mac_key'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'用户的授权code，部分平台可能没有',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'code'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'Twitter平台用户的附带属性，部分平台可能没有',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'oauth_token'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'Twitter平台用户的附带属性，部分平台可能没有',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'oauth_token_secret'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'有效标志（1有效 0无效）',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'valid_flag'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'删除标志（0存在 1删除）',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'del_flag'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'创建者',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'create_by'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'创建时间',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'create_time'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'更新者',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'update_by'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'更新时间',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity',
+    'COLUMN', N'update_time'
+GO
+EXEC sys.sp_addextendedproperty
+    'MS_Description', N'应用用户第三方身份表',
+    'SCHEMA', N'dbo',
+    'TABLE', N'app_user_identity'
 GO
 
 CREATE TABLE test_demo
@@ -3470,4 +4072,3 @@ INSERT test_tree VALUES (1762200000000000012, 1762200000000000010, 1761000000000
 GO
 INSERT test_tree VALUES (1762200000000000013, 1762200000000000010, 1761000000000000108, 1761100000000000003, N'子节点99', 0, 1761000000000000103, getdate(), 1761100000000000001, NULL, NULL, 0);
 GO
-

@@ -1,0 +1,7 @@
+{
+  "string": [
+    { "name": "module_desc", "value": "HarmonyOS 客户端" },
+    { "name": "EntryAbility_desc", "value": "HarmonyOS 客户端入口" },
+    { "name": "EntryAbility_label", "value": "HarmonyOS 客户端" }
+  ]
+}

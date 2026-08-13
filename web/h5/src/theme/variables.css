@@ -32,7 +32,7 @@
   --font-size-base: 14px;
 }
 
-[data-theme='dark'] {
+:root[data-theme='dark'] {
   --adm-color-primary: #1668dc;
   --adm-color-success: #52c41a;
   --adm-color-warning: #faad14;

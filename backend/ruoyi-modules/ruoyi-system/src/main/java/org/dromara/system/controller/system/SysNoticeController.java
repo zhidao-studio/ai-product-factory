@@ -13,7 +13,7 @@ import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.redis.annotation.RepeatSubmit;
 import org.dromara.common.web.core.BaseController;
 import org.dromara.system.api.MessageService;
-import org.dromara.system.api.domain.PushPayloadDTO;
+import org.dromara.common.core.domain.dto.PushPayloadDTO;
 import org.dromara.system.domain.bo.SysNoticeBo;
 import org.dromara.system.domain.vo.SysNoticeVo;
 import org.dromara.system.service.ISysNoticeService;

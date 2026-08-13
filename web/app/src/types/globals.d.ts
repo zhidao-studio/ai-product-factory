@@ -5,11 +5,6 @@
 export {};
 
 declare global {
-  interface Crypto {
-    getRandomValues<T extends ArrayBufferView | null>(array: T): T;
-  }
-  // eslint-disable-next-line no-var
-  const crypto: Crypto;
   const localStorage: {
     getItem(key: string): string | null;
     setItem(key: string, value: string): void;

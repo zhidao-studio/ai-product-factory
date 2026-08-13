@@ -1,9 +1,9 @@
 export default {
   pages: ['pages/index/index'],
   window: {
-    navigationBarTitleText: 'RuoYi 小程序',
-    navigationBarBackgroundColor: '#ffffff',
+    navigationBarTitleText: '微信小程序客户端',
+    navigationBarBackgroundColor: '#FFFFFF',
     navigationBarTextStyle: 'black',
-    backgroundColor: '#ffffff',
+    backgroundColor: '#F5F5F5',
   },
 }

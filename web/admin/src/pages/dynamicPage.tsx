@@ -2,6 +2,8 @@ import { PageContainer, ProCard } from '@ant-design/pro-components';
 import { useLocation } from '@umijs/max';
 import { useMemo } from 'react';
 import AiChatPage from '@/pages/ai/chat';
+import ClientApplicationPage from '@/pages/client/application';
+import ClientUserPage from '@/pages/client/user';
 import DemoDemoPage from '@/pages/demo/demo';
 import DemoTreePage from '@/pages/demo/tree';
 import MonitorAdminPage from '@/pages/monitor/admin';
@@ -43,6 +45,8 @@ import { flattenBackendRoutes } from '@/utils/menu';
 
 const migratedPages: Record<string, React.ComponentType> = {
   'ai/chat/index': AiChatPage,
+  'client/application/index': ClientApplicationPage,
+  'client/user/index': ClientUserPage,
   'demo/demo/index': DemoDemoPage,
   'demo/tree/index': DemoTreePage,
   'monitor/admin/index': MonitorAdminPage,

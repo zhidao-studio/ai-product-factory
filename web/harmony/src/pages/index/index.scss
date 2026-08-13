@@ -1,0 +1,322 @@
+@use '../../theme/token-values' as token;
+
+.page {
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--color-bg-layout, #{token.$color-bg-layout});
+  color: var(--color-text, #{token.$color-text});
+}
+
+.page-content {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.title {
+  color: var(--color-text, #{token.$color-text});
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.subtitle,
+.secondary-text,
+.helper-text,
+.info-label {
+  color: var(--color-text-secondary, #{token.$color-text-secondary});
+}
+
+.subtitle,
+.secondary-text,
+.helper-text,
+.field-label,
+.info-row {
+  font-size: 16px;
+  line-height: 1.571;
+}
+
+.content-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 16px;
+  border: 1px solid var(--color-border, #{token.$color-border});
+  border-radius: 8px;
+  background: var(--color-bg-container, #{token.$color-bg-container});
+}
+
+.card-title {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--color-text, #{token.$color-text});
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.secondary-text {
+  display: block;
+  margin-bottom: 12px;
+}
+
+.action-button,
+.sms-button,
+.login-tab,
+.input {
+  box-sizing: border-box;
+  min-height: 48px;
+}
+
+.action-button,
+.sms-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  border-radius: 8px;
+  font-size: 16px;
+  line-height: 1.571;
+}
+
+.primary-button {
+  border-color: var(--color-primary, #{token.$color-primary});
+  background: var(--color-primary, #{token.$color-primary});
+  color: var(--color-text-inverse, #{token.$color-text-inverse});
+}
+
+.login-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.login-tab {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border, #{token.$color-border});
+  border-radius: 8px;
+  color: var(--color-text-secondary, #{token.$color-text-secondary});
+  font-size: 16px;
+}
+
+.login-tab-active {
+  border-color: var(--color-primary, #{token.$color-primary});
+  color: var(--color-primary, #{token.$color-primary});
+}
+
+.field {
+  margin-bottom: 16px;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--color-text, #{token.$color-text});
+  font-weight: 500;
+}
+
+.input {
+  width: 100%;
+  padding: 0 12px;
+  border: 1px solid var(--color-border, #{token.$color-border});
+  border-radius: 8px;
+  background: var(--color-bg-container, #{token.$color-bg-container});
+  color: var(--color-text, #{token.$color-text});
+  font-size: 16px;
+}
+
+.captcha-row,
+.sms-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.captcha-input,
+.sms-input {
+  width: 0;
+  flex: 1;
+}
+
+.captcha-image {
+  width: 0;
+  height: 48px;
+  flex: 1;
+  border: 1px solid var(--color-border, #{token.$color-border});
+  border-radius: 8px;
+}
+
+.sms-button {
+  flex: 1;
+  padding: 0 8px;
+}
+
+.helper-text {
+  display: block;
+  margin: 0 0 12px;
+}
+
+.info-row {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--color-split, #{token.$color-split});
+}
+
+.danger-button {
+  margin-top: 16px;
+}
+
+// harmony-cpp 会将简单 class 编译为原生样式；不要依赖 CSS 变量级联实现主题。
+.page-light {
+  background: token.$color-bg-layout;
+  color: token.$color-text;
+}
+
+.page-dark {
+  background: token.$dark-color-bg-layout;
+  color: token.$dark-color-text;
+}
+
+.card-light,
+.input-light {
+  border-color: token.$color-border;
+  background: token.$color-bg-container;
+  color: token.$color-text;
+}
+
+.card-dark,
+.input-dark {
+  border-color: token.$dark-color-border;
+  background: token.$dark-color-bg-container;
+  color: token.$dark-color-text;
+}
+
+.title-light,
+.card-title-light,
+.field-label-light,
+.body-text-light {
+  color: token.$color-text;
+}
+
+.title-dark,
+.card-title-dark,
+.field-label-dark,
+.body-text-dark {
+  color: token.$dark-color-text;
+}
+
+.subtitle-light,
+.secondary-text-light,
+.helper-text-light,
+.info-label-light {
+  color: token.$color-text-secondary;
+}
+
+.subtitle-dark,
+.secondary-text-dark,
+.helper-text-dark,
+.info-label-dark {
+  color: token.$dark-color-text-secondary;
+}
+
+.info-row-light {
+  border-bottom-color: token.$color-split;
+}
+
+.info-row-dark {
+  border-bottom-color: token.$dark-color-split;
+}
+
+.login-tab-light,
+.captcha-image-light {
+  border-color: token.$color-border;
+}
+
+.login-tab-dark,
+.captcha-image-dark {
+  border-color: token.$dark-color-border;
+}
+
+.login-tab-active-light,
+.primary-text-light {
+  border-color: token.$color-primary;
+  color: token.$color-primary;
+}
+
+.login-tab-active-dark,
+.primary-text-dark {
+  border-color: token.$dark-color-primary;
+  color: token.$dark-color-primary;
+}
+
+.secondary-button-light {
+  border-color: token.$color-border;
+  background: token.$color-bg-container;
+  color: token.$color-text;
+}
+
+.secondary-button-dark {
+  border-color: token.$dark-color-border;
+  background: token.$dark-color-bg-container;
+  color: token.$dark-color-text;
+}
+
+.primary-button-light {
+  border-color: token.$color-primary;
+  background: token.$color-primary;
+}
+
+.primary-button-dark {
+  border-color: token.$dark-color-primary;
+  background: token.$dark-color-primary;
+}
+
+@media (min-width: 600px) {
+  .page-content {
+    max-width: 840px;
+  }
+
+  .content-grid {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .theme-card {
+    flex: 1;
+  }
+
+  .session-card {
+    flex: 2;
+  }
+}
+
+@media (min-width: 840px) {
+  .page-content {
+    max-width: 1280px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .page-content {
+    max-width: 1280px;
+  }
+}

@@ -1,16 +1,7 @@
 /**
- * 统一请求层（与后端 RuoYi-Vue-Plus 契约严格对齐，参考 admin/src/api/request.ts、h5 同源实现）
- *
- * 约定：
- *  - 统一返回体 R<T> = { code: number; msg: string; data: T }
- *  - code === 200 成功，其它视为业务错误（取 msg 提示）
- *  - 鉴权头 Authorization: Bearer <token>（Sa-Token）
- *  - clientid 头标识客户端
- *  - 登录/注册等接口打 isEncrypt: 'true' 时，按后端 @ApiEncrypt 做 AES+RSA 加密
- *  - 响应头带 encrypt-key 时，按同样的 AES 密钥解密响应体
+ * 微信小程序统一请求层，使用 Taro.request，不依赖浏览器 Axios 适配器。
  */
 import Taro from '@tarojs/taro';
-import axios, { type AxiosError, type AxiosRequestConfig } from 'axios';
 import { getToken, removeToken } from '@/utils/auth';
 import { appEnv } from '@/utils/env';
 import {
@@ -23,16 +14,23 @@ import {
 import { decrypt, encrypt } from '@/utils/jsencrypt';
 
 const SUCCESS = 200;
-const encryptHeader = 'encrypt-key';
+const ENCRYPT_HEADER = 'encrypt-key';
 
-export interface RequestConfig<D = unknown> extends AxiosRequestConfig<D> {
-  headers?: AxiosRequestConfig<D>['headers'] & {
+type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS' | 'HEAD';
+type QueryValue = string | number | boolean | null | undefined;
+
+export interface RequestConfig<D = unknown> {
+  url: string;
+  method?: Lowercase<RequestMethod> | RequestMethod;
+  headers?: Record<string, string | boolean | undefined> & {
     isToken?: false;
     isEncrypt?: 'true' | 'false' | boolean;
   };
+  data?: D;
+  params?: Record<string, QueryValue>;
+  timeout?: number;
 }
 
-/** 后端统一返回体 */
 export interface R<T = unknown> {
   code: number;
   msg: string;
@@ -53,70 +51,6 @@ export function isHandledRequestError(error: unknown): boolean {
   return Boolean((error as { isHandled?: boolean } | undefined)?.isHandled);
 }
 
-const service = axios.create({
-  baseURL: appEnv.baseApi,
-  timeout: 50000,
-  headers: {
-    'Content-Type': 'application/json;charset=utf-8',
-    clientid: appEnv.clientId
-  }
-});
-
-service.interceptors.request.use((config) => {
-  const isToken = config.headers?.['isToken'] === false;
-  const isEncrypt = config.headers?.['isEncrypt'] === 'true' || config.headers?.['isEncrypt'] === true;
-
-  if (getToken() && !isToken) {
-    config.headers.set('Authorization', `Bearer ${getToken()}`);
-  }
-
-  if (appEnv.encryptEnabled && isEncrypt && (config.method === 'post' || config.method === 'put')) {
-    const aesKey = generateAesKey();
-    const encryptedKey = encrypt(encryptBase64(aesKey));
-    if (encryptedKey) {
-      config.headers.set(encryptHeader, encryptedKey);
-    }
-    const data = typeof config.data === 'object' ? JSON.stringify(config.data) : String(config.data ?? '');
-    config.data = encryptWithAes(data, aesKey);
-  }
-
-  config.headers.delete('isToken');
-  config.headers.delete('isEncrypt');
-
-  return config;
-});
-
-function normalizeErrorMessage(message?: string): string | undefined {
-  if (!message) return undefined;
-  if (message === 'Network Error') return '后端接口连接异常';
-  if (message.includes('timeout')) return '系统接口请求超时';
-  if (message.includes('Request failed with status code')) return `系统接口${message.slice(-3)}异常`;
-  return message;
-}
-
-async function parseResponseErrorData(data: unknown): Promise<string | undefined> {
-  if (!data) return undefined;
-  if (typeof data === 'string') {
-    const text = data.trim();
-    if (!text) return undefined;
-    try {
-      return parseResponseErrorData(JSON.parse(text));
-    } catch {
-      return text;
-    }
-  }
-  if (typeof data === 'object') {
-    const payload = data as { msg?: string; message?: string };
-    return payload.msg || payload.message;
-  }
-  return undefined;
-}
-
-async function getErrorMessage(error: AxiosError): Promise<string> {
-  const responseMessage = await parseResponseErrorData(error.response?.data);
-  return responseMessage || normalizeErrorMessage(error.message) || '系统未知错误';
-}
-
 function showRequestError(content: string): void {
   Taro.showToast({ title: content, icon: 'none' });
 }
@@ -124,50 +58,112 @@ function showRequestError(content: string): void {
 function showRelogin(): void {
   if (isRelogin.show) return;
   isRelogin.show = true;
-  Taro.showToast({ title: '登录状态已过期，请重新登录', icon: 'none' });
   removeToken();
+  Taro.showToast({ title: '登录状态已过期，请重新登录', icon: 'none' });
   isRelogin.show = false;
 }
 
-service.interceptors.response.use(
-  (response) => {
-    const keyStr = response.headers[encryptHeader];
+function appendQuery(url: string, params?: Record<string, QueryValue>): string {
+  if (!params) return url;
+  const query = Object.entries(params)
+    .filter(([, value]) => value !== null && value !== undefined)
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)
+    .join('&');
+  if (!query) return url;
+  return `${url}${url.includes('?') ? '&' : '?'}${query}`;
+}
+
+function resolveUrl(path: string): string {
+  if (/^https?:\/\//.test(path)) return path;
+  return `${appEnv.baseApi.replace(/\/$/, '')}/${path.replace(/^\//, '')}`;
+}
+
+function getResponseHeader(headers: Record<string, unknown>, name: string): string | undefined {
+  const target = name.toLowerCase();
+  const entry = Object.entries(headers).find(([key]) => key.toLowerCase() === target);
+  return typeof entry?.[1] === 'string' ? entry[1] : undefined;
+}
+
+function getErrorMessage(error: unknown): string {
+  if (typeof error === 'object' && error && 'errMsg' in error) {
+    const message = String((error as { errMsg?: unknown }).errMsg || '');
+    if (message.includes('timeout')) return '系统接口请求超时';
+    if (message) return message;
+  }
+  return error instanceof Error && error.message ? error.message : '系统未知错误';
+}
+
+export default async function request<T = unknown, D = unknown>(config: RequestConfig<D>): Promise<T> {
+  const requestHeaders: Record<string, string> = {
+    'Content-Type': 'application/json;charset=utf-8',
+    clientid: appEnv.clientId,
+  };
+  const isToken = config.headers?.isToken === false;
+  const isEncrypt = config.headers?.isEncrypt === true || config.headers?.isEncrypt === 'true';
+
+  Object.entries(config.headers || {}).forEach(([key, value]) => {
+    if (key !== 'isToken' && key !== 'isEncrypt' && value !== undefined) {
+      requestHeaders[key] = String(value);
+    }
+  });
+
+  const token = getToken();
+  if (token && !isToken) requestHeaders.Authorization = `Bearer ${token}`;
+
+  const method = (config.method || 'GET').toUpperCase() as RequestMethod;
+  let data: unknown = config.data;
+  if (appEnv.encryptEnabled && isEncrypt && (method === 'POST' || method === 'PUT')) {
+    try {
+      const aesKey = await generateAesKey();
+      const encryptedKey = encrypt(encryptBase64(aesKey));
+      if (!encryptedKey) throw new Error('请求加密失败');
+      requestHeaders[ENCRYPT_HEADER] = encryptedKey;
+      data = encryptWithAes(JSON.stringify(config.data ?? {}), aesKey);
+    } catch (error) {
+      const message = getErrorMessage(error);
+      showRequestError(message);
+      throw createHandledError(message);
+    }
+  }
+
+  try {
+    const response = await Taro.request({
+      url: appendQuery(resolveUrl(config.url), config.params),
+      method,
+      header: requestHeaders,
+      data,
+      timeout: config.timeout ?? 50000,
+    });
+
+    if (response.statusCode === 401) {
+      showRelogin();
+      throw createHandledError('无效的会话，或者会话已过期，请重新登录。');
+    }
+
+    let payload: unknown = response.data;
+    const keyStr = getResponseHeader(response.header as Record<string, unknown>, ENCRYPT_HEADER);
     if (appEnv.encryptEnabled && keyStr) {
       const base64Str = decrypt(keyStr);
-      if (base64Str) {
-        const aesKey = decryptBase64(base64Str);
-        response.data = JSON.parse(decryptWithAes(response.data, aesKey));
-      }
+      if (!base64Str || typeof payload !== 'string') throw createHandledError('响应解密失败');
+      payload = JSON.parse(decryptWithAes(payload, decryptBase64(base64Str)));
     }
 
-    const code = response.data?.code ?? SUCCESS;
-    const msg = response.data?.msg || '系统未知错误';
-
+    const result = payload as Partial<R<unknown>>;
+    const code = result.code ?? SUCCESS;
+    const message = result.msg || '系统未知错误';
     if (code === 401) {
       showRelogin();
-      return Promise.reject(createHandledError('无效的会话，或者会话已过期，请重新登录。'));
+      throw createHandledError(message);
     }
-
-    if (code !== SUCCESS) {
-      showRequestError(msg);
-      return Promise.reject(createHandledError(msg));
+    if (response.statusCode < 200 || response.statusCode >= 300 || code !== SUCCESS) {
+      showRequestError(message);
+      throw createHandledError(message);
     }
-
-    return response.data;
-  },
-  async (error) => {
-    if (axios.isAxiosError(error) && error.response?.status === 401) {
-      showRelogin();
-      return Promise.reject(createHandledError('无效的会话，或者会话已过期，请重新登录。'));
-    }
-    const msg = axios.isAxiosError(error)
-      ? await getErrorMessage(error)
-      : normalizeErrorMessage(error?.message) || '系统未知错误';
-    showRequestError(msg);
-    return Promise.reject(createHandledError(msg));
+    return payload as T;
+  } catch (error) {
+    if (isHandledRequestError(error)) throw error;
+    const message = getErrorMessage(error);
+    showRequestError(message);
+    throw createHandledError(message);
   }
-);
-
-export default function request<T = unknown, D = unknown>(config: RequestConfig<D>): Promise<T> {
-  return service.request(config) as unknown as Promise<T>;
 }

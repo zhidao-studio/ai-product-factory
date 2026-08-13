@@ -2,7 +2,7 @@
  * Taro 全局设计 Token → CSS 变量（单源：docs/design-tokens）
  *
  * 小程序以 page 为根作用域，故变量声明在 page 上。
- * 暗色：默认跟随系统 prefers-color-scheme；h5 平台可经 <html data-theme="dark"> 运行时切换。
+ * 暗色：默认跟随系统 prefers-color-scheme；用户手动切换时由页面根节点 class 覆盖。
  * 业务样式统一引用 var(--color-*)，禁止写死色值。
  */
 
@@ -25,6 +25,7 @@ page {
   --color-bg-layout: #f5f5f5;
   --color-bg-container: #ffffff;
   --color-link: #1677ff;
+  --color-text-inverse: rgba(255, 255, 255, 0.85);
 
   /* 字形 / 圆角 */
   --font-size-base: 28px; /* 小程序默认 rpx 体系，按端微调 */
@@ -48,8 +49,8 @@ page {
   }
 }
 
-/* h5 平台运行时切换（与 PC / H5 端 data-theme 约定一致） */
-html[data-theme='dark'] page {
+/* 用户手动切换时由页面根节点覆盖系统主题。 */
+.theme-dark {
   --color-primary: #1668dc;
   --color-text: rgba(255, 255, 255, 0.85);
   --color-text-secondary: rgba(255, 255, 255, 0.65);

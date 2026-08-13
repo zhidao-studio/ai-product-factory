@@ -3,6 +3,8 @@ package org.dromara.common.push.handler;
 import cn.hutool.core.util.ObjectUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dromara.common.core.domain.dto.PushPayloadDTO;
+import org.dromara.common.core.domain.model.LoginUserContext;
 import org.dromara.common.core.enums.PushSourceEnum;
 import org.dromara.common.core.enums.PushTypeEnum;
 import org.dromara.common.core.utils.StringUtils;
@@ -10,8 +12,6 @@ import org.dromara.common.push.constant.MessageConstants;
 import org.dromara.common.push.core.WebSocketSessionManager;
 import org.dromara.common.push.dto.PushDTO;
 import org.dromara.common.push.properties.MessageProperties;
-import org.dromara.system.api.domain.PushPayloadDTO;
-import org.dromara.system.api.model.LoginUser;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 import org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorator;
@@ -48,7 +48,7 @@ public class PlusWebSocketHandler extends AbstractWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws IOException {
         // 从会话属性中获取登录用户信息和Token
-        LoginUser loginUser = (LoginUser) session.getAttributes().get(MessageConstants.LOGIN_USER_KEY);
+        LoginUserContext loginUser = (LoginUserContext) session.getAttributes().get(MessageConstants.LOGIN_USER_KEY);
         String token = (String) session.getAttributes().get(MessageConstants.LOGIN_TOKEN_KEY);
 
         // 校验用户信息是否为空，无效则直接关闭连接
@@ -80,7 +80,7 @@ public class PlusWebSocketHandler extends AbstractWebSocketHandler {
      */
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) {
-        LoginUser loginUser = (LoginUser) session.getAttributes().get(MessageConstants.LOGIN_USER_KEY);
+        LoginUserContext loginUser = (LoginUserContext) session.getAttributes().get(MessageConstants.LOGIN_USER_KEY);
         if (ObjectUtil.isNull(loginUser)) {
             return;
         }
@@ -125,7 +125,7 @@ public class PlusWebSocketHandler extends AbstractWebSocketHandler {
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) {
         log.error("[transport error] sessionId: {}, exception:{}", session.getId(), exception.getMessage(), exception);
-        LoginUser loginUser = (LoginUser) session.getAttributes().get(MessageConstants.LOGIN_USER_KEY);
+        LoginUserContext loginUser = (LoginUserContext) session.getAttributes().get(MessageConstants.LOGIN_USER_KEY);
         String token = (String) session.getAttributes().get(MessageConstants.LOGIN_TOKEN_KEY);
         if (ObjectUtil.hasNull(loginUser, token)) {
             webSocketSessionManager.closeSession(session, CloseStatus.SERVER_ERROR);
@@ -140,7 +140,7 @@ public class PlusWebSocketHandler extends AbstractWebSocketHandler {
      */
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        LoginUser loginUser = (LoginUser) session.getAttributes().get(MessageConstants.LOGIN_USER_KEY);
+        LoginUserContext loginUser = (LoginUserContext) session.getAttributes().get(MessageConstants.LOGIN_USER_KEY);
         String token = (String) session.getAttributes().get(MessageConstants.LOGIN_TOKEN_KEY);
 
         if (ObjectUtil.hasNull(loginUser, token)) {

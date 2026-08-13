@@ -1,0 +1,6 @@
+@use './theme/token-values' as token;
+
+page {
+  min-height: 100%;
+  background: var(--color-bg-layout, #{token.$color-bg-layout});
+}

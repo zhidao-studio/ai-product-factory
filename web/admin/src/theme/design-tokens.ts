@@ -119,9 +119,9 @@ export const antdTokens = {
   motionEaseOut: motion.easeOut,
 } as const;
 
-export const lightTheme = { token: antdTokens, cssVar: true, algorithm: theme.defaultAlgorithm };
-export const darkTheme = { token: { ...antdTokens, ...darkColors }, cssVar: true, algorithm: theme.darkAlgorithm };
-export const compactTheme = { cssVar: true, algorithm: theme.compactAlgorithm };
-export const darkCompactTheme = { cssVar: true, algorithm: [theme.darkAlgorithm, theme.compactAlgorithm] };
+export const lightTheme = { token: antdTokens, cssVar: {}, algorithm: theme.defaultAlgorithm };
+export const darkTheme = { token: { ...antdTokens, ...darkColors }, cssVar: {}, algorithm: theme.darkAlgorithm };
+export const compactTheme = { cssVar: {}, algorithm: theme.compactAlgorithm };
+export const darkCompactTheme = { cssVar: {}, algorithm: [theme.darkAlgorithm, theme.compactAlgorithm] };
 
 export default antdTokens;

@@ -1,0 +1,28 @@
+@use './token-values' as token;
+
+page {
+  --color-primary: #{token.$color-primary};
+  --color-primary-active: #{token.$color-primary-active};
+  --color-error: #{token.$color-error};
+  --color-text: #{token.$color-text};
+  --color-text-secondary: #{token.$color-text-secondary};
+  --color-text-placeholder: #{token.$color-text-placeholder};
+  --color-text-inverse: #{token.$color-text-inverse};
+  --color-border: #{token.$color-border};
+  --color-split: #{token.$color-split};
+  --color-bg-layout: #{token.$color-bg-layout};
+  --color-bg-container: #{token.$color-bg-container};
+  background: var(--color-bg-layout, #{token.$color-bg-layout});
+  color: var(--color-text, #{token.$color-text});
+}
+
+.theme-dark {
+  --color-primary: #{token.$dark-color-primary};
+  --color-text: #{token.$dark-color-text};
+  --color-text-secondary: #{token.$dark-color-text-secondary};
+  --color-text-placeholder: #{token.$dark-color-text-placeholder};
+  --color-border: #{token.$dark-color-border};
+  --color-split: #{token.$dark-color-split};
+  --color-bg-layout: #{token.$dark-color-bg-layout};
+  --color-bg-container: #{token.$dark-color-bg-container};
+}

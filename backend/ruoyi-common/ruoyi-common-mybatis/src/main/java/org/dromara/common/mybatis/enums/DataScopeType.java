@@ -2,16 +2,16 @@ package org.dromara.common.mybatis.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.dromara.common.core.domain.model.DataPermissionUser;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.helper.DataPermissionHelper;
-import org.dromara.system.api.model.LoginUser;
 
 /**
  * 数据权限类型枚举
  * <p>
  * 支持使用 SpEL 模板表达式定义 SQL 查询条件
  * 内置数据：
- * - {@code user}: 当前登录用户信息，参考 {@link LoginUser}
+ * - {@code user}: 当前登录用户信息，参考 {@link DataPermissionUser}
  * 内置服务：
  * - {@code sdss}: 系统数据权限服务，参考 ISysDataScopeService
  * 如需扩展数据，可以通过 {@link DataPermissionHelper} 进行操作

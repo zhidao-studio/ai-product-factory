@@ -13,6 +13,9 @@ import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.relational.ParenthesedExpressionList;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
+import org.dromara.common.core.domain.model.DataPermissionUser;
+import org.dromara.common.core.domain.model.DataScopeRole;
+import org.dromara.common.core.domain.model.LoginUserContext;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.ServletUtils;
 import org.dromara.common.core.utils.SpringUtils;
@@ -24,8 +27,6 @@ import org.dromara.common.mybatis.core.domain.DataPermissionAccess;
 import org.dromara.common.mybatis.enums.DataScopeType;
 import org.dromara.common.mybatis.helper.DataPermissionHelper;
 import org.dromara.common.satoken.utils.LoginHelper;
-import org.dromara.system.api.domain.RoleDTO;
-import org.dromara.system.api.model.LoginUser;
 import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.expression.*;
 import org.springframework.expression.common.TemplateParserContext;
@@ -71,13 +72,18 @@ public class PlusDataPermissionHandler {
      */
     public Expression getSqlSegment(Expression where, boolean isSelect) {
         try {
-            LoginUser currentUser = currentUser();
-            // 如果是超级管理员或租户管理员，则不过滤数据
-            if (LoginHelper.isSuperAdmin()) {
-                return where;
+            LoginUserContext loginUser = currentUser();
+            String dataFilterSql;
+            if (loginUser instanceof DataPermissionUser currentUser) {
+                // 超级管理员不受数据范围约束
+                if (currentUser.isSuperAdmin()) {
+                    return where;
+                }
+                dataFilterSql = buildDataFilter(getDataPermission(), currentUser, isSelect);
+            } else {
+                // 未提供数据权限上下文时拒绝访问，禁止把 Client 会话误当作 Admin 会话放行
+                dataFilterSql = "1 = 0";
             }
-            // 构造数据过滤条件的 SQL 片段
-            String dataFilterSql = buildDataFilter(getDataPermission(), currentUser, isSelect);
             if (StringUtils.isBlank(dataFilterSql)) {
                 return where;
             }
@@ -104,7 +110,7 @@ public class PlusDataPermissionHandler {
      * @return 构建的数据过滤条件的 SQL 语句
      * @throws ServiceException 如果角色的数据范围异常或者 key 与 value 的长度不匹配，则抛出 ServiceException 异常
      */
-    private String buildDataFilter(DataPermission dataPermission, LoginUser user, boolean isSelect) {
+    private String buildDataFilter(DataPermission dataPermission, DataPermissionUser user, boolean isSelect) {
         // 更新或删除需满足所有条件
         String joinStr = isSelect ? " OR " : " AND ";
         if (StringUtils.isNotBlank(dataPermission.joinStr())) {
@@ -117,7 +123,7 @@ public class PlusDataPermissionHandler {
         DataPermissionHelper.getContext().forEach(context::setVariable);
         Set<String> conditions = new HashSet<>();
         DataPermissionAccess access = currentAccess();
-        List<RoleDTO> scopeRoles = scopeRoles(user, access);
+        List<DataScopeRole> scopeRoles = scopeRoles(user, access);
         if (CollUtil.isEmpty(scopeRoles)) {
             if (access.constrained()) {
                 return " 1 = 0 ";
@@ -137,7 +143,7 @@ public class PlusDataPermissionHandler {
             keys.addAll(Arrays.stream(dataColumn.key()).map(key -> "#" + key).toList());
         }
 
-        for (RoleDTO role : scopeRoles) {
+        for (DataScopeRole role : scopeRoles) {
             context.setVariable("roleId", role.getRoleId());
             // 获取角色权限泛型
             DataScopeType type = DataScopeType.findCode(role.getDataScope());
@@ -182,14 +188,16 @@ public class PlusDataPermissionHandler {
     /**
      * 获取当前登录用户信息
      *
-     * @return 当前登录用户的LoginUser对象，可能为null（如未登录场景）
+     * @return 当前登录用户上下文，可能为 null（如未登录场景）
      */
-    private LoginUser currentUser() {
+    private LoginUserContext currentUser() {
         // 从数据权限助手缓存中获取当前登录用户
-        LoginUser currentUser = DataPermissionHelper.getVariable("user");
+        LoginUserContext currentUser = DataPermissionHelper.getVariable("user");
         if (ObjectUtil.isNull(currentUser)) {
             currentUser = LoginHelper.getLoginUser();
-            DataPermissionHelper.setVariable("user", currentUser);
+            if (ObjectUtil.isNotNull(currentUser)) {
+                DataPermissionHelper.setVariable("user", currentUser);
+            }
         }
         return currentUser;
     }
@@ -216,23 +224,24 @@ public class PlusDataPermissionHandler {
      * @param access 当前接口访问约束
      * @return 参与数据权限计算的角色集合
      */
-    private List<RoleDTO> scopeRoles(LoginUser user, DataPermissionAccess access) {
-        List<RoleDTO> roles = user.getRoles();
+    private List<DataScopeRole> scopeRoles(DataPermissionUser user, DataPermissionAccess access) {
+        Collection<? extends DataScopeRole> sourceRoles = user.getRoles();
+        List<DataScopeRole> roles = CollUtil.isEmpty(sourceRoles) ? new ArrayList<>() : new ArrayList<>(sourceRoles);
         if (!access.constrained()) {
             return roles;
         }
-        Map<Long, RoleDTO> allRoleMap = new LinkedHashMap<>();
+        Map<Long, DataScopeRole> allRoleMap = new LinkedHashMap<>();
         if (CollUtil.isNotEmpty(roles)) {
             roles.forEach(role -> allRoleMap.put(role.getRoleId(), role));
         }
-        Map<Long, RoleDTO> roleMap = new LinkedHashMap<>();
+        Map<Long, DataScopeRole> roleMap = new LinkedHashMap<>();
         Map<String, List<Long>> dataScopeRoleMap = user.getDataScopeRoleMap();
         if (CollUtil.isNotEmpty(dataScopeRoleMap)) {
             access.perms().forEach(perm -> {
                 List<Long> roleIds = dataScopeRoleMap.get(perm);
                 if (CollUtil.isNotEmpty(roleIds)) {
                     roleIds.forEach(roleId -> {
-                        RoleDTO role = allRoleMap.get(roleId);
+                        DataScopeRole role = allRoleMap.get(roleId);
                         if (role != null) {
                             roleMap.putIfAbsent(role.getRoleId(), role);
                         }

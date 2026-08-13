@@ -30,8 +30,9 @@ Pods/
 *.jsbundle
 
 # ============ Local overrides ============
-# 注意：本脚手架刻意提交 .env / .env.development / .env.production（含 RuoYi 默认开发 RSA 密钥对），
-# 以保证开箱即用；如需生产隔离请自行改为 .env.example + 本地复制。
+# 五个前端会提交不含真实生产密钥的环境模板，以保证复制后可直接开发。
+# 生产部署从 infra/.env.prod.example 复制本地密钥文件，真实值禁止入库。
+infra/.env.prod
 
 # ============ Misc ============
 *.tmp
@@ -40,3 +41,4 @@ Pods/
 
 # ============ 启动脚本产物 ============
 backend/ruoyi-admin.pid
+backend/ruoyi-client.pid

@@ -9,7 +9,7 @@
  *  - 登录/注册等接口打 isEncrypt: 'true' 时，按后端 @ApiEncrypt 做 AES+RSA 加密
  *  - 响应头带 encrypt-key 时，按同样的 AES 密钥解密响应体
  *
- * 注意：RN 调试时请确认 baseApi 指向可达的后端地址（如安卓模拟器用 http://10.0.2.2:8080/dev-api）。
+ * 注意：Android 模拟器开发地址为 http://10.0.2.2:8082，生产地址必须指向 Client Gateway。
  */
 import axios, { type AxiosError, type AxiosRequestConfig } from 'axios';
 import { Toast } from '@ant-design/react-native';
@@ -65,8 +65,8 @@ const service = axios.create({
 });
 
 service.interceptors.request.use((config) => {
-  const isToken = config.headers?.['isToken'] === false;
-  const isEncrypt = config.headers?.['isEncrypt'] === 'true' || config.headers?.['isEncrypt'] === true;
+  const isToken = config.headers?.isToken === false;
+  const isEncrypt = config.headers?.isEncrypt === 'true' || config.headers?.isEncrypt === true;
 
   if (getToken() && !isToken) {
     config.headers.set('Authorization', `Bearer ${getToken()}`);
