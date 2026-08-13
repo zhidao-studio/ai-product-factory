@@ -18,6 +18,7 @@
     <description>Admin 后台管理总工程</description>
 
     <modules>
+        <module>ruoyi-admin-api</module>
         <module>ruoyi-admin-server</module>
         <module>../ruoyi-modules/ruoyi-system</module>
         <module>../ruoyi-modules/ruoyi-gen</module>

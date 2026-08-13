@@ -12,12 +12,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.dromara.common.core.constant.SystemConstants;
+import org.dromara.common.core.domain.model.DataPermissionUser;
+import org.dromara.common.core.domain.model.LoginUserContext;
 import org.dromara.common.core.enums.UserType;
 import org.dromara.common.core.utils.ServletUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.core.utils.ip.AddressUtils;
-import org.dromara.system.api.model.LoginUser;
-
 
 /**
  * 登录鉴权助手
@@ -51,16 +51,17 @@ public class LoginHelper {
      * @param loginUser 登录用户信息
      * @param model     配置参数
      */
-    public static void login(LoginUser loginUser, SaLoginParameter model) {
+    public static void login(LoginUserContext loginUser, SaLoginParameter model) {
         model = ObjectUtil.defaultIfNull(model, new SaLoginParameter());
         fillRequestContext(loginUser, model);
-        StpUtil.login(loginUser.getLoginId(),
-            model.setExtra(USER_KEY, loginUser.getUserId())
-                .setExtra(USER_NAME_KEY, loginUser.getUsername())
-                .setExtra(DEPT_KEY, loginUser.getDeptId())
-                .setExtra(DEPT_NAME_KEY, loginUser.getDeptName())
-                .setExtra(DEPT_CATEGORY_KEY, loginUser.getDeptCategory())
-        );
+        model.setExtra(USER_KEY, loginUser.getUserId())
+            .setExtra(USER_NAME_KEY, loginUser.getUsername());
+        if (loginUser instanceof DataPermissionUser permissionUser) {
+            model.setExtra(DEPT_KEY, permissionUser.getDeptId())
+                .setExtra(DEPT_NAME_KEY, permissionUser.getDeptName())
+                .setExtra(DEPT_CATEGORY_KEY, permissionUser.getDeptCategory());
+        }
+        StpUtil.login(loginUser.getLoginId(), model);
         StpUtil.getTokenSession().set(LOGIN_USER_KEY, loginUser);
     }
 
@@ -70,7 +71,7 @@ public class LoginHelper {
      * @param loginUser 登录用户
      * @param model     登录参数
      */
-    private static void fillRequestContext(LoginUser loginUser, SaLoginParameter model) {
+    private static void fillRequestContext(LoginUserContext loginUser, SaLoginParameter model) {
         HttpServletRequest request = ServletUtils.getRequest();
         if (ObjectUtil.isNull(request)) {
             return;
@@ -99,7 +100,7 @@ public class LoginHelper {
      *
      * @return 登录用户
      */
-    public static <T extends LoginUser> T getLoginUser() {
+    public static <T extends LoginUserContext> T getLoginUser() {
         try {
             return getLoginUser(StpUtil.getTokenSession());
         } catch (NotLoginException e) {
@@ -113,7 +114,7 @@ public class LoginHelper {
      * @param token Token
      * @return 登录用户
      */
-    public static <T extends LoginUser> T getLoginUser(String token) {
+    public static <T extends LoginUserContext> T getLoginUser(String token) {
         if (StringUtils.isBlank(token)) {
             return null;
         }
@@ -133,7 +134,7 @@ public class LoginHelper {
      * @return 登录用户
      */
     @SuppressWarnings("unchecked")
-    private static <T extends LoginUser> T getLoginUser(SaSession session) {
+    private static <T extends LoginUserContext> T getLoginUser(SaSession session) {
         if (ObjectUtil.isNull(session)) {
             return null;
         }

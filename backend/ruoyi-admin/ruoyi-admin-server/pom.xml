@@ -69,10 +69,10 @@
             <artifactId>ruoyi-common-mcp</artifactId>
         </dependency>
 
-        <!-- api模块 -->
+        <!-- Admin 契约模块 -->
         <dependency>
             <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-api</artifactId>
+            <artifactId>ruoyi-admin-api</artifactId>
         </dependency>
 
         <!-- 系统模块 -->

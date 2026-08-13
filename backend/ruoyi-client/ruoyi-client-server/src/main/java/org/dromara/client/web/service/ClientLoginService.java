@@ -6,6 +6,7 @@ import cn.hutool.core.util.ObjectUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dromara.client.api.model.ClientLoginUser;
 import org.dromara.client.domain.vo.ClientUserVo;
 import org.dromara.client.service.IClientUserService;
 import org.dromara.common.core.constant.CacheNames;
@@ -17,12 +18,10 @@ import org.dromara.common.core.utils.ServletUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.redis.utils.RedisUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
-import org.dromara.system.api.model.LoginUser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.util.Collections;
 import java.util.function.Supplier;
 
 /**
@@ -49,14 +48,12 @@ public class ClientLoginService {
      * @param user 产品用户
      * @return 登录上下文
      */
-    public LoginUser buildLoginUser(ClientUserVo user) {
-        LoginUser loginUser = new LoginUser();
+    public ClientLoginUser buildLoginUser(ClientUserVo user) {
+        ClientLoginUser loginUser = new ClientLoginUser();
         loginUser.setUserId(user.getUserId());
         loginUser.setUsername(user.getUserName());
         loginUser.setNickname(user.getNickName());
         loginUser.setUserType(user.getUserType());
-        loginUser.setMenuPermission(Collections.emptySet());
-        loginUser.setRolePermission(Collections.emptySet());
         return loginUser;
     }
 
@@ -127,7 +124,7 @@ public class ClientLoginService {
      */
     public void logout() {
         try {
-            LoginUser loginUser = LoginHelper.getLoginUser();
+            ClientLoginUser loginUser = LoginHelper.getLoginUser();
             if (ObjectUtil.isNotNull(loginUser)) {
                 recordLoginInfo(loginUser.getUsername(), Constants.LOGOUT,
                     MessageUtils.message("user.logout.success"));

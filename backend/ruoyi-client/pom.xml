@@ -18,6 +18,7 @@
     <description>Client 客户端后台总工程</description>
 
     <modules>
+        <module>ruoyi-client-api</module>
         <module>ruoyi-client-server</module>
         <module>../ruoyi-modules/ruoyi-client-system</module>
     </modules>

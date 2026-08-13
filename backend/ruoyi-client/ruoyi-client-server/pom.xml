@@ -29,10 +29,10 @@
             <artifactId>ruoyi-client-system</artifactId>
         </dependency>
 
-        <!-- 登录用户上下文 -->
+        <!-- Client 接口契约 -->
         <dependency>
             <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-api</artifactId>
+            <artifactId>ruoyi-client-api</artifactId>
         </dependency>
 
         <!-- 统一安全配置 -->

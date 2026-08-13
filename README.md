@@ -7,12 +7,13 @@ ai-product-factory/
 ├── backend/
 │   ├── pom.xml               # 后端根总工程
 │   ├── ruoyi-admin/          # Admin 总工程
+│   │   ├── ruoyi-admin-api/     # Admin Java 契约
 │   │   └── ruoyi-admin-server/  # Admin 启动模块，8080
 │   ├── ruoyi-client/         # Client 总工程
+│   │   ├── ruoyi-client-api/    # Client Java 契约
 │   │   └── ruoyi-client-server/ # Client 启动模块，8082
-│   ├── ruoyi-common/         # Common 通用技术总工程
+│   ├── ruoyi-common/         # Common 通用技术总工程（无业务 API 工程）
 │   ├── ruoyi-modules/        # 既有模块物理目录，归属由 Admin/Client 总工程声明
-│   ├── ruoyi-api/            # 根工程暂管的历史契约桥接模块
 │   ├── ruoyi-extend/         # 根工程直接管理的独立扩展服务
 │   └── script/sql/           # MySQL/Oracle/PostgreSQL/SQL Server 初始化脚本
 ├── web/
@@ -32,6 +33,7 @@ ai-product-factory/
 - Client 是客户端后台，承载 H5、App、微信小程序与 HarmonyOS 的认证和业务接口。
 - 后台管理员使用 `sys_*` 身份表；应用用户当前使用 `client_*` 身份表。
 - Admin 运营 Client 的业务数据。两侧工程分别维护自己的 Controller、身份与权限语义。
+- Admin 与 Client 分别维护 `ruoyi-admin-api`、`ruoyi-client-api`；Common 不承载业务 API。
 - 五个前端分别安装依赖、构建、部署，不建立共享前端包。
 
 ## 本地基础设施

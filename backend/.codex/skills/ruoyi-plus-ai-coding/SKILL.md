@@ -96,6 +96,14 @@ Vue 3、React、TypeScript API 文件、生成式列表页、表单状态、字�
 
 ## 目录映射规则
 
+后端契约归属固定如下：
+
+- `ruoyi-admin/ruoyi-admin-api` 只放 Admin 的 System、Workflow、管理身份等真实跨模块 Java 契约。
+- `ruoyi-client/ruoyi-client-api` 只放 Client 自己的真实跨模块 Java 契约。
+- `ruoyi-common` 不创建 `common-api`；两侧确实共用的最小技术模型或 SPI 放入对应的既有 Common 模块，例如 `ruoyi-common-core`。
+- 仅被一个启动服务 Controller 使用的请求/响应 VO 留在该 Server；没有跨模块消费者时，不为“看起来完整”预建 API 接口或 DTO。
+- Admin、Client 的登录用户和认证请求模型不得互相复用；字段暂时相同不等于契约归属相同。
+
 标准后端模块通常按下面结构组织：
 
 - `src/main/java/.../domain/Entity.java`

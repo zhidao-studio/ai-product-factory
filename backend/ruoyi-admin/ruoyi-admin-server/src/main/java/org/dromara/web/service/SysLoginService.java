@@ -23,7 +23,7 @@ import org.dromara.common.redis.utils.RedisUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.system.api.domain.PostDTO;
 import org.dromara.system.api.domain.RoleDTO;
-import org.dromara.system.api.model.LoginUser;
+import org.dromara.system.api.model.AdminLoginUser;
 import org.dromara.system.domain.SysUser;
 import org.dromara.system.domain.bo.SysSocialBo;
 import org.dromara.system.domain.vo.*;
@@ -111,7 +111,7 @@ public class SysLoginService {
      */
     public void logout() {
         try {
-            LoginUser loginUser = LoginHelper.getLoginUser();
+            AdminLoginUser loginUser = LoginHelper.getLoginUser();
             if (ObjectUtil.isNull(loginUser)) {
                 return;
             }
@@ -152,8 +152,8 @@ public class SysLoginService {
      * @param user 用户基础信息
      * @return 包含部门、角色、岗位与权限数据的登录用户
      */
-    public LoginUser buildLoginUser(SysUserVo user) {
-        LoginUser loginUser = new LoginUser();
+    public AdminLoginUser buildLoginUser(SysUserVo user) {
+        AdminLoginUser loginUser = new AdminLoginUser();
         Long userId = user.getUserId();
         loginUser.setUserId(userId);
         loginUser.setDeptId(user.getDeptId());

@@ -17,8 +17,8 @@ import org.dromara.common.core.utils.ValidatorUtils;
 import org.dromara.common.json.utils.JsonUtils;
 import org.dromara.common.redis.utils.RedisUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
-import org.dromara.system.api.model.EmailLoginBody;
-import org.dromara.system.api.model.LoginUser;
+import org.dromara.system.api.model.AdminEmailLoginBody;
+import org.dromara.system.api.model.AdminLoginUser;
 import org.dromara.system.domain.SysUser;
 import org.dromara.system.domain.vo.SysClientVo;
 import org.dromara.system.domain.vo.SysUserVo;
@@ -50,14 +50,14 @@ public class EmailAuthStrategy implements IAuthStrategy {
      */
     @Override
     public LoginVo login(String body, SysClientVo client) {
-        EmailLoginBody loginBody = JsonUtils.parseObject(body, EmailLoginBody.class);
+        AdminEmailLoginBody loginBody = JsonUtils.parseObject(body, AdminEmailLoginBody.class);
         ValidatorUtils.validate(loginBody);
         String email = loginBody.getEmail();
         String emailCode = loginBody.getEmailCode();
         SysUserVo user = loadUserByEmail(email);
         loginService.checkLogin(LoginType.EMAIL, user.getUserName(), () -> !validateEmailCode(email, emailCode));
         // 此处可根据登录用户的数据不同 自行创建 loginUser 属性不够用继承扩展就行了
-        LoginUser loginUser = loginService.buildLoginUser(user);
+        AdminLoginUser loginUser = loginService.buildLoginUser(user);
         loginUser.setClientKey(client.getClientKey());
         loginUser.setDeviceType(client.getDeviceType());
         SaLoginParameter model = IAuthStrategy.buildLoginParameter(client);

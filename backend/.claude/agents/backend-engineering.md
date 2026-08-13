@@ -25,6 +25,8 @@ description: 后端工程总入口。用于在当前 RuoYi-Vue-Plus 项目中识
 通用要求：
 
 - 先读同模块最近似实现，再动代码。
+- Admin Java 契约归 `ruoyi-admin-api`，Client Java 契约归 `ruoyi-client-api`；Common 不设业务 API 工程，只在既有 Common 模块中放真正中立的技术模型或 SPI。
+- Admin 与 Client 不共享登录用户、认证请求或业务 DTO；仅 Server 使用的 HTTP VO 不移入 API 模块。
 - 发生冲突时优先相信当前模块真实代码，其次是公共基础设施，再其次才是 generator 模板。
 - 默认直接产出可落地代码，而不是只给抽象建议。
 - 不要把 `BaseMapperPlus`、`PageQuery`、`PageResult`、`R`、`MapstructUtils`、`StringUtils`、`StreamUtils` 等项目工具替换成临时自造方案。

@@ -17,8 +17,8 @@ import org.dromara.common.core.utils.ValidatorUtils;
 import org.dromara.common.json.utils.JsonUtils;
 import org.dromara.common.redis.utils.RedisUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
-import org.dromara.system.api.model.LoginUser;
-import org.dromara.system.api.model.SmsLoginBody;
+import org.dromara.system.api.model.AdminLoginUser;
+import org.dromara.system.api.model.AdminSmsLoginBody;
 import org.dromara.system.domain.SysUser;
 import org.dromara.system.domain.vo.SysClientVo;
 import org.dromara.system.domain.vo.SysUserVo;
@@ -50,14 +50,14 @@ public class SmsAuthStrategy implements IAuthStrategy {
      */
     @Override
     public LoginVo login(String body, SysClientVo client) {
-        SmsLoginBody loginBody = JsonUtils.parseObject(body, SmsLoginBody.class);
+        AdminSmsLoginBody loginBody = JsonUtils.parseObject(body, AdminSmsLoginBody.class);
         ValidatorUtils.validate(loginBody);
         String phoneNumber = loginBody.getPhoneNumber();
         String smsCode = loginBody.getSmsCode();
         SysUserVo user = loadUserByPhoneNumber(phoneNumber);
         loginService.checkLogin(LoginType.SMS, user.getUserName(), () -> !validateSmsCode(phoneNumber, smsCode));
         // 此处可根据登录用户的数据不同 自行创建 loginUser 属性不够用继承扩展就行了
-        LoginUser loginUser = loginService.buildLoginUser(user);
+        AdminLoginUser loginUser = loginService.buildLoginUser(user);
         loginUser.setClientKey(client.getClientKey());
         loginUser.setDeviceType(client.getDeviceType());
         SaLoginParameter model = IAuthStrategy.buildLoginParameter(client);

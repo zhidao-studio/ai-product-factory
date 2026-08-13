@@ -48,14 +48,15 @@ Admin 管理员 Token 不能访问 Client 用户接口，Client Token 也不能�
 
 ### 2.2 目标边界与当前阶段
 
-- 根总工程主要负责版本、依赖与插件治理；当前还暂管历史 `ruoyi-api` 桥接模块和既有独立扩展服务。Admin、Client、Common 分别由自己的聚合 POM 管理。
+- 根总工程主要负责版本、依赖与插件治理，并继续聚合既有独立扩展服务。Admin、Client、Common 分别由自己的聚合 POM 管理。
 - 目标边界：Admin 与 Client 是两套工程，分别拥有身份、接口、业务模块和运行配置，不共享 Entity、Service、LoginUser 或安全会话模型。
-- 目标边界：Common 只放与业务和身份无关的技术能力，不得新增对 Admin 或 Client 业务实现的依赖。
+- `ruoyi-admin-api` 只承载 Admin 的 System、Workflow 与管理身份 Java 契约；`ruoyi-client-api` 只承载 Client 自己的会话和认证请求契约。
+- Common 不设 `common-api`：跨两侧复用的最小会话和数据权限技术接口属于既有 `ruoyi-common-core`，Common 不得定义 Admin/Client 业务契约，也不得依赖任一侧 API。
 - Admin 管理 Client 时，复杂业务操作调用 Client 管理接口；确需直接访问数据时，通过 Admin 专属适配层访问 Client 所拥有的表。
 - Client 模块由 Client 总工程聚合；Admin 模块由 Admin 总工程聚合。物理上继续使用 `backend/ruoyi-modules/` 存放既有模块，不再使用混合的 `ruoyi-modules` 聚合 POM。
 - 不创建没有真实代码的 API、UM、微服务或分层空壳工程。
 
-当前阶段只完成 Maven 所有权划分，仍有两项历史耦合：Admin Server 直接依赖 `ruoyi-client-system`；Client 与部分 Common 模块仍依赖根工程暂管的 `ruoyi-api` 和其中的 System 登录模型。它们是后续解耦对象，不是新代码可以继续复制的范例，也不得通过修改文档宣称已经完成隔离。
+当前已完成 Maven 所有权与 Java API 拆分：旧 `ruoyi-api` 已删除，Admin/Client 使用各自登录上下文，Common 不再依赖 System API。仍有一项历史耦合：Admin Server 为现有运营页面直接依赖 `ruoyi-client-system`。它应在后续改为 Client 管理接口或 Admin 专属数据适配层，不是新代码可以继续复制的范例。
 
 当前受支持的完整构建入口是 `backend/pom.xml`。Admin、Client、Common 的 POM 首先表达模块所有权；在上述历史桥接依赖解除前，不把三个子总工程宣称为可在全新 Maven 仓库中完全独立发布的发行单元。
 
@@ -77,12 +78,13 @@ backend/
 ├── pom.xml                         # 后端根总工程
 ├── ruoyi-admin/                    # Admin 总工程
 │   ├── pom.xml                     # 聚合 Admin 所有模块
+│   ├── ruoyi-admin-api/            # Admin System、Workflow 与管理身份契约
 │   └── ruoyi-admin-server/         # Admin Boot 与专属 Controller
 ├── ruoyi-client/                   # Client 总工程
 │   ├── pom.xml                     # 聚合 Client 所有模块
+│   ├── ruoyi-client-api/           # Client 会话与认证请求契约
 │   └── ruoyi-client-server/        # Client Boot、认证与专属 Controller
-├── ruoyi-common/                   # Common 总工程
-├── ruoyi-api/                      # 根工程暂管的历史契约桥接模块
+├── ruoyi-common/                   # Common 总工程，无业务 API 子工程
 ├── ruoyi-modules/
 │   ├── ruoyi-system/               # 归 Admin 总工程
 │   ├── ruoyi-client-system/        # 归 Client 总工程，名称待 UM 阶段收口
@@ -99,6 +101,8 @@ web/
 ```
 
 不要批量改名 `ruoyi-modules` 物理目录；代码生成器和仓库 Skill 仍以该目录为模板入口。模块的 Maven 所有权以 Admin/Client 总工程的 `<modules>` 为准。
+
+API 模块只放存在真实跨模块消费者的 Java 契约。HTTP Controller、仅启动服务使用的响应 VO 和业务实现不因名称中含“接口”就进入 API 模块；没有消费者时禁止预建空 Service、DTO 或微服务契约。
 
 ## 4. 后端接口契约
 
@@ -311,6 +315,7 @@ cd web/harmony && pnpm install && pnpm dev:harmony
 - **401 clientid 不匹配**：检查请求头、Token 中 clientid 和当前应用种子是否一致。
 - **登录后无法退出**：Client 应用允许路径必须包含 `/client/**,/auth/logout`。
 - **数据库已有旧结构**：Docker init 只在空数据卷首次运行；开发环境需要重建数据卷或手工迁移。
+- **API 拆分后旧 Token 反序列化失败**：Admin/Client 登录上下文类已独立命名；从旧版本升级时清理两侧各自的 Sa-Token 会话键并重新登录，不迁移旧会话对象。
 - **登录脚本 NPE**：登录请求必须带有效 `User-Agent`。
 - **RSA 解密失败**：前端公私钥和后端 `application.yml` 必须成对一致。
 - **HarmonyOS 加密失败**：运行时必须提供安全随机能力；禁止降级到 `Math.random()`，需在 DevEco 真机/模拟器验证。

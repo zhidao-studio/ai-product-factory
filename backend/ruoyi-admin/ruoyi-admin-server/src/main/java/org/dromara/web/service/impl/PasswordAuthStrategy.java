@@ -20,8 +20,8 @@ import org.dromara.common.json.utils.JsonUtils;
 import org.dromara.common.redis.utils.RedisUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.common.web.config.properties.CaptchaProperties;
-import org.dromara.system.api.model.LoginUser;
-import org.dromara.system.api.model.PasswordLoginBody;
+import org.dromara.system.api.model.AdminLoginUser;
+import org.dromara.system.api.model.AdminPasswordLoginBody;
 import org.dromara.system.domain.SysUser;
 import org.dromara.system.domain.vo.SysClientVo;
 import org.dromara.system.domain.vo.SysUserVo;
@@ -54,7 +54,7 @@ public class PasswordAuthStrategy implements IAuthStrategy {
      */
     @Override
     public LoginVo login(String body, SysClientVo client) {
-        PasswordLoginBody loginBody = JsonUtils.parseObject(body, PasswordLoginBody.class);
+        AdminPasswordLoginBody loginBody = JsonUtils.parseObject(body, AdminPasswordLoginBody.class);
         ValidatorUtils.validate(loginBody);
         String username = loginBody.getUsername();
         String password = loginBody.getPassword();
@@ -69,7 +69,7 @@ public class PasswordAuthStrategy implements IAuthStrategy {
         SysUserVo user = loadUserByUsername(username);
         loginService.checkLogin(LoginType.PASSWORD, username, () -> !BCrypt.checkpw(password, user.getPassword()));
         // 此处可根据登录用户的数据不同 自行创建 loginUser
-        LoginUser loginUser = loginService.buildLoginUser(user);
+        AdminLoginUser loginUser = loginService.buildLoginUser(user);
         loginUser.setClientKey(client.getClientKey());
         loginUser.setDeviceType(client.getDeviceType());
         SaLoginParameter model = IAuthStrategy.buildLoginParameter(client);

@@ -457,10 +457,17 @@
                 <version>${revision}</version>
             </dependency>
 
-            <!--  api模块  -->
+            <!-- Admin 契约模块 -->
             <dependency>
                 <groupId>org.dromara</groupId>
-                <artifactId>ruoyi-api</artifactId>
+                <artifactId>ruoyi-admin-api</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- Client 契约模块 -->
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-client-api</artifactId>
                 <version>${revision}</version>
             </dependency>
 
@@ -474,8 +481,6 @@
         <module>ruoyi-client</module>
         <!-- Common 通用技术总工程 -->
         <module>ruoyi-common</module>
-        <!-- 历史跨模块契约桥接，待 Admin/Client 契约真正拆分后移除 -->
-        <module>ruoyi-api</module>
         <!-- 既有独立扩展服务聚合器，暂不参与 Admin/Client 业务划分 -->
         <module>ruoyi-extend</module>
     </modules>

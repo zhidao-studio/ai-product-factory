@@ -2,12 +2,12 @@ package org.dromara.client.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
 import lombok.RequiredArgsConstructor;
-import org.dromara.client.domain.vo.ClientSessionVo;
+import org.dromara.client.api.model.ClientLoginUser;
 import org.dromara.client.domain.vo.ClientUserVo;
 import org.dromara.client.service.IClientUserService;
+import org.dromara.client.web.domain.vo.ClientSessionVo;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.satoken.utils.LoginHelper;
-import org.dromara.system.api.model.LoginUser;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,7 +33,7 @@ public class ClientUserController {
      */
     @GetMapping("/info")
     public R<ClientSessionVo> getInfo() {
-        LoginUser loginUser = LoginHelper.getLoginUser();
+        ClientLoginUser loginUser = LoginHelper.getLoginUser();
         ClientUserVo user = userService.queryById(loginUser.getUserId());
         if (user == null) {
             return R.fail("没有权限访问用户数据!");

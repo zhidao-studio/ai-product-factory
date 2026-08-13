@@ -17,7 +17,7 @@ import org.dromara.common.log.event.LoginInfoEvent;
 import org.dromara.common.redis.utils.RedisUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.common.web.config.properties.CaptchaProperties;
-import org.dromara.system.api.model.RegisterBody;
+import org.dromara.system.api.model.AdminRegisterBody;
 import org.dromara.system.domain.SysUser;
 import org.dromara.system.domain.bo.SysUserBo;
 import org.dromara.system.mapper.SysUserMapper;
@@ -42,7 +42,7 @@ public class SysRegisterService {
      *
      * @param registerBody 注册请求参数
      */
-    public void register(RegisterBody registerBody) {
+    public void register(AdminRegisterBody registerBody) {
         String username = registerBody.getUsername();
         String password = registerBody.getPassword();
         // 校验用户类型是否存在

@@ -1,9 +1,9 @@
 package org.dromara.common.push.interceptor;
 
 import cn.dev33.satoken.stp.StpUtil;
+import org.dromara.common.core.domain.model.LoginUserContext;
 import org.dromara.common.push.constant.MessageConstants;
 import org.dromara.common.satoken.utils.LoginHelper;
-import org.dromara.system.api.model.LoginUser;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.socket.WebSocketHandler;
@@ -27,7 +27,7 @@ public class PlusWebSocketInterceptor implements HandshakeInterceptor {
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
                                    Map<String, Object> attributes) {
-        LoginUser loginUser = LoginHelper.getLoginUser();
+        LoginUserContext loginUser = LoginHelper.getLoginUser();
         String tokenValue = StpUtil.getTokenValue();
         attributes.put(MessageConstants.LOGIN_USER_KEY, loginUser);
         attributes.put(MessageConstants.LOGIN_TOKEN_KEY, tokenValue);

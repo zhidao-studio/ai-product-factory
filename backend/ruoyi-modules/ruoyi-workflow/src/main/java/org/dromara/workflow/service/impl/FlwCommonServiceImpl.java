@@ -14,7 +14,7 @@ import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.core.utils.ThreadUtils;
 import org.dromara.common.mail.core.MailBuilder;
 import org.dromara.system.api.MessageService;
-import org.dromara.system.api.domain.PushPayloadDTO;
+import org.dromara.common.core.domain.dto.PushPayloadDTO;
 import org.dromara.system.api.domain.UserDTO;
 import org.dromara.warm.flow.core.FlowEngine;
 import org.dromara.warm.flow.core.entity.Node;

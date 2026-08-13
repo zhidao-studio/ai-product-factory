@@ -8,7 +8,7 @@
 
 - `ruoyi-admin`：Admin 总工程，只服务 PC 管理端；启动模块端口 `8080`。
 - `ruoyi-client`：Client 总工程，服务 H5、App、微信小程序和 HarmonyOS；启动模块端口 `8082`。
-- `ruoyi-common`：Common 总工程，目标职责是只承载两侧可复用的中立技术能力；现有对 `ruoyi-api` 的依赖属于待治理历史耦合。
+- `ruoyi-common`：Common 总工程，只承载两侧可复用的中立技术能力；Common 不设业务 API 工程。
 - Admin 身份使用 `sys_*`；Client 当前身份表为 `client_*`，两套身份数据隔离。
 - Admin 是 Client 的运营管理后台，可通过 Client 管理接口或独立的数据访问适配层管理 Client 数据；Client 不反向依赖 Admin。
 - 五个前端都是独立工程，禁止运行时源码共享、公共包共享或跨工程引用。
@@ -18,14 +18,14 @@
 1. 生成或修改 UI 前，完整读取 `docs/AI-设计系统上下文.md` 和对应的 `docs/平台适配/<端>.md`；Token 是唯一样式来源。
 2. 前端契约必须以后端真实 Controller 与 VO 为准，禁止发明接口路径或返回字段。
 3. 后端沿用 RuoYi 的 `controller / service / mapper / domain.bo / domain.vo`、MyBatis-Plus、`R<T>` 与现有认证策略写法，禁止另造 DDD/Port/JdbcTemplate 体系。
-4. Admin 与 Client 的业务模块分别由各自总工程拥有；Common 不得依赖任何一侧的业务实现。当前历史依赖不等于允许新增同类耦合。
+4. Admin 与 Client 的业务模块和 API 契约分别由各自总工程拥有；Common 不得定义业务 API，也不得依赖任何一侧的业务实现。
 5. 新增模块必须加入其所属总工程的 `pom.xml`；不要提前创建无实现的 API、UM 或微服务空壳。
 
 ## 关键目录
 
 - 后端根总工程：`backend/pom.xml`
-- Admin 总工程：`backend/ruoyi-admin/pom.xml`；启动模块：`backend/ruoyi-admin/ruoyi-admin-server/`
-- Client 总工程：`backend/ruoyi-client/pom.xml`；启动模块：`backend/ruoyi-client/ruoyi-client-server/`
+- Admin 总工程：`backend/ruoyi-admin/pom.xml`；契约模块：`backend/ruoyi-admin/ruoyi-admin-api/`；启动模块：`backend/ruoyi-admin/ruoyi-admin-server/`
+- Client 总工程：`backend/ruoyi-client/pom.xml`；契约模块：`backend/ruoyi-client/ruoyi-client-api/`；启动模块：`backend/ruoyi-client/ruoyi-client-server/`
 - Common 总工程：`backend/ruoyi-common/pom.xml`
 - 既有模块物理目录：`backend/ruoyi-modules/`；模块归属以 Admin/Client 总工程的聚合声明为准
 - 五个独立前端：`web/admin`、`web/h5`、`web/app`、`web/miniapp`、`web/harmony`

@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.common.web.core.BaseController;
-import org.dromara.system.api.model.LoginUser;
+import org.dromara.system.api.model.AdminLoginUser;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,7 +50,7 @@ public class SnailAiController extends BaseController {
      */
     private OpenApiUserVO ensureOpenApiUser() {
         Long userId = LoginHelper.getUserId();
-        LoginUser loginUser = LoginHelper.getLoginUser();
+        AdminLoginUser loginUser = LoginHelper.getLoginUser();
         if (loginUser == null || userId == null) {
             throw new SnailAiException("当前登录用户为空");
         }

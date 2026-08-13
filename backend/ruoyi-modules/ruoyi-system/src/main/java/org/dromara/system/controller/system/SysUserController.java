@@ -25,7 +25,7 @@ import org.dromara.common.redis.annotation.RepeatSubmit;
 import org.dromara.common.redis.utils.RedisUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.common.web.core.BaseController;
-import org.dromara.system.api.model.LoginUser;
+import org.dromara.system.api.model.AdminLoginUser;
 import org.dromara.system.domain.bo.SysDeptBo;
 import org.dromara.system.domain.bo.SysPostBo;
 import org.dromara.system.domain.bo.SysRoleBo;
@@ -121,7 +121,7 @@ public class SysUserController extends BaseController {
     @GetMapping("/getInfo")
     public R<UserInfoVo> getInfo() {
         UserInfoVo userInfoVo = new UserInfoVo();
-        LoginUser loginUser = LoginHelper.getLoginUser();
+        AdminLoginUser loginUser = LoginHelper.getLoginUser();
 
         SysUserVo user = DataPermissionHelper.ignore(() -> userService.selectUserById(loginUser.getUserId()));
         if (ObjectUtil.isNull(user)) {

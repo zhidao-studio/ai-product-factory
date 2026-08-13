@@ -12,7 +12,7 @@ import org.dromara.common.json.utils.JsonUtils;
 import org.dromara.common.mybatis.utils.IdGeneratorUtil;
 import org.dromara.common.push.helper.PushHelper;
 import org.dromara.system.api.MessageService;
-import org.dromara.system.api.domain.PushPayloadDTO;
+import org.dromara.common.core.domain.dto.PushPayloadDTO;
 import org.dromara.system.domain.SysMessage;
 import org.dromara.system.domain.vo.SysMessageBoxVo;
 import org.dromara.system.domain.vo.SysMessageVo;

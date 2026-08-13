@@ -58,9 +58,9 @@ Admin 开发账号：`admin / admin123`；Client 开发账号：`client / admin1
 ai-product-factory/
 ├── backend/          # RuoYi-Vue-Plus Boot 6.x（Admin/Client 双入口）
 │   ├── pom.xml       # 后端根总工程
-│   ├── ruoyi-admin/  # Admin 总工程，含 ruoyi-admin-server
-│   ├── ruoyi-client/ # Client 总工程，含 ruoyi-client-server
-│   ├── ruoyi-common/ # Common 技术总工程
+│   ├── ruoyi-admin/  # Admin 总工程，含 admin-api / admin-server
+│   ├── ruoyi-client/ # Client 总工程，含 client-api / client-server
+│   ├── ruoyi-common/ # Common 技术总工程，不定义业务 API
 │   └── ruoyi-modules/# 既有模块物理目录，所有权由 Admin/Client POM 声明
 ├── web/
 │   ├── admin/        # PC 后台 (React + antd, Umi)

@@ -16,8 +16,8 @@ import org.dromara.common.json.utils.JsonUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.common.social.config.properties.SocialProperties;
 import org.dromara.common.social.utils.SocialUtils;
-import org.dromara.system.api.model.LoginUser;
-import org.dromara.system.api.model.SocialLoginBody;
+import org.dromara.system.api.model.AdminLoginUser;
+import org.dromara.system.api.model.AdminSocialLoginBody;
 import org.dromara.system.domain.vo.SysClientVo;
 import org.dromara.system.domain.vo.SysSocialVo;
 import org.dromara.system.domain.vo.SysUserVo;
@@ -54,7 +54,7 @@ public class SocialAuthStrategy implements IAuthStrategy {
      */
     @Override
     public LoginVo login(String body, SysClientVo client) {
-        SocialLoginBody loginBody = JsonUtils.parseObject(body, SocialLoginBody.class);
+        AdminSocialLoginBody loginBody = JsonUtils.parseObject(body, AdminSocialLoginBody.class);
         ValidatorUtils.validate(loginBody);
         AuthResponse<AuthUser> response = SocialUtils.loginAuth(
             loginBody.getSource(), loginBody.getSocialCode(),
@@ -70,7 +70,7 @@ public class SocialAuthStrategy implements IAuthStrategy {
         }
         SysUserVo user = loadUser(list.getFirst().getUserId());
         // 此处可根据登录用户的数据不同 自行创建 loginUser 属性不够用继承扩展就行了
-        LoginUser loginUser = loginService.buildLoginUser(user);
+        AdminLoginUser loginUser = loginService.buildLoginUser(user);
         loginUser.setClientKey(client.getClientKey());
         loginUser.setDeviceType(client.getDeviceType());
         SaLoginParameter model = IAuthStrategy.buildLoginParameter(client);

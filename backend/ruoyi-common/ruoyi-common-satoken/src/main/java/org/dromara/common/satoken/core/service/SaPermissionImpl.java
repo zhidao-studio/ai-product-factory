@@ -3,11 +3,13 @@ package org.dromara.common.satoken.core.service;
 import cn.dev33.satoken.stp.StpInterface;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import org.dromara.common.core.domain.model.DataPermissionUser;
+import org.dromara.common.core.domain.model.LoginUserContext;
+import org.dromara.common.core.enums.UserType;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.service.PermissionService;
 import org.dromara.common.core.utils.SpringUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
-import org.dromara.system.api.model.LoginUser;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,7 +32,8 @@ public class SaPermissionImpl implements StpInterface {
      */
     @Override
     public List<String> getPermissionList(Object loginId, String loginType) {
-        return resolvePermissionList(loginId, LoginUser::getMenuPermission, PermissionService::getMenuPermission);
+        return resolvePermissionList(
+            loginId, loginType, DataPermissionUser::getMenuPermission, PermissionService::getMenuPermission);
     }
 
     /**
@@ -42,7 +45,8 @@ public class SaPermissionImpl implements StpInterface {
      */
     @Override
     public List<String> getRoleList(Object loginId, String loginType) {
-        return resolvePermissionList(loginId, LoginUser::getRolePermission, PermissionService::getRolePermission);
+        return resolvePermissionList(
+            loginId, loginType, DataPermissionUser::getRolePermission, PermissionService::getRolePermission);
     }
 
     /**
@@ -54,21 +58,41 @@ public class SaPermissionImpl implements StpInterface {
      * @return 权限列表
      */
     private List<String> resolvePermissionList(Object loginId,
-                                               java.util.function.Function<LoginUser, Collection<String>> localPermissionExtractor,
+                                               String loginType,
+                                               java.util.function.Function<DataPermissionUser, Collection<String>> localPermissionExtractor,
                                                BiFunction<PermissionService, Long, Collection<String>> remotePermissionExtractor) {
-        LoginUser loginUser = LoginHelper.getLoginUser();
-        if (ObjectUtil.isNull(loginUser) || !loginUser.getLoginId().equals(loginId)) {
-            PermissionService permissionService = getPermissionService();
-            if (ObjectUtil.isNotNull(permissionService)) {
-                return new ArrayList<>(remotePermissionExtractor.apply(permissionService, resolveUserId(loginId)));
+        LoginUserContext loginUser = LoginHelper.getLoginUser();
+        if (ObjectUtil.isNotNull(loginUser) && loginUser.getLoginId().equals(loginId)) {
+            if (!(loginUser instanceof DataPermissionUser permissionUser)) {
+                return new ArrayList<>();
             }
-            throw new ServiceException("PermissionService 实现类不存在");
+            Collection<String> permissionList = localPermissionExtractor.apply(permissionUser);
+            if (CollUtil.isNotEmpty(permissionList)) {
+                return new ArrayList<>(permissionList);
+            }
+            return new ArrayList<>();
         }
-        Collection<String> permissionList = localPermissionExtractor.apply(loginUser);
-        if (CollUtil.isNotEmpty(permissionList)) {
-            return new ArrayList<>(permissionList);
+        PermissionService permissionService = getPermissionService();
+        if (ObjectUtil.isNotNull(permissionService) && isAdminLoginId(loginId, loginType)) {
+            return new ArrayList<>(remotePermissionExtractor.apply(permissionService, resolveUserId(loginId)));
         }
         return new ArrayList<>();
+    }
+
+    /**
+     * 判断指定登录标识是否属于 Admin 管理身份。
+     *
+     * @param loginId   登录标识
+     * @param loginType Sa-Token 登录类型
+     * @return 是否属于 Admin 管理身份
+     */
+    private boolean isAdminLoginId(Object loginId, String loginType) {
+        if (loginId == null) {
+            return false;
+        }
+        String loginIdStr = loginId.toString();
+        String appUserType = UserType.APP_USER.getUserType();
+        return !loginIdStr.startsWith(appUserType + ":") && !appUserType.equals(loginType);
     }
 
     /**

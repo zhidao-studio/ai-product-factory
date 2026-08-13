@@ -78,10 +78,10 @@
             <artifactId>ruoyi-common-security</artifactId>
         </dependency>
 
-        <!-- api模块 -->
+        <!-- Admin 契约模块 -->
         <dependency>
             <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-api</artifactId>
+            <artifactId>ruoyi-admin-api</artifactId>
         </dependency>
 
         <!-- Warm-Flow 工作流引擎 -->

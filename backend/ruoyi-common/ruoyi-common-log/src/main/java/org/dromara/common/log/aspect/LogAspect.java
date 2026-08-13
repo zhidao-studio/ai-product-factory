@@ -12,6 +12,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.dromara.common.core.constant.SystemConstants;
+import org.dromara.common.core.domain.model.DataPermissionUser;
+import org.dromara.common.core.domain.model.LoginUserContext;
 import org.dromara.common.core.utils.ServletUtils;
 import org.dromara.common.core.utils.SpringUtils;
 import org.dromara.common.core.utils.StringUtils;
@@ -20,7 +22,6 @@ import org.dromara.common.log.annotation.Log;
 import org.dromara.common.log.enums.BusinessStatus;
 import org.dromara.common.log.event.OperLogEvent;
 import org.dromara.common.satoken.utils.LoginHelper;
-import org.dromara.system.api.model.LoginUser;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.http.HttpMethod;
 import org.springframework.validation.BindingResult;
@@ -97,12 +98,14 @@ public class LogAspect {
             operLog.setOperIp(ip);
             operLog.setOperUrl(limit(request.getRequestURI(), MAX_URL_LENGTH));
             operLog.setClientKey(limit(request.getHeader(LoginHelper.CLIENT_KEY), MAX_CLIENT_KEY_LENGTH));
-            LoginUser loginUser = LoginHelper.getLoginUser();
+            LoginUserContext loginUser = LoginHelper.getLoginUser();
             if (ObjectUtil.isNotNull(loginUser)) {
                 operLog.setOperName(loginUser.getUsername());
                 operLog.setUserId(loginUser.getUserId());
-                operLog.setDeptId(loginUser.getDeptId());
-                operLog.setDeptName(loginUser.getDeptName());
+                if (loginUser instanceof DataPermissionUser permissionUser) {
+                    operLog.setDeptId(permissionUser.getDeptId());
+                    operLog.setDeptName(permissionUser.getDeptName());
+                }
                 operLog.setDeviceType(loginUser.getDeviceType());
                 operLog.setBrowser(loginUser.getBrowser());
                 operLog.setOs(loginUser.getOs());

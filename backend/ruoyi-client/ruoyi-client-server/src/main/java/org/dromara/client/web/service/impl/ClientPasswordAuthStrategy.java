@@ -5,10 +5,12 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.crypto.digest.BCrypt;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dromara.client.api.model.ClientLoginUser;
+import org.dromara.client.api.model.ClientPasswordLoginBody;
 import org.dromara.client.domain.vo.ClientApplicationVo;
-import org.dromara.client.domain.vo.ClientLoginVo;
 import org.dromara.client.domain.vo.ClientUserVo;
 import org.dromara.client.service.IClientUserService;
+import org.dromara.client.web.domain.vo.ClientLoginVo;
 import org.dromara.client.web.service.ClientLoginService;
 import org.dromara.client.web.service.IClientAuthStrategy;
 import org.dromara.common.core.constant.SystemConstants;
@@ -25,8 +27,6 @@ import org.dromara.common.json.utils.JsonUtils;
 import org.dromara.common.redis.utils.RedisUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.common.web.config.properties.CaptchaProperties;
-import org.dromara.system.api.model.LoginUser;
-import org.dromara.system.api.model.PasswordLoginBody;
 import org.springframework.stereotype.Service;
 
 /**
@@ -45,7 +45,7 @@ public class ClientPasswordAuthStrategy implements IClientAuthStrategy {
 
     @Override
     public ClientLoginVo login(String body, ClientApplicationVo client) {
-        PasswordLoginBody loginBody = JsonUtils.parseObject(body, PasswordLoginBody.class);
+        ClientPasswordLoginBody loginBody = JsonUtils.parseObject(body, ClientPasswordLoginBody.class);
         ValidatorUtils.validate(loginBody);
         if (captchaProperties.getEnable()) {
             validateCaptcha(loginBody.getUsername(), loginBody.getCode(), loginBody.getUuid());
@@ -90,7 +90,7 @@ public class ClientPasswordAuthStrategy implements IClientAuthStrategy {
     }
 
     private ClientLoginVo login(ClientUserVo user, ClientApplicationVo client) {
-        LoginUser loginUser = loginService.buildLoginUser(user);
+        ClientLoginUser loginUser = loginService.buildLoginUser(user);
         loginUser.setClientKey(client.getClientKey());
         loginUser.setDeviceType(client.getDeviceType());
         LoginHelper.login(loginUser, IClientAuthStrategy.buildLoginParameter(client, user));

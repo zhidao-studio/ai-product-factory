@@ -11,13 +11,15 @@ import me.zhyd.oauth.model.AuthToken;
 import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.request.AuthWechatMiniProgramRequest;
+import org.dromara.client.api.model.ClientLoginUser;
+import org.dromara.client.api.model.ClientXcxLoginBody;
 import org.dromara.client.domain.bo.ClientIdentityBo;
 import org.dromara.client.domain.vo.ClientApplicationVo;
 import org.dromara.client.domain.vo.ClientIdentityVo;
-import org.dromara.client.domain.vo.ClientLoginVo;
 import org.dromara.client.domain.vo.ClientUserVo;
 import org.dromara.client.service.IClientIdentityService;
 import org.dromara.client.service.IClientUserService;
+import org.dromara.client.web.domain.vo.ClientLoginVo;
 import org.dromara.client.web.service.ClientLoginService;
 import org.dromara.client.web.service.ClientRegistrationService;
 import org.dromara.client.web.service.IClientAuthStrategy;
@@ -28,8 +30,6 @@ import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.core.utils.ValidatorUtils;
 import org.dromara.common.json.utils.JsonUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
-import org.dromara.system.api.model.LoginUser;
-import org.dromara.system.api.model.XcxLoginBody;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -63,7 +63,7 @@ public class ClientXcxAuthStrategy implements IClientAuthStrategy {
 
     @Override
     public ClientLoginVo login(String body, ClientApplicationVo client) {
-        XcxLoginBody loginBody = JsonUtils.parseObject(body, XcxLoginBody.class);
+        ClientXcxLoginBody loginBody = JsonUtils.parseObject(body, ClientXcxLoginBody.class);
         ValidatorUtils.validate(loginBody);
         if (StringUtils.isAnyBlank(configuredAppId, appSecret)) {
             throw new ServiceException("微信小程序 app-id 或 app-secret 未配置");
@@ -95,7 +95,7 @@ public class ClientXcxAuthStrategy implements IClientAuthStrategy {
         validateUser(user, token.getOpenId());
         refreshIdentity(identity, authUser, token);
 
-        LoginUser loginUser = loginService.buildLoginUser(user);
+        ClientLoginUser loginUser = loginService.buildLoginUser(user);
         loginUser.setClientKey(client.getClientKey());
         loginUser.setDeviceType(client.getDeviceType());
         LoginHelper.login(loginUser, IClientAuthStrategy.buildLoginParameter(client, user));

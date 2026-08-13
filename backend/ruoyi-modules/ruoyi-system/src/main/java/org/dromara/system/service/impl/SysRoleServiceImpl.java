@@ -20,7 +20,7 @@ import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.query.QueryBuilder;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.system.api.RoleService;
-import org.dromara.system.api.model.LoginUser;
+import org.dromara.system.api.model.AdminLoginUser;
 import org.dromara.system.domain.SysRole;
 import org.dromara.system.domain.SysRoleDept;
 import org.dromara.system.domain.SysRoleMenu;
@@ -550,7 +550,7 @@ public class SysRoleServiceImpl implements ISysRoleService, RoleService {
             if (StpUtil.stpLogic.getTokenActiveTimeoutByToken(token) < -1) {
                 return;
             }
-            LoginUser loginUser = LoginHelper.getLoginUser(token);
+            AdminLoginUser loginUser = LoginHelper.getLoginUser(token);
             if (ObjectUtil.isNull(loginUser) || CollUtil.isEmpty(loginUser.getRoles())) {
                 return;
             }
@@ -586,7 +586,7 @@ public class SysRoleServiceImpl implements ISysRoleService, RoleService {
             if (StpUtil.stpLogic.getTokenActiveTimeoutByToken(token) < -1) {
                 return;
             }
-            LoginUser loginUser = LoginHelper.getLoginUser(token);
+            AdminLoginUser loginUser = LoginHelper.getLoginUser(token);
             if (ObjectUtil.isNull(loginUser)) {
                 return;
             }

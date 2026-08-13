@@ -1,0 +1,5 @@
+org.dromara.system.translation.DeptNameTranslationImpl
+org.dromara.system.translation.DictTypeTranslationImpl
+org.dromara.system.translation.OssUrlTranslationImpl
+org.dromara.system.translation.UserNameTranslationImpl
+org.dromara.system.translation.NicknameTranslationImpl

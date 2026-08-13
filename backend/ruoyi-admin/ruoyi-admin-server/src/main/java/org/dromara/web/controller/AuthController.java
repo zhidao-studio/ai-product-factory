@@ -11,6 +11,7 @@ import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.utils.AuthStateUtils;
 import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.domain.R;
+import org.dromara.common.core.domain.dto.PushPayloadDTO;
 import org.dromara.common.core.domain.model.LoginBody;
 import org.dromara.common.core.enums.PushSourceEnum;
 import org.dromara.common.core.enums.PushTypeEnum;
@@ -25,9 +26,8 @@ import org.dromara.common.social.config.properties.SocialLoginConfigProperties;
 import org.dromara.common.social.config.properties.SocialProperties;
 import org.dromara.common.social.utils.SocialUtils;
 import org.dromara.system.api.MessageService;
-import org.dromara.system.api.domain.PushPayloadDTO;
-import org.dromara.system.api.model.RegisterBody;
-import org.dromara.system.api.model.SocialLoginBody;
+import org.dromara.system.api.model.AdminRegisterBody;
+import org.dromara.system.api.model.AdminSocialLoginBody;
 import org.dromara.system.domain.vo.SysClientVo;
 import org.dromara.system.service.ISysClientService;
 import org.dromara.system.service.ISysConfigService;
@@ -130,7 +130,7 @@ public class AuthController {
      * @return 操作结果
      */
     @PostMapping("/social/callback")
-    public R<Void> socialCallback(@RequestBody SocialLoginBody loginBody) {
+    public R<Void> socialCallback(@RequestBody AdminSocialLoginBody loginBody) {
         // 校验token
         StpUtil.checkLogin();
         // 获取第三方登录信息
@@ -179,7 +179,7 @@ public class AuthController {
      */
     @ApiEncrypt
     @PostMapping("/register")
-    public R<Void> register(@Validated @RequestBody RegisterBody user) {
+    public R<Void> register(@Validated @RequestBody AdminRegisterBody user) {
         if (!configService.selectRegisterEnabled()) {
             return R.fail("当前系统没有开启注册功能！");
         }

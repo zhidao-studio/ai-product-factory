@@ -6,6 +6,7 @@ import cn.hutool.core.util.ObjectUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.dromara.client.api.model.ClientLoginUser;
 import org.dromara.client.domain.vo.ClientApplicationVo;
 import org.dromara.client.domain.vo.ClientUserVo;
 import org.dromara.client.service.IClientApplicationService;
@@ -14,7 +15,6 @@ import org.dromara.client.web.service.IClientAuthStrategy;
 import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
-import org.dromara.system.api.model.LoginUser;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -43,7 +43,7 @@ public class ClientSessionStatusInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         StpUtil.checkLogin();
-        LoginUser loginUser = LoginHelper.getLoginUser();
+        ClientLoginUser loginUser = LoginHelper.getLoginUser();
         if (ObjectUtil.isNull(loginUser)) {
             invalidateSession("产品用户会话不存在");
         }
