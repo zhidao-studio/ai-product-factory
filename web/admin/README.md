@@ -1,80 +1,68 @@
-# RuoYi-React-Plus
+# PC Admin 前端
 
-> **注意：本文件下方保留的是上游前端资料。** 当前 `web/admin` 只对接 Admin Backend `8080`，不直接调用 Client Backend，也不复用 Client 身份。请先阅读根目录 [工程现状](../../docs/工程现状.md) 和 [CLAUDE](../../CLAUDE.md)。
+`web/admin` 是独立的 PC 运营管理工程，只对接 Admin Backend `8080`。它不直接调用 Client Backend，不使用 Client Token，也不与 H5、App、小程序或 HarmonyOS 共享源码包。
 
-## 平台简介
+开始修改前请阅读：
 
-- 本仓库为前端技术栈 [React](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) + [Ant Design](https://ant.design/) + [Umi Max](https://umijs.org/) + [Vite](https://vitejs.dev/)。
-- 官方项目: 基于 Vue + ElementPlus 版本前端项目 [plus-ui](https://gitee.com/JavaLionLi/plus-ui)
-- 成员项目: 基于 vben5(ant-design-vue) 的前端项目 [ruoyi-plus-vben5](https://gitee.com/dapppp/ruoyi-plus-vben5)
-- 成员项目: 基于soybean 的前端项目 [ruoyi-plus-soybean](https://gitee.com/xlsea/ruoyi-plus-soybean)
+- [工程现状](../../docs/工程现状.md)
+- [根工程约束](../../CLAUDE.md)
+- [Web 工程约束](../CLAUDE.md)
+- [AI 设计系统上下文](../../docs/AI-设计系统上下文.md)
+- [PC Web 平台适配](../../docs/平台适配/PC-Web.md)
 
-## 配套后端代码仓库地址
+## 技术栈
 
-| 介绍           | 项目名           | 项目地址                                                                                                                                                              |
-| -------------- | :--------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 分布式集群框架 | RuoYi-Vue-Plus   | [Gitee](https://gitee.com/dromara/RuoYi-Vue-Plus) / [GitHub](https://github.com/dromara/RuoYi-Vue-Plus) / [GitCode](https://gitcode.com/dromara/RuoYi-Vue-Plus)       |
-| 微服务框架     | RuoYi-Cloud-Plus | [Gitee](https://gitee.com/dromara/RuoYi-Cloud-Plus) / [GitHub](https://github.com/dromara/RuoYi-Cloud-Plus) / [GitCode](https://gitcode.com/dromara/RuoYi-Cloud-Plus) |
+- React 19 + TypeScript
+- Umi Max 4
+- Ant Design 6 + ProComponents
+- ahooks、TanStack Query、Zustand
+- pnpm
 
-## 分支说明
-
-- 6.X-react分支(稳定发布主分支 生产可用)
-- dev-react分支(开发分支 开发过程中使用)
-
-## 前端运行
+## 运行与验证
 
 ```bash
-# 安装依赖
-pnpm install --registry=https://registry.npmmirror.com
-
-# 启动服务
+pnpm install
 pnpm dev
-
-# 构建生产环境
-pnpm build:prod
-
-# 前端访问地址 http://localhost:8000
 ```
 
-## 本框架与RuoYi的业务差异
+开发地址为 `http://localhost:8000`，请求通过开发代理进入 Admin Backend `8080`。
 
-| 业务         | 功能说明                                                      | 本框架 | RuoYi                         |
-| ------------ | ------------------------------------------------------------- | ------ | ----------------------------- |
-| 用户管理     | 用户的管理配置 如:新增用户、分配用户所属部门、角色、岗位等    | 支持   | 支持                          |
-| 部门管理     | 配置系统组织机构（公司、部门、小组） 树结构展现支持数据权限   | 支持   | 支持                          |
-| 岗位管理     | 配置系统用户所属担任职务                                      | 支持   | 支持                          |
-| 菜单管理     | 配置系统菜单、操作权限、按钮权限标识等                        | 支持   | 支持                          |
-| 角色管理     | 角色菜单权限分配、设置角色按机构进行数据范围权限划分          | 支持   | 支持                          |
-| 字典管理     | 对系统中经常使用的一些较为固定的数据进行维护                  | 支持   | 支持                          |
-| 参数管理     | 对系统动态配置常用参数                                        | 支持   | 支持                          |
-| 通知公告     | 系统通知公告信息发布维护                                      | 支持   | 支持                          |
-| 操作日志     | 系统正常操作日志记录和查询 系统异常信息日志记录和查询         | 支持   | 支持                          |
-| 登录日志     | 系统登录日志记录查询包含登录异常                              | 支持   | 支持                          |
-| 文件管理     | 系统文件展示、上传、下载、删除等管理                          | 支持   | 无                            |
-| 文件配置管理 | 系统文件上传、下载所需要的配置信息动态添加、修改、删除等管理  | 支持   | 无                            |
-| 在线用户管理 | 已登录系统的在线用户信息监控与强制踢出操作                    | 支持   | 支持                          |
-| 定时任务     | 运行报表、任务管理(添加、修改、删除)、日志管理、执行器管理等  | 支持   | 仅支持任务与日志管理          |
-| 代码生成     | 多数据源前后端代码的生成（java、html、xml、sql）支持CRUD下载  | 支持   | 仅支持单数据源                |
-| 系统接口     | 根据业务代码自动生成相关的api接口文档                         | 支持   | 支持                          |
-| 服务监控     | 监视集群系统CPU、内存、磁盘、堆栈、在线日志、Spring相关配置等 | 支持   | 仅支持单机CPU、内存、磁盘监控 |
-| 缓存监控     | 对系统的缓存信息查询，命令统计等。                            | 支持   | 支持                          |
-| 在线构建器   | 拖动表单元素生成相应的HTML代码。                              | 支持   | 支持                          |
-| 使用案例     | 系统的一些功能案例                                            | 支持   | 不支持                        |
+```bash
+pnpm lint
+pnpm build
+```
 
-## 演示图例
+`pnpm lint` 包含 TypeScript 检查；修改页面、API、生成模板或公共组件后，至少按影响范围执行上述命令。
 
-|                                                                                            |                                                                                            |
-|--------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|
-| ![输入图片说明](https://foruda.gitee.com/images/1780300015922774817/47c1f39f_1766278.png "屏幕截图") | ![输入图片说明](https://foruda.gitee.com/images/1780300034170229441/1608ee0a_1766278.png "屏幕截图") |
-| ![输入图片说明](https://foruda.gitee.com/images/1780300053860691133/f8d334ce_1766278.png "屏幕截图") | ![输入图片说明](https://foruda.gitee.com/images/1780300066022559831/7c8e74cd_1766278.png "屏幕截图") |
-| ![输入图片说明](https://foruda.gitee.com/images/1780300081538003511/906c028f_1766278.png "屏幕截图") | ![输入图片说明](https://foruda.gitee.com/images/1780300104233264980/8df4a03d_1766278.png "屏幕截图") |
-| ![输入图片说明](https://foruda.gitee.com/images/1780300116889441614/7206e749_1766278.png "屏幕截图") | ![输入图片说明](https://foruda.gitee.com/images/1780300133555040293/6f4067f0_1766278.png "屏幕截图") |
-| ![输入图片说明](https://foruda.gitee.com/images/1780300380395316233/d1cc70c4_1766278.png "屏幕截图") | ![输入图片说明](https://foruda.gitee.com/images/1780300232306768234/1f474295_1766278.png "屏幕截图") |
-| ![输入图片说明](https://foruda.gitee.com/images/1780300245151922243/132ae6e0_1766278.png "屏幕截图") | ![输入图片说明](https://foruda.gitee.com/images/1780300259301543383/a0c982b3_1766278.png "屏幕截图") |
-| ![输入图片说明](https://foruda.gitee.com/images/1780300401947949756/673c7fdc_1766278.png "屏幕截图") | ![输入图片说明](https://foruda.gitee.com/images/1780300417037474904/2fd89565_1766278.png "屏幕截图") |
-| ![输入图片说明](https://foruda.gitee.com/images/1780300430575382678/cef384a4_1766278.png "屏幕截图") | ![输入图片说明](https://foruda.gitee.com/images/1780300446747725208/413ba289_1766278.png "屏幕截图") |
-| ![输入图片说明](https://foruda.gitee.com/images/1780300471231552129/5d45227c_1766278.png "屏幕截图") | ![输入图片说明](https://foruda.gitee.com/images/1780300496559910468/0008fa0c_1766278.png "屏幕截图") |
-| ![输入图片说明](https://foruda.gitee.com/images/1780300562713799535/a15b018d_1766278.png "屏幕截图") | ![输入图片说明](https://foruda.gitee.com/images/1780300575582711290/d440b1c9_1766278.png "屏幕截图") |
-| ![输入图片说明](https://foruda.gitee.com/images/1780300617515185769/db2968e4_1766278.png "屏幕截图") | ![输入图片说明](https://foruda.gitee.com/images/1780300631462725775/30b9cd2c_1766278.png "屏幕截图") |
-| ![输入图片说明](https://foruda.gitee.com/images/1780300644824617448/12b7e446_1766278.png "屏幕截图") | ![输入图片说明](https://foruda.gitee.com/images/1780300665964630901/07f14841_1766278.png "屏幕截图") |
-| ![输入图片说明](https://foruda.gitee.com/images/1780300695487754948/17569a2e_1766278.png "屏幕截图") | ![输入图片说明](https://foruda.gitee.com/images/1780300715114472355/ebb81e7c_1766278.png "屏幕截图") |
+## 目录职责
+
+```text
+web/admin/
+├── src/api/            # Admin 浏览器契约与请求封装
+├── src/pages/          # Admin 管理页面
+├── src/components/     # 本工程内通用组件
+├── src/hooks/          # 本工程内 hooks
+├── src/theme/          # 设计 Token 镜像与主题配置
+└── gen/                # React/TSX FreeMarker 生成模板
+```
+
+运行时代码生成的唯一事实源是 `backend/ruoyi-admin/ruoyi-gen/src/main/resources/fm/react/`。本工程的 `gen/` 是便于前端开发和 AI 查阅的镜像，单独修改它不会影响后端生成器；如确需调整生成结果，必须先修改后端运行时模板，再同步此镜像。
+
+## 接口边界
+
+- Admin 登录、权限、系统管理接口均进入 Admin Backend。
+- 应用用户和接入客户端的浏览器管理路径仍为 `/client/user/**` 与 `/client/application/**`，但由 Admin Backend 检查管理员权限和记录日志。
+- Admin Backend 再使用私有服务签名调用 Client；浏览器不知道 `/internal/admin/**`，也不得直连 Client Backend。
+- API 字段以真实 Admin Controller/VO 为准，页面不得为了显示需求虚构后端字段。
+
+## 页面实现规则
+
+- 标准列表优先复用 `ProTable`、`ModalForm`、`RowActions`、`useTableSelection`、`useDateRangeQuery` 和 `useTableExport`。
+- 优先阅读同目录最相似的真实页面，再参考后端 `fm/react/*.ftl` 事实源并核对 `gen/` 镜像；不引入第二套路由、请求、状态或表格体系。
+- 修改 UI 前必须读取设计系统与 PC Web 规范；样式只使用本工程 Token。
+- 危险操作使用 `danger` 与二次确认，每个页面不制造多个主操作。
+- 五端只统一设计语义和后端契约；不为“复用”建立跨前端共享运行包。
+
+## 上游参考
+
+本工程来源于 RuoYi React 前端生态，但当前仓库的页面、工具、契约和设计系统更高优先。上游文档只用于理解原始框架，不得覆盖本项目的 Admin/Client 分界。

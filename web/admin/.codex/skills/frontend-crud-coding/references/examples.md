@@ -14,7 +14,7 @@
 
 - 先看 `src/api/system/client/*` 和 `src/pages/system/client/index.tsx` 是否已存在。
 - 再看 `src/pages/demo/demo/index.tsx` 的标准 React CRUD 骨架。
-- 新增标准生成能力时优先对照当前仓库 `gen/index.tsx.ftl`、`gen/api.ts.ftl`、`gen/types.ts.ftl`；boot4 generator 只用于核对字段、权限和接口。
+- 新增标准生成能力时，优先对照后端 `fm/react` 运行时事实源与当前项目真实页面，完成后同步 `gen/` 镜像。
 - 生成或修改 `api/index.ts`、`types.ts`、`pages/.../index.tsx`。
 - 使用 `request<R<PageResult<T>>>`、`ProTable`、`ModalForm`、`RowActions`、`useTableSelection`、`useTableExport`。
 - 日期范围、字典 options、确认框、loading 等优先使用 `useDateRangeQuery`、`dictOptions`、`confirmAction`、`useLoading` 等项目工具。
@@ -41,16 +41,17 @@
 ### 用户提问示例
 
 ```text
-使用 $frontend-crud-coding 优化当前项目 gen 目录下的 React 代码生成模板，让生成页面继续使用新加的工具。
+使用 $frontend-crud-coding 优化 React 代码生成模板，先修改后端 fm/react 运行时事实源，再同步 web/admin/gen 镜像，让生成页面继续使用新加的工具。
 ```
 
 ### 期望执行方式
 
-- 读取 `gen/api.ts.ftl`、`gen/types.ts.ftl`、`gen/index.tsx.ftl`、`gen/index-tree.tsx.ftl`。
+- 读取 `backend/ruoyi-admin/ruoyi-gen/src/main/resources/fm/react/` 下四个运行时模板，并核对 `web/admin/gen/` 同名镜像。
 - 保持 FreeMarker 变量、宏和文件名不变。
 - 普通表模板继续使用 `useTableSelection`、`useTableExport`、`useDateRangeQuery`、`dictOptions`、`confirmAction`。
 - 树表模板继续使用 `handleTree`、`filterTree`、`useTreeTableExpand`、`dictOptions`。
 - 输出仍是 React TSX 项目代码，不写 Vue `src/views`、Element Plus 或 `AxiosPromise`。
+- 完成后保证后端运行时模板与 `web/admin/gen/` 镜像一致。
 
 ## 案例 3：修改已有复杂列表页
 
@@ -124,7 +125,7 @@
 2. 新增状态筛选和导出
 3. API 路径沿用后端接口
 4. 参考 system/config 的工具栏与导出交互
-5. 参考当前项目 gen 模板和 boot4 generator 字段补齐缺失 types
+5. 参考后端 `fm/react` 运行时事实源并核对 `gen/` 镜像，补齐缺失 types
 ```
 
 ## 不推荐的任务描述

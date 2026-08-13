@@ -12,7 +12,7 @@
 - **只有一条常驻分支 `main`**，且 `main` 永远是可发布的（生产就绪）。
 - 任何改动都从 `main` 拉一个 **短期特性分支**，改完开 **PR 回 `main`**，评审通过即合并。
 - **没有** `develop` / `release` / `hotfix` 这类长存分支（紧急修复也走同一套）。
-- 分支命名、提交信息、PR 标题 **全部中文**，格式固定。
+- 人工创建的分支描述、提交信息、PR 标题使用中文；Codex 桌面端任务分支允许工具固定的 `codex/` 命名空间。
 - 合并默认用 **Squash**，保持 `main` 历史干净线性。
 - 发版 = 给 `main` 上某个 commit 打 `vX.Y.Z` tag 并建 Release。
 
@@ -29,7 +29,9 @@ GitHub Flow 只有「一条主干 + 临时分支」，**不区分测试/生产�
 | 修复分支 | `fix/xxx` | `main` | `main` | 短期 | 否 |
 | 优化分支 | `refactor/xxx` | `main` | `main` | 短期 | 否 |
 | 文档分支 | `docs/xxx` | `main` | `main` | 短期 | 否 |
+| 治理分支 | `chore/xxx` | `main` | `main` | 短期 | 否 |
 | 实验分支 | `experiment/xxx` | `main` | `main` | 短期 | 否 |
+| Codex 任务分支 | `codex/xxx` | `main` | `main` | 短期 | 否 |
 
 ### 1.1 分支交互图
 
@@ -43,6 +45,8 @@ GitHub Flow 只有「一条主干 + 临时分支」，**不区分测试/生产�
             （全部从 main 拉出，PR 回 main，合完即删）
 ```
 
+> 图中只列常见分支作为交互示意；`refactor`、`chore` 和 `codex` 的来源、合并目标与生命周期完全相同。
+
 **交互规则：**
 1. 想改代码，第一步永远：`git checkout main && git pull`，再 `git checkout -b feature/xxx`。
 2. 分支只和 `main` 单向交互：拉出来 → PR 回 `main`。不在分支间互相合并。
@@ -50,7 +54,7 @@ GitHub Flow 只有「一条主干 + 临时分支」，**不区分测试/生产�
 4. 合入 `main` 即代表可发布；发版时直接在 `main` 上打 tag，不再开 release 分支。
 5. 紧急修复、实验性改动，**流程完全一样**，只是优先级更高、分支名不同。
 
-### 1.2 main 保护规则（必须配置）
+### 1.2 main 保护规则（CI 建成后的目标态）
 
 在仓库 Settings → Branches 给 `main` 设保护（GitHub 官方最佳实践）：
 - ✅ Require a pull request before merging（禁止直推）
@@ -66,10 +70,11 @@ GitHub Flow 只有「一条主干 + 临时分支」，**不区分测试/生产�
 
 格式：`<类型>/<简短中文描述-连字符>`
 
-- 类型：`feature` / `fix` / `refactor` / `docs` / `experiment`。
+- 人工分支类型：`feature` / `fix` / `refactor` / `docs` / `chore` / `experiment`。
 - 描述 **中文**，多词用 **连字符 `-`**，小写，无空格、无下划线。
 - 要能一眼看懂做了什么，建议 ≤ 20 字。
 - GitHub Flow 本身不强求类型前缀，但为清晰我们保留前缀。
+- Codex 桌面端自动管理的任务分支使用 `codex/<简短描述>`，这是工具命名空间例外，不改变分支来源、PR、评审和 Squash 合并规则。
 
 | 正确示例 | 错误示例 |
 |---------|---------|
@@ -77,6 +82,8 @@ GitHub Flow 只有「一条主干 + 临时分支」，**不区分测试/生产�
 | `fix/支付金额精度丢失` | `fix2` ✗（含糊） |
 | `refactor/订单服务拆分` | `refactor/order` ✗（含糊） |
 | `docs/接口文档补充` | `doc` ✗（格式错） |
+| `chore/后端目录收口` | `chore_backend` ✗（格式错） |
+| `codex/admin-modules-governance` | `codex_admin` ✗（格式错） |
 
 ---
 
@@ -194,7 +201,7 @@ Closes #234
 ### 4.4 评审与合并规则
 
 1. 至少 **1 名 reviewer 通过**（团队可设 2）。
-2. **CI 全绿** 才能合并（受 main 保护规则强制）。
+2. CI 建成后必须全绿才能合并；当前未配置 CI 时，必须在 PR 中记录受影响范围的本地构建、检查结果和人工评审结论。
 3. 合并方式：默认 **Squash and merge**，把多个小提交压成一个干净提交进 `main`，squash 信息按第 3 节规范写。需保留完整历史时用 **Rebase and merge**。
 4. 合并后 **自动删除源分支**（开启 Auto-delete）。
 5. 冲突先在自己分支 `git rebase main` 解决再重新 push，不在 PR 留冲突。
@@ -321,7 +328,7 @@ git push origin main --tags
 - ❌ 禁止提交密钥、token、个人信息。
 - ❌ 禁止一个 commit 混多个不相关改动。
 - ❌ 禁止无意义提交信息。
-- ❌ 禁止跳过 CI / review 自行合并。
+- ❌ 禁止绕过已配置的 CI / review 自行合并；CI 建成前不得跳过规定的本地验证和人工评审。
 
 ---
 
@@ -336,9 +343,11 @@ branch_prefix:
   fix:        { from: main, to: main }
   refactor:   { from: main, to: main }
   docs:       { from: main, to: main }
+  chore:      { from: main, to: main }
   experiment: { from: main, to: main }
+  codex:      { from: main, to: main }
 naming:
-  branch: "<type>/<chinese-dash-separated>"
+  branch: "<type>/<chinese-dash-separated> | codex/<tool-description>"
   pr_title: "<type>: <chinese-desc>"
 commit:
   format: "<type>(<scope>): <chinese-subject>"
@@ -350,7 +359,8 @@ commit:
 merge:
   target: main
   method: squash
-  require: [ci_green, reviewer_approved, branch_protection]
+  require_current: [local_verification, reviewer_approved]
+  require_target: [ci_green, reviewer_approved, branch_protection]
   post: auto_delete_branch
 release:
   from: main
@@ -358,12 +368,14 @@ release:
   notes: 中文 Release Notes
 protection:
   main:
-    - require_pull_request
-    - require_approvals(>=1)
-    - require_status_checks
-    - require_up_to_date
-    - no_bypass
-    - auto_delete_head
+    status: planned_until_ci_is_available
+    rules:
+      - require_pull_request
+      - require_approvals(>=1)
+      - require_status_checks
+      - require_up_to_date
+      - no_bypass
+      - auto_delete_head
 ```
 
 ---

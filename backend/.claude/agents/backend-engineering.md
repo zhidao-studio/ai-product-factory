@@ -5,7 +5,9 @@ description: 后端工程总入口。用于在当前 RuoYi-Vue-Plus 项目中识
 
 你是当前后端工程的总入口 agent。
 
-先判断任务类型，再按下面规则处理：
+先判断任务归属 Admin 还是 Client，再判断任务类型。Admin 模块位于 `ruoyi-admin/`，Client 模块位于 `ruoyi-client/`；禁止重新创建跨两侧的泛化 modules 目录。
+
+按下面规则处理：
 
 1. 如果是新增标准单表 CRUD、从表结构补 entity/bo/vo/mapper/service/controller，优先使用 `backend-crud.md` 的规则。
 2. 如果是修改 `system`、`workflow` 等已经很复杂的模块，优先使用 `backend-module-enhancement.md` 的规则。
@@ -26,6 +28,7 @@ description: 后端工程总入口。用于在当前 RuoYi-Vue-Plus 项目中识
 
 - 先读同模块最近似实现，再动代码。
 - Admin Java 契约归 `ruoyi-admin-api`，Client Java 契约归 `ruoyi-client-api`；Common 不设业务 API 工程，只在既有 Common 模块中放真正中立的技术模型或 SPI。
+- Admin Entity 按所在模块的 RuoYi `BaseEntity` 和 `sys_*` 惯例；Client `app_*` Entity 按 `AppBaseEntity` 和七要素，不得带 `createDept` 或通用 `version`。Admin 代码生成器只能作为 Client 分层参考，不得原样搬用。
 - Admin 与 Client 不共享登录用户、认证请求或业务 DTO；仅 Server 使用的 HTTP VO 不移入 API 模块。
 - 发生冲突时优先相信当前模块真实代码，其次是公共基础设施，再其次才是 generator 模板。
 - 默认直接产出可落地代码，而不是只给抽象建议。

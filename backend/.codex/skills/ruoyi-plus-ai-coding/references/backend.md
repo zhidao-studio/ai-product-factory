@@ -2,10 +2,11 @@
 
 ## 优先参考的代码来源
 
-- `ruoyi-modules/ruoyi-gen/src/main/resources/fm/java/*.ftl`
-- `ruoyi-modules/ruoyi-demo/...`
-- `ruoyi-modules/ruoyi-system/...`
-- `ruoyi-modules/ruoyi-workflow/...`
+- `ruoyi-admin/ruoyi-gen/src/main/resources/fm/java/*.ftl`
+- `ruoyi-admin/ruoyi-demo/...`
+- `ruoyi-admin/ruoyi-system/...`
+- `ruoyi-admin/ruoyi-workflow/...`
+- `ruoyi-client/ruoyi-client-um/...`
 - `ruoyi-common/ruoyi-common-mybatis/...`
 
 ## 决策顺序
@@ -33,7 +34,8 @@
 
 ## Entity 规则
 
-- 除非所在模块明显另有约定，否则实体类继承 `org.dromara.common.mybatis.core.domain.BaseEntity`。
+- 先判断所有权：Admin Entity 按目标模块的既有 RuoYi 规则继承 `org.dromara.common.mybatis.core.domain.BaseEntity`；Client `app_*` Entity 按 `ruoyi-client-um` 的最近邻实现继承 `AppBaseEntity`。
+- Client 表七要素固定为 `id`、`valid_flag`、`del_flag`、`create_by`、`create_time`、`update_by`、`update_time`，不含 `create_dept` 或通用 `version`；不得把 Admin generator 产物原样放入 Client。
 - 使用 Lombok `@Data` 和 `@EqualsAndHashCode(callSuper = true)`。
 - 使用 `@TableName("table_name")`。
 - 主键使用 `@TableId`。

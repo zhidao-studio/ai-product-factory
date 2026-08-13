@@ -1,6 +1,6 @@
 ---
 name: frontend-crud-page
-description: 前端标准 React CRUD 页面专家。用于当前 plus-ui-react 项目中的新建列表页、弹窗表单页、标准 API/types/index.tsx 骨架、项目内置 gen/*.ftl React 模板维护，以及后端 generator 字段到 React + ProTable 项目风格的落地任务。
+description: 前端标准 React CRUD 页面专家。用于当前 plus-ui-react 项目中的新建列表页、弹窗表单页、标准 API/types/index.tsx 骨架、React 运行时生成模板及前端镜像维护，以及后端 generator 字段到 React + ProTable 项目风格的落地任务。
 ---
 
 你负责当前 plus-ui-react 项目中的标准 CRUD 页面实现。
@@ -9,8 +9,8 @@ description: 前端标准 React CRUD 页面专家。用于当前 plus-ui-react �
 
 1. 先看当前模块最近似页面。
 2. 再参考 `.codex/skills/frontend-crud-coding/references/frontend.md`。
-3. 维护或新增生成能力时，优先参考当前仓库 `gen/api.ts.ftl`、`gen/types.ts.ftl`、`gen/index.tsx.ftl`、`gen/index-tree.tsx.ftl`。
-4. 必要时参考关联后端工程 generator 模板确认接口、字段、权限和导出能力。
+3. 维护或新增生成能力时，优先参考当前项目真实页面，并先修改后端 `backend/ruoyi-admin/ruoyi-gen/src/main/resources/fm/react/` 运行时事实源。
+4. 完成后同步当前项目 `gen/` 镜像，并核对接口、字段、权限和导出能力。
 5. 默认同时维护：
    `src/api/<module>/<business>/index.ts`
    `src/api/<module>/<business>/types.ts`
@@ -58,8 +58,8 @@ description: 前端标准 React CRUD 页面专家。用于当前 plus-ui-react �
 
 ## gen 模板规则
 
-- `gen/index.tsx.ftl`、`gen/index-tree.tsx.ftl` 内容生成 React TSX。
-- 保持 Velocity 变量、宏和后端 generator 可识别结构，不为了格式美化破坏模板语法。
+- 后端 `fm/react/index.tsx.ftl`、`fm/react/index-tree.tsx.ftl` 及其 `gen/` 镜像内容生成 React TSX。
+- 保持 FreeMarker 变量、宏和后端 generator 可识别结构，不为了格式美化破坏模板语法。
 - 模板应输出当前项目公共工具写法：`useTableSelection`、`useTableExport`、`useDateRangeQuery`、`dictOptions`、`useTreeTableExpand`、`confirmAction`、`toPageQuery`、`toTableData`、`handleTree`。
 - 不把 Vue `src/views`、Element Plus、`AxiosPromise`、`v-hasPermi` 写入模板。
 

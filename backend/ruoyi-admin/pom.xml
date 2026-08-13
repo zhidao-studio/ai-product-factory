@@ -19,13 +19,13 @@
 
     <modules>
         <module>ruoyi-admin-api</module>
+        <module>ruoyi-system</module>
+        <module>ruoyi-gen</module>
+        <module>ruoyi-job</module>
+        <module>ruoyi-workflow</module>
+        <module>ruoyi-ai</module>
+        <module>ruoyi-demo</module>
         <module>ruoyi-admin-server</module>
-        <module>../ruoyi-modules/ruoyi-system</module>
-        <module>../ruoyi-modules/ruoyi-gen</module>
-        <module>../ruoyi-modules/ruoyi-job</module>
-        <module>../ruoyi-modules/ruoyi-workflow</module>
-        <module>../ruoyi-modules/ruoyi-ai</module>
-        <module>../ruoyi-modules/ruoyi-demo</module>
     </modules>
 
 </project>

@@ -31,8 +31,8 @@ description: 在仓库内按代码生成器模板、项目 reference 文档和�
 ## 执行流程
 
 1. 先判断任务类型，并按“文档读取规则”读取当前任务需要的 reference。
-2. 确认目标模块，优先复用同模块中最近似功能的写法。
-3. 新增标准 CRUD 代码前，先读取 `ruoyi-modules/ruoyi-gen/src/main/resources/fm/` 下的 FreeMarker 模板。
+2. 先确认目标属于 Admin 还是 Client，再复用同模块中最近似功能的写法。
+3. 新增 Admin 标准 CRUD 前，先读取 `ruoyi-admin/ruoyi-gen/src/main/resources/fm/` 下的 FreeMarker 模板。Client 可参考分层，但必须按 `AppBaseEntity`、`app_*` 和 Client 七要素适配，不得原样搬用 Admin 模板。
 4. 命名和分层保持与仓库一致：
    `domain` entity、`domain.bo`、`domain.vo`、`mapper`、`service`、`service.impl`、`controller`。
 5. 优先在生成器结构上扩展，不要自行发明新的分层。
@@ -98,11 +98,13 @@ Vue 3、React、TypeScript API 文件、生成式列表页、表单状态、字�
 
 后端契约归属固定如下：
 
+- Admin 实现模块直接位于 `ruoyi-admin/`，Client 实现模块直接位于 `ruoyi-client/`；不建立泛化 `ruoyi-modules` 中间桶。
 - `ruoyi-admin/ruoyi-admin-api` 只放 Admin 的 System、Workflow、管理身份等真实跨模块 Java 契约。
 - `ruoyi-client/ruoyi-client-api` 只放 Client 自己的真实跨模块 Java 契约。
 - `ruoyi-common` 不创建 `common-api`；两侧确实共用的最小技术模型或 SPI 放入对应的既有 Common 模块，例如 `ruoyi-common-core`。
 - 仅被一个启动服务 Controller 使用的请求/响应 VO 留在该 Server；没有跨模块消费者时，不为“看起来完整”预建 API 接口或 DTO。
 - Admin、Client 的登录用户和认证请求模型不得互相复用；字段暂时相同不等于契约归属相同。
+- Admin Entity 遵循目标模块的 `BaseEntity` 与 `sys_*` 惯例；Client `app_*` Entity 遵循 `AppBaseEntity`，七要素固定为 `id/valid_flag/del_flag/create_by/create_time/update_by/update_time`，不含 `create_dept` 和通用 `version`。
 
 标准后端模块通常按下面结构组织：
 

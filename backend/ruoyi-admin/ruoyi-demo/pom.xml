@@ -6,22 +6,26 @@
         <groupId>org.dromara</groupId>
         <artifactId>ruoyi-admin</artifactId>
         <version>${revision}</version>
-        <relativePath>../../ruoyi-admin/pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>ruoyi-workflow</artifactId>
+    <artifactId>ruoyi-demo</artifactId>
 
-    <description>
-        工作流模块
-    </description>
+    <description>Admin 技术能力示例模块</description>
 
     <dependencies>
 
-        <!-- 消息推送模块 -->
+        <!-- 通用工具-->
         <dependency>
             <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-common-push</artifactId>
+            <artifactId>ruoyi-common-core</artifactId>
+        </dependency>
+
+        <!-- Admin 契约模块 -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-admin-api</artifactId>
         </dependency>
 
         <!-- 接口模块 -->
@@ -30,28 +34,28 @@
             <artifactId>ruoyi-common-doc</artifactId>
         </dependency>
 
-        <!-- 邮件服务 -->
-        <dependency>
-            <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-common-mail</artifactId>
-        </dependency>
-
         <!-- 短信模块 -->
         <dependency>
             <groupId>org.dromara</groupId>
             <artifactId>ruoyi-common-sms</artifactId>
         </dependency>
 
+        <!-- 邮件服务 -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-common-mail</artifactId>
+        </dependency>
+
+        <!-- 缓存服务 -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-common-redis</artifactId>
+        </dependency>
+
         <!-- 数据库服务 -->
         <dependency>
             <groupId>org.dromara</groupId>
             <artifactId>ruoyi-common-mybatis</artifactId>
-        </dependency>
-
-        <!-- web服务 -->
-        <dependency>
-            <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-common-web</artifactId>
         </dependency>
 
         <!-- 日志记录 -->
@@ -66,40 +70,58 @@
             <artifactId>ruoyi-common-excel</artifactId>
         </dependency>
 
-        <!-- 翻译模块 -->
-        <dependency>
-            <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-common-translation</artifactId>
-        </dependency>
-
         <!-- 安全模块 -->
         <dependency>
             <groupId>org.dromara</groupId>
             <artifactId>ruoyi-common-security</artifactId>
         </dependency>
 
-        <!-- Admin 契约模块 -->
+        <!-- web服务 -->
         <dependency>
             <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-admin-api</artifactId>
+            <artifactId>ruoyi-common-web</artifactId>
         </dependency>
 
-        <!-- Warm-Flow 工作流引擎 -->
-        <dependency>
-            <groupId>org.dromara.warm</groupId>
-            <artifactId>warm-flow-mybatis-plus-sb3-starter</artifactId>
-        </dependency>
-
-        <!-- Warm-Flow UI 插件 -->
-        <dependency>
-            <groupId>org.dromara.warm</groupId>
-            <artifactId>warm-flow-plugin-ui-sb-web</artifactId>
-        </dependency>
-
-        <!-- LiteFlow 规则编排 -->
+        <!-- 翻译模块 -->
         <dependency>
             <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-common-liteflow</artifactId>
+            <artifactId>ruoyi-common-translation</artifactId>
+        </dependency>
+
+        <!-- 脱敏模块 -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-common-sensitive</artifactId>
+        </dependency>
+
+        <!-- 数据库加解密模块 -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-common-encrypt</artifactId>
+        </dependency>
+
+        <!-- ES搜索引擎服务 -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-common-elasticsearch</artifactId>
+        </dependency>
+
+        <!-- 消息推送模块 -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-common-push</artifactId>
+        </dependency>
+
+        <!-- mqtt模块 -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-common-mqtt</artifactId>
+        </dependency>
+
+        <!-- mcp模块 -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-common-mcp</artifactId>
         </dependency>
 
     </dependencies>
