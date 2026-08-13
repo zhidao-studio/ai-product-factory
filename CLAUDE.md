@@ -55,7 +55,7 @@ Admin 管理员 Token 不能访问 Client 用户接口，Client Token 也不能�
 - `ruoyi-admin-api` 只承载 Admin 的 System、Workflow 与管理身份 Java 契约；`ruoyi-client-api` 只承载 Client 自己的会话和认证请求契约。
 - Common 不设 `common-api`：跨两侧复用的最小会话和数据权限技术接口属于既有 `ruoyi-common-core`，Common 不得定义 Admin/Client 业务契约，也不得依赖任一侧 API。
 - Admin 管理 Client 时默认调用 Client 私有管理接口；确需直接访问数据时，必须经过单独架构决策，并通过 Admin 专属适配层访问 Client 所拥有的表。
-- Client 模块由 Client 总工程聚合；`ruoyi-client-um` 位于 `backend/ruoyi-client/`，拥有应用用户、接入客户端和第三方身份的数据模型、Mapper 与 Service。既有 Admin 模块继续位于 `backend/ruoyi-modules/`，由 Admin 总工程聚合。
+- Admin 模块全部直接位于 `backend/ruoyi-admin/`，Client 模块全部直接位于 `backend/ruoyi-client/`；物理目录与 Maven 所有权必须一致，不再设立泛化的 `ruoyi-modules` 中间桶。`ruoyi-client-um` 拥有应用用户、接入客户端和第三方身份的数据模型、Mapper 与 Service。
 - 不创建没有真实代码的 API、UM、微服务或分层空壳工程。
 
 当前已完成 Maven 所有权、Java API、Client UM 与运行边界拆分：旧 `ruoyi-api` 已删除，Admin/Client 使用各自登录上下文，Common 不再依赖 System API。Client Server 使用 `ruoyi-client-um` 完成认证与身份管理；Admin Server 只依赖 `ruoyi-client-api`，通过私有 HTTP 管理接口完成应用用户和接入客户端运营，不再装载 UM 实现。
@@ -81,6 +81,12 @@ backend/
 ├── ruoyi-admin/                    # Admin 总工程
 │   ├── pom.xml                     # 聚合 Admin 所有模块
 │   ├── ruoyi-admin-api/            # Admin System、Workflow 与管理身份契约
+│   ├── ruoyi-system/               # Admin 系统管理实现
+│   ├── ruoyi-gen/                  # Admin 代码生成
+│   ├── ruoyi-job/                  # Admin 任务执行
+│   ├── ruoyi-workflow/             # Admin 工作流实现
+│   ├── ruoyi-ai/                   # Admin AI 接入
+│   ├── ruoyi-demo/                 # Admin 技术能力示例
 │   └── ruoyi-admin-server/         # Admin Boot 与专属 Controller
 ├── ruoyi-client/                   # Client 总工程
 │   ├── pom.xml                     # 聚合 Client 所有模块
@@ -88,9 +94,6 @@ backend/
 │   ├── ruoyi-client-um/            # 应用用户、接入客户端、第三方身份管理
 │   └── ruoyi-client-server/        # Client Boot、认证与专属 Controller
 ├── ruoyi-common/                   # Common 总工程，无业务 API 子工程
-├── ruoyi-modules/
-│   ├── ruoyi-system/               # 归 Admin 总工程
-│   └── ...                         # 既有 Admin 业务模块
 ├── ruoyi-extend/                   # 根工程直接管理的独立扩展服务
 └── script/sql/                     # 多数据库初始化脚本
 
@@ -102,7 +105,7 @@ web/
 └── harmony/
 ```
 
-不要批量改名 `ruoyi-modules` 物理目录；代码生成器和仓库 Skill 仍以该目录为模板入口。新增 Client 模块放入 `backend/ruoyi-client/`，所有模块的 Maven 所有权以所属总工程的 `<modules>` 为准。
+Admin 新模块放入 `backend/ruoyi-admin/`，Client 新模块放入 `backend/ruoyi-client/`，并加入对应总工程的 `<modules>`。`ruoyi-admin/ruoyi-gen` 是 Admin 代码生成器，默认模板含 Admin 表结构、权限和 `BaseEntity` 语义；Client 业务可参考其分层，但必须改为 `AppBaseEntity`、`app_*` 与 Client 七要素，禁止原样搬用。
 
 API 模块只放存在真实跨模块消费者的 Java 契约。HTTP Controller、仅启动服务使用的响应 VO 和业务实现不因名称中含“接口”就进入 API 模块；没有消费者时禁止预建空 Service、DTO 或微服务契约。
 
@@ -343,6 +346,7 @@ cd web/harmony && pnpm install && pnpm dev:harmony
 - Agent 摘要：`AGENTS.md`
 - 当前完成度与开发导航：`docs/工程现状.md`
 - 协作规范：`CONTRIBUTING.md`
+- Git 分支、PR 与合并规范：`git-workflow-spec.md`
 - 设计系统：`docs/AI-设计系统上下文.md`
 - 设计 Token：`docs/design-tokens.json`、`docs/design-tokens.ts`
 - 平台规范：`docs/平台适配/`

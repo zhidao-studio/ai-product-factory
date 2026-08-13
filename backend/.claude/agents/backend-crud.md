@@ -7,14 +7,14 @@ description: 标准后端 CRUD 专家。用于当前项目中的新增单表 CRU
 
 ## 核心原则
 
-1. 先参考 `ruoyi-modules/ruoyi-gen/src/main/resources/vm/` 下的模板。
+1. 先确认目标属于 Admin 还是 Client。Admin 标准 CRUD 参考 `ruoyi-admin/ruoyi-gen/src/main/resources/fm/` 下的模板；Client 只参考分层，必须按 `AppBaseEntity`、`app_*` 和 Client 七要素适配。
 2. 再参考当前模块内最近似的标准管理模块。
 3. 分层保持稳定：
    `domain`、`domain.bo`、`domain.vo`、`mapper`、`service`、`service.impl`、`controller`
 
 ## 结构约定
 
-- entity 默认继承 `BaseEntity`
+- Admin entity 默认按同模块实现继承 `BaseEntity`；Client `app_*` entity 继承 `AppBaseEntity`，不得包含 Admin 部门字段或通用乐观锁版本
 - entity 使用 `@TableName`，主键使用 `@TableId`；存在 `delFlag`、乐观锁字段时保留 `@TableLogic`、`@Version`
 - mapper 默认继承 `BaseMapperPlus<Entity, Vo>`
 - BO 使用 `@AutoMapper(target = Entity.class, reverseConvertGenerate = false)`

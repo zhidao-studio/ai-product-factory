@@ -10,13 +10,18 @@ ai-product-factory/
 │   ├── pom.xml               # 后端根总工程
 │   ├── ruoyi-admin/          # Admin 总工程
 │   │   ├── ruoyi-admin-api/     # Admin Java 契约
+│   │   ├── ruoyi-system/        # 系统管理
+│   │   ├── ruoyi-gen/           # 代码生成
+│   │   ├── ruoyi-job/           # 任务执行
+│   │   ├── ruoyi-workflow/      # 工作流
+│   │   ├── ruoyi-ai/            # AI 接入
+│   │   ├── ruoyi-demo/          # 技术能力示例
 │   │   └── ruoyi-admin-server/  # Admin 启动模块，8080
 │   ├── ruoyi-client/         # Client 总工程
 │   │   ├── ruoyi-client-api/    # Client Java 契约
 │   │   ├── ruoyi-client-um/     # 应用用户、接入客户端与第三方身份管理
 │   │   └── ruoyi-client-server/ # Client 启动模块，8082
 │   ├── ruoyi-common/         # Common 通用技术总工程（无业务 API 工程）
-│   ├── ruoyi-modules/        # 既有 Admin 业务模块物理目录
 │   ├── ruoyi-extend/         # 根工程直接管理的独立扩展服务
 │   └── script/sql/           # MySQL/Oracle/PostgreSQL/SQL Server 初始化脚本
 ├── web/

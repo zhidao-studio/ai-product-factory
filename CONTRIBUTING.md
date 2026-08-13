@@ -58,10 +58,10 @@ Admin 开发账号：`admin / admin123`；Client 开发账号：`client / admin1
 ai-product-factory/
 ├── backend/          # RuoYi-Vue-Plus Boot 6.x（Admin/Client 双入口）
 │   ├── pom.xml       # 后端根总工程
-│   ├── ruoyi-admin/  # Admin 总工程，含 admin-api / admin-server
+│   ├── ruoyi-admin/  # Admin 总工程，含 api / system / gen / job / workflow / ai / demo / server
 │   ├── ruoyi-client/ # Client 总工程，含 client-api / client-um / client-server
 │   ├── ruoyi-common/ # Common 技术总工程，不定义业务 API
-│   └── ruoyi-modules/# 既有 Admin 业务模块物理目录
+│   └── ruoyi-extend/ # 独立扩展服务聚合器
 ├── web/
 │   ├── admin/        # PC 后台 (React + antd, Umi)
 │   ├── h5/           # 移动 H5 (React + antd-mobile)
@@ -80,12 +80,12 @@ ai-product-factory/
 
 ## 5. 分支策略
 
-- `main`：**稳定可运行**分支，受保护，只接受经过评审的合并。
-- 功能开发：`feature/<简短描述>`，如 `feature/login-page`。
-- 缺陷修复：`fix/<简短描述>`，如 `fix/redis-timeout`。
-- 文档/脚手架：`chore/<简短描述>`。
+分支、PR 与合并的唯一详细规范是 [`git-workflow-spec.md`](./git-workflow-spec.md)，本文不再维护第二套规则。摘要如下：
 
-提交前请保证：本地能编译/构建通过，且不破坏 `main` 既有的前后端贯通验证。
+- `main` 保持稳定可运行，改动通过短期分支和 PR 合入。
+- 人工分支使用 `feature/`、`fix/`、`refactor/`、`docs/`、`chore/` 或 `experiment/`。
+- Codex 桌面端管理的任务分支可使用工具固定命名空间 `codex/<简短描述>`，仍必须遵守同一套提交、验证、PR 和合并规则。
+- 默认使用 Squash 合并；提交前确保受影响范围可构建，且不破坏 `main` 既有贯通链路。
 
 ---
 
@@ -123,7 +123,7 @@ docs: 补充 CONTRIBUTING 协作规范
 
 ## 7. 编码约定
 
-- **后端**：遵循 RuoYi 的 Entity / BO / VO / Mapper / Service / Controller 分层，统一返回 `R<T>`，新增接口默认需 Sa-Token 鉴权；登录等敏感接口使用 `@ApiEncrypt`。新增模块必须归属 Admin 或 Client 总工程，Common 只承载中立技术能力。`backend/ruoyi-client/ruoyi-client-um/` 负责 `AppUser`、`AppClient`、`AppUserIdentity` 及其 Mapper/Service；对应 `app_*` 表的七要素为 `id`、`valid_flag`、`del_flag`、`create_by`、`create_time`、`update_by`、`update_time`，不含部门和通用 `version`，Admin `sys_*` 表继续沿用原 RuoYi 字段。Admin 运营 Client 时只依赖 `ruoyi-client-api`，经私有 HTTP 适配层调用 Client；内部请求只传递并签名操作人 ID，不传部门 ID，禁止直接依赖 UM 实现。
+- **后端**：遵循 RuoYi 的 Entity / BO / VO / Mapper / Service / Controller 分层，统一返回 `R<T>`，新增接口默认需 Sa-Token 鉴权；登录等敏感接口使用 `@ApiEncrypt`。Admin 模块直接位于 `backend/ruoyi-admin/`，Client 模块直接位于 `backend/ruoyi-client/`，Common 只承载中立技术能力；禁止重新建立泛化的模块桶。`backend/ruoyi-client/ruoyi-client-um/` 负责 `AppUser`、`AppClient`、`AppUserIdentity` 及其 Mapper/Service；对应 `app_*` 表的七要素为 `id`、`valid_flag`、`del_flag`、`create_by`、`create_time`、`update_by`、`update_time`，不含部门和通用 `version`，Admin `sys_*` 表继续沿用原 RuoYi 字段。Admin 运营 Client 时只依赖 `ruoyi-client-api`，经私有 HTTP 适配层调用 Client；内部请求只传递并签名操作人 ID，不传部门 ID，禁止直接依赖 UM 实现。
 - **前端**：五个工程分别维护自己的 `src/api/request.ts`，不得跨工程引用源码或建立共享运行包；但每一份实现都必须遵守同一个 `R<T>`、`Authorization + clientid`、AES+RSA 与 401 契约。
 - **设计系统**：颜色/间距/字体/圆角等一律引用 `docs/` Token，不得硬编码。
 - **密钥与配置**：`.env` 含 RuoYi 默认开发密钥，仅用于本地开发；正式环境须替换为独立密钥并通过 CI/密钥管理注入，**不要**把真实生产密钥提交入库。

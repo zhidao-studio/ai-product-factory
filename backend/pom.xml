@@ -408,7 +408,7 @@
                 <version>${ip2region.version}</version>
             </dependency>
 
-            <!-- 系统模块 -->
+            <!-- Admin 系统管理模块 -->
             <dependency>
                 <groupId>org.dromara</groupId>
                 <artifactId>ruoyi-system</artifactId>
@@ -422,35 +422,35 @@
                 <version>${revision}</version>
             </dependency>
 
-            <!-- 调度任务模块 -->
+            <!-- Admin 任务执行模块 -->
             <dependency>
                 <groupId>org.dromara</groupId>
                 <artifactId>ruoyi-job</artifactId>
                 <version>${revision}</version>
             </dependency>
 
-            <!-- AI业务模块 -->
+            <!-- Admin AI 接入模块 -->
             <dependency>
                 <groupId>org.dromara</groupId>
                 <artifactId>ruoyi-ai</artifactId>
                 <version>${revision}</version>
             </dependency>
 
-            <!-- 代码生成模块 -->
+            <!-- Admin 代码生成模块 -->
             <dependency>
                 <groupId>org.dromara</groupId>
                 <artifactId>ruoyi-gen</artifactId>
                 <version>${revision}</version>
             </dependency>
 
-            <!-- demo模块 -->
+            <!-- Admin 技术能力示例模块 -->
             <dependency>
                 <groupId>org.dromara</groupId>
                 <artifactId>ruoyi-demo</artifactId>
                 <version>${revision}</version>
             </dependency>
 
-            <!--  工作流模块  -->
+            <!-- Admin 工作流实现模块 -->
             <dependency>
                 <groupId>org.dromara</groupId>
                 <artifactId>ruoyi-workflow</artifactId>

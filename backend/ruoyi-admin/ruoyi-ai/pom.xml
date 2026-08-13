@@ -6,15 +6,13 @@
         <groupId>org.dromara</groupId>
         <artifactId>ruoyi-admin</artifactId>
         <version>${revision}</version>
-        <relativePath>../../ruoyi-admin/pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging>
     <artifactId>ruoyi-ai</artifactId>
 
-    <description>
-        ai模块
-    </description>
+    <description>Admin AI 接入模块</description>
 
     <dependencies>
 

@@ -6,15 +6,13 @@
         <groupId>org.dromara</groupId>
         <artifactId>ruoyi-admin</artifactId>
         <version>${revision}</version>
-        <relativePath>../../ruoyi-admin/pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>ruoyi-system</artifactId>
 
-    <description>
-        system系统模块
-    </description>
+    <description>Admin 系统管理实现模块</description>
 
     <dependencies>
         <!-- 通用工具-->

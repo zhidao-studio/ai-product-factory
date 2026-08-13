@@ -1,11 +1,11 @@
 ---
 name: frontend-crud-coding
-description: 在当前 plus-ui-react 前端项目中按真实 React + TypeScript + Umi Max + Ant Design ProComponents + oxlint/oxfmt 代码风格生成或修改页面、API、types、hooks 接入、样式和项目内置 gen/*.ftl 代码生成模板。用于新增或修改标准 CRUD 列表页、树表页、系统管理页、监控页、workflow 页面、demo 页面，补齐与 RuoYi-Vue-Plus boot4 后端接口对应的 src/api、types 和 src/pages 代码，或维护 gen/api.ts.ftl、gen/types.ts.ftl、gen/index.tsx.ftl、gen/index-tree.tsx.ftl；触发后应先读取适用 references，再阅读目标模块真实代码和项目内置 gen 模板。
+description: 在当前 plus-ui-react 前端项目中按真实 React + TypeScript + Umi Max + Ant Design ProComponents + oxlint/oxfmt 代码风格生成或修改页面、API、types、hooks 接入、样式和 React 代码生成模板。用于新增或修改标准 CRUD 列表页、树表页、系统管理页、监控页、workflow 页面、demo 页面，补齐与 RuoYi-Vue-Plus boot4 后端接口对应的 src/api、types 和 src/pages 代码，或维护后端 fm/react 运行时模板及 web/admin/gen 镜像；触发后应先读取适用 references，再阅读目标模块真实代码和运行时模板。
 ---
 
 # 前端编码规范
 
-先对齐当前 React 项目里的真实实现，再参考项目内置 `gen/` 代码生成模板。Vue 版本 skill 和关联后端工程的代码生成器模板只用于理解字段、权限、任务分型和迁移意图。不要直接套 Vue 3、Element Plus、AxiosPromise 或 `src/views` 规则；要落成当前仓库的 `src/pages`、`src/api`、ProTable、ModalForm、权限、导出和公共工具方式。
+先对齐当前 React 项目里的真实实现。需要生成页面时，后端 `backend/ruoyi-admin/ruoyi-gen/src/main/resources/fm/react/` 是运行时唯一事实源，`web/admin/gen/` 仅是同步镜像。Vue 版本 skill 和上游模板只用于理解字段、权限、任务分型和迁移意图。不要直接套 Vue 3、Element Plus、AxiosPromise 或 `src/views` 规则；要落成当前仓库的 `src/pages`、`src/api`、ProTable、ModalForm、权限、导出和公共工具方式。
 
 ## 执行流程
 
@@ -16,10 +16,10 @@ description: 在当前 plus-ui-react 前端项目中按真实 React + TypeScript
    - 树表优先看 `src/pages/demo/tree/index.tsx`、`src/pages/workflow/category/index.tsx`。
    - 系统复杂页优先看 `src/pages/system/user/index.tsx`、`system/role`、`system/post`、`system/config`。
    - workflow 业务页优先看 `src/pages/workflow/*` 与 `src/api/workflow/*` 同类页面。
-4. 新增或维护代码生成能力时，优先阅读当前仓库 `gen/api.ts.ftl`、`gen/types.ts.ftl`、`gen/index.tsx.ftl`、`gen/index-tree.tsx.ftl`。这些是 React 版内置 FreeMarker 生成模板，页面模板必须输出当前项目 React/TSX 风格。
+4. 新增或维护代码生成能力时，以后端 `backend/ruoyi-admin/ruoyi-gen/src/main/resources/fm/react/` 为运行时唯一事实源。本工程 `gen/api.ts.ftl`、`gen/types.ts.ftl`、`gen/index.tsx.ftl`、`gen/index-tree.tsx.ftl` 只是前端与 AI 查阅镜像；修改生成结果时先改后端模板，再同步镜像，页面模板必须输出当前项目 React/TSX 风格。
 5. 需要从 Vue 版本迁移经验时，参考 Gitee 项目 `https://gitee.com/JavaLionLi/plus-ui` 的 `6.X-Vue` 分支，目录为 `.codex/skills/frontend-crud-coding` 和 `.claude/agents`，只吸收任务分型、增量修改和自检原则。
-6. 新增标准页面前，可以对照 Gitee 项目 `https://gitee.com/dromara/RuoYi-Vue-Plus` 的 `6.X` 分支，目录为 `ruoyi-modules/ruoyi-gen/src/main/resources/fm`，确认字段、权限和导出能力，但输出和 `gen/` 模板必须保持 React 项目风格。
-7. 新增代码时通常同步维护 `src/api/<module>/<business>/index.ts`、`types.ts`、`src/pages/<module>/<business>/index.tsx`；如果是生成模板优化，同步维护 `gen/` 对应 `.ftl`。
+6. 新增标准页面前，优先参考本仓库 `backend/ruoyi-admin/ruoyi-gen/src/main/resources/fm`。如需对照上游，Gitee 项目 `https://gitee.com/dromara/RuoYi-Vue-Plus` 的 `6.X` 分支仍使用其原始目录 `ruoyi-modules/ruoyi-gen/src/main/resources/fm`。上游只用于确认字段、权限和导出能力，本地 `fm/react/` 事实源及 `gen/` 镜像必须保持 React 项目风格。
+7. 新增代码时通常同步维护 `src/api/<module>/<business>/index.ts`、`types.ts`、`src/pages/<module>/<business>/index.tsx`；如果是生成模板优化，同步维护后端 `fm/react/` 事实源与本工程 `gen/` 镜像。
 8. 增强已有页面时只做增量修改，保留原页面的树筛选、导入导出、列显隐、权限、字典、弹窗、抽屉和路由跳转能力。
 9. 修改完成后按影响范围运行验证：优先 `pnpm exec tsc --noEmit` 或 `pnpm lint`；大范围页面、公共组件、构建配置变更再跑 `pnpm build`。
 
@@ -35,7 +35,7 @@ description: 在当前 plus-ui-react 前端项目中按真实 React + TypeScript
 
 1. 目标目录下最近似页面、API、types 的真实实现。
 2. 当前项目公共 hooks、组件、工具、样式和请求封装约定。
-3. 当前项目内置 `gen/*.ftl` React 代码生成模板。
+3. 后端 `fm/react/*.ftl` 运行时模板，以及与其保持一致的本工程 `gen/*.ftl` 镜像。
 4. Gitee 项目 `plus-ui` 的 `6.X-Vue` 分支 `.codex` / `.claude` 中的任务分型和工作流。
 5. Gitee 项目 `RuoYi-Vue-Plus` 的 `6.X` 分支 generator 模板。
 6. 通用 React / Ant Design ProComponents 习惯。
@@ -108,12 +108,12 @@ workflow 目录优先参考 `src/pages/workflow/*`。流程定义、流程实例
 
 ### 6. 维护 React 生成模板
 
-模板只放在当前仓库 `gen/` 下，除非用户明确要求写入 boot4 后端工程。维护时保持 FreeMarker 变量和文件名不变：
+运行时模板放在 `backend/ruoyi-admin/ruoyi-gen/src/main/resources/fm/react/`，本工程 `gen/` 保留同名镜像。维护时先改运行时事实源，再同步镜像，并保持 FreeMarker 变量和文件名不变：
 
-- `gen/api.ts.ftl`
-- `gen/types.ts.ftl`
-- `gen/index.tsx.ftl`
-- `gen/index-tree.tsx.ftl`
+- `fm/react/api.ts.ftl` ↔ `gen/api.ts.ftl`
+- `fm/react/types.ts.ftl` ↔ `gen/types.ts.ftl`
+- `fm/react/index.tsx.ftl` ↔ `gen/index.tsx.ftl`
+- `fm/react/index-tree.tsx.ftl` ↔ `gen/index-tree.tsx.ftl`
 
 模板内容必须生成当前 React 项目代码，并优先使用已有公共工具：`useDateRangeQuery`、`dictOptions`、`useTreeTableExpand`、`useTableSelection`、`useTableExport`、`confirmAction`、`toPageQuery`、`toTableData`、`handleTree`、`formatDateTimeFields`、`toDayjsFields`。不要把 Vue 模板、Element Plus 组件或 `src/views` 路径写入这些模板。
 

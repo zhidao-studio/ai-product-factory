@@ -27,10 +27,10 @@
 
 - 后端根总工程：`backend/pom.xml`
 - Admin 总工程：`backend/ruoyi-admin/pom.xml`；契约模块：`backend/ruoyi-admin/ruoyi-admin-api/`；启动模块：`backend/ruoyi-admin/ruoyi-admin-server/`
+- Admin 业务与支撑模块：`backend/ruoyi-admin/ruoyi-system/`、`ruoyi-gen/`、`ruoyi-job/`、`ruoyi-workflow/`、`ruoyi-ai/`、`ruoyi-demo/`
 - Client 总工程：`backend/ruoyi-client/pom.xml`；认证与内部管理契约：`backend/ruoyi-client/ruoyi-client-api/`；启动模块：`backend/ruoyi-client/ruoyi-client-server/`
 - Client 用户与身份管理：`backend/ruoyi-client/ruoyi-client-um/`，拥有 `AppUser`、`AppClient`、`AppUserIdentity` 及对应 Mapper/Service
 - Common 总工程：`backend/ruoyi-common/pom.xml`
-- 既有 Admin 业务模块物理目录：`backend/ruoyi-modules/`；模块归属以所属总工程的聚合声明为准
 - 五个独立前端：`web/admin`、`web/h5`、`web/app`、`web/miniapp`、`web/harmony`
 - 各端请求层：`web/<端>/src/api/request.ts`
 - 初始化 SQL：`infra/init/01-init.sql`；多数据库脚本：`backend/script/sql/`
@@ -49,6 +49,7 @@
 ## 常见任务
 
 - 启动完整开发后端：`bash scripts/start-dev.sh`。
+- 新增 Admin 能力：在 `backend/ruoyi-admin/` 下建立有真实实现的模块并加入 Admin 总工程；代码生成器只是 Admin 参考模板，不得原样生成 Client `app_*` 业务。
 - 新增 Client 业务：在 `backend/ruoyi-client/` 下建立真实模块并加入 Client 总工程；需要运营能力时，由 Client 提供私有管理契约与接口，Admin 通过适配层接入。
 - 新增前端接口：只修改目标前端自己的 `src/api/<模块>.ts`，返回类型逐字段对齐后端 VO。
 - 新增 UI：先从 `docs/design-tokens.*` 与对应平台规范取值，不跨端复制平台专属实现。

@@ -5,7 +5,7 @@
 ### 用户提问示例
 
 ```text
-使用 $ruoyi-plus-ai-coding 在 system 模块新增一个 client 管理的标准 CRUD。
+使用 $ruoyi-plus-ai-coding 在 Admin system 模块新增一个 SysClient 扩展管理的标准 CRUD。
 请参考 generator 模板和现有 system 模块写法，补齐 entity、bo、vo、mapper、service、controller。
 ```
 
@@ -14,6 +14,8 @@
 - 先读 generator 的 `domain/bo/vo/service/serviceImpl/controller` 模板。
 - 再读 `system` 模块里最接近的现有管理模块。
 - 先生成骨架，再补权限、日志、校验、导出等细节。
+
+> Client `app_*` CRUD 不属于这个 Admin 生成示例。它必须明确放入 `ruoyi-client/` 的真实业务模块，参考 `ruoyi-client-um` 的 `AppBaseEntity`、`validFlag` 与七要素。
 
 ## 案例 2：修改已有复杂模块
 

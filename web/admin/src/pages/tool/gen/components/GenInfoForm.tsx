@@ -85,7 +85,7 @@ export default function GenInfoForm({ form, columns, menuOptions }: GenInfoFormP
             label={
               <span>
                 前端模板{' '}
-                <Tooltip title="对应后端 resources/vm 下的模板目录，例如 vue、react">
+                <Tooltip title="对应后端 resources/fm 下的模板目录，例如 vue、react">
                   <QuestionCircleOutlined />
                 </Tooltip>
               </span>

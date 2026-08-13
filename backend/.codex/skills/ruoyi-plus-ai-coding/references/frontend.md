@@ -2,7 +2,7 @@
 
 ## 优先参考的代码来源
 
-- `ruoyi-modules/ruoyi-gen/src/main/resources/fm/<frontendType>/*.ftl`
+- `ruoyi-admin/ruoyi-gen/src/main/resources/fm/<frontendType>/*.ftl`
 - 默认 Vue 模板在 `fm/vue`，React 模板在 `fm/react`
 - 前端工程中与目标模块最接近的现有页面
 
