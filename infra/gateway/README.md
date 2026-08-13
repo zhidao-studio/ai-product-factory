@@ -7,6 +7,15 @@
 
 两个 Gateway 没有共享 upstream，也不能互相转发。Token、`clientid`、应用访问范围、用户权限和数据权限仍由各自后端校验。
 
+## 内部管理接口边界
+
+`/internal` 及 `/internal/**` 只用于 Admin Backend 通过 `admin-client-internal` 容器网络直连 Client Backend。两个 Gateway 都对以下路径显式返回 `404`：
+
+- `/internal` 和 `/internal/**`
+- `/prod-api/internal` 和 `/prod-api/internal/**`
+
+内部调用不使用 Admin 用户 Token，由两个 Backend 之间的独立共享密钥验证。Gateway 不得持有该密钥，也不得新增任何指向内部管理接口的 upstream 或 location。
+
 ## `/prod-api` 规则
 
 浏览器端生产构建统一使用 `/prod-api` 作为前端代理前缀，Gateway 会在转发前去掉此前缀：

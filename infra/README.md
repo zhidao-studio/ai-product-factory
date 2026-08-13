@@ -10,11 +10,16 @@ TLS / 负载均衡
 admin-backend  ─┐
                 ├──> MySQL / Redis（仅内部网络）
 client-backend ─┘
+
+admin-backend ──> admin-client-internal ──> client-backend:8082
+                    （Client 内部管理接口）
 ```
 
 - 只有 `admin-gateway` 和 `client-gateway` 发布宿主机端口。
 - 两个后端只有容器网络内的 `expose`，没有宿主机 `ports`。
 - MySQL、Redis 没有宿主机端口，并分别接入 Admin/Client 内部数据网络。
+- `admin-client-internal` 只接入两个 Backend；Admin 以 `http://client-backend:8082` 直连 Client 内部管理接口，不经过任何 Gateway。
+- Admin 与 Client 使用同一个 `ADMIN_CLIENT_SHARED_SECRET` 完成内部调用签名校验；该密钥不得出现在前端、Gateway 或仓库中。
 - Admin 与 Client 当前共用 `ry-vue` Schema，但使用各自的数据表、Redis database/keyPrefix 和 JWT 密钥。
 - Gateway 只负责入口路由、请求标识和粗粒度限流；身份、应用范围与数据权限仍由后端校验。
 - 五个前端仍按独立工程分别构建和部署，不放进这份后端基础设施编排；两个 Gateway 的根路径不会托管静态页面。
@@ -36,7 +41,7 @@ cp .env.prod.example .env.prod
 chmod 600 .env.prod
 ```
 
-Admin 与 Client 的 JWT 密钥必须不同；两侧各自的一对 RSA 配置必须与对应前端密钥成对。不要把 `.env.prod` 或真实密钥提交到仓库。
+Admin 与 Client 的 JWT 密钥必须不同；两侧各自的一对 RSA 配置必须与对应前端密钥成对。`ADMIN_CLIENT_SHARED_SECRET` 必须使用至少 32 字节的高熵随机值，并在两个 Backend 重启时同步更换。不要把 `.env.prod` 或真实密钥提交到仓库。
 
 Client 短信服务默认关闭，不影响后端启动。只有设置 `CLIENT_SMS_ENABLED=true` 时，才需要同时填写 `CLIENT_SMS_SUPPLIER`、`CLIENT_SMS_ACCESS_KEY_ID`、`CLIENT_SMS_ACCESS_KEY_SECRET`、`CLIENT_SMS_SIGNATURE` 以及供应商要求的 `CLIENT_SMS_SDK_APP_ID`；未启用时短信验证码和短信登录都会明确返回“短信服务未启用”。
 

@@ -69,6 +69,8 @@ services:
       SPRING_DATA_REDIS_DATABASE: 0
       SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD:?请设置 REDIS_PASSWORD}
       REDISSON_KEYPREFIX: admin
+      CLIENT_MANAGEMENT_BASE_URL: http://client-backend:8082
+      CLIENT_MANAGEMENT_SHARED_SECRET: ${ADMIN_CLIENT_SHARED_SECRET:?请设置 ADMIN_CLIENT_SHARED_SECRET}
       JAVA_OPTS: >-
         ${ADMIN_JAVA_OPTS:--Xms512m -Xmx1024m}
         -Dsa-token.jwt-secret-key=${ADMIN_JWT_SECRET:?请设置 ADMIN_JWT_SECRET}
@@ -92,6 +94,7 @@ services:
     networks:
       - admin-data
       - admin-edge
+      - admin-client-internal
 
   client-backend:
     image: ai-product-factory/ruoyi-client:${APP_VERSION:-local}
@@ -114,6 +117,7 @@ services:
       CLIENT_JWT_SECRET: ${CLIENT_JWT_SECRET:?请设置 CLIENT_JWT_SECRET}
       CLIENT_API_DECRYPT_PUBLIC_KEY: ${CLIENT_API_DECRYPT_PUBLIC_KEY:?请设置 CLIENT_API_DECRYPT_PUBLIC_KEY}
       CLIENT_API_DECRYPT_PRIVATE_KEY: ${CLIENT_API_DECRYPT_PRIVATE_KEY:?请设置 CLIENT_API_DECRYPT_PRIVATE_KEY}
+      CLIENT_INTERNAL_ADMIN_SHARED_SECRET: ${ADMIN_CLIENT_SHARED_SECRET:?请设置 ADMIN_CLIENT_SHARED_SECRET}
       CLIENT_SMS_ENABLED: ${CLIENT_SMS_ENABLED:-false}
       CLIENT_SMS_SUPPLIER: ${CLIENT_SMS_SUPPLIER:-alibaba}
       CLIENT_SMS_ACCESS_KEY_ID: ${CLIENT_SMS_ACCESS_KEY_ID:-}
@@ -141,6 +145,7 @@ services:
     networks:
       - client-data
       - client-edge
+      - admin-client-internal
 
   admin-gateway:
     image: nginx:1.27-alpine
@@ -196,6 +201,8 @@ networks:
   admin-data:
     internal: true
   client-data:
+    internal: true
+  admin-client-internal:
     internal: true
   admin-edge:
   client-edge:
