@@ -1,4 +1,4 @@
-/** 微信小程序产品用户 Token，与其他端会话隔离。 */
+/** 微信小程序应用用户 Token，与其他端会话隔离。 */
 import Taro from '@tarojs/taro';
 
 const TOKEN_KEY = 'Client-Miniapp-Token';

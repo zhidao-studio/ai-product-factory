@@ -7,9 +7,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.client.api.model.ClientLoginUser;
 import org.dromara.client.api.model.ClientPasswordLoginBody;
-import org.dromara.client.domain.vo.ClientApplicationVo;
-import org.dromara.client.domain.vo.ClientUserVo;
-import org.dromara.client.service.IClientUserService;
+import org.dromara.client.um.domain.vo.AppClientVo;
+import org.dromara.client.um.domain.vo.AppUserVo;
+import org.dromara.client.um.service.IAppUserService;
 import org.dromara.client.web.domain.vo.ClientLoginVo;
 import org.dromara.client.web.service.ClientLoginService;
 import org.dromara.client.web.service.IClientAuthStrategy;
@@ -30,7 +30,7 @@ import org.dromara.common.web.config.properties.CaptchaProperties;
 import org.springframework.stereotype.Service;
 
 /**
- * 产品用户账号密码认证策略。
+ * 应用用户账号密码认证策略。
  *
  * @author Lion Li
  */
@@ -40,17 +40,17 @@ import org.springframework.stereotype.Service;
 public class ClientPasswordAuthStrategy implements IClientAuthStrategy {
 
     private final ClientLoginService loginService;
-    private final IClientUserService userService;
+    private final IAppUserService userService;
     private final CaptchaProperties captchaProperties;
 
     @Override
-    public ClientLoginVo login(String body, ClientApplicationVo client) {
+    public ClientLoginVo login(String body, AppClientVo client) {
         ClientPasswordLoginBody loginBody = JsonUtils.parseObject(body, ClientPasswordLoginBody.class);
         ValidatorUtils.validate(loginBody);
         if (captchaProperties.getEnable()) {
             validateCaptcha(loginBody.getUsername(), loginBody.getCode(), loginBody.getUuid());
         }
-        ClientUserVo user = loadUserByUserName(loginBody.getUsername());
+        AppUserVo user = loadUserByUserName(loginBody.getUsername());
         loginService.checkLogin(LoginType.PASSWORD, loginBody.getUsername(),
             () -> !BCrypt.checkpw(loginBody.getPassword(), user.getPassword()));
         return login(user, client);
@@ -72,12 +72,12 @@ public class ClientPasswordAuthStrategy implements IClientAuthStrategy {
         }
     }
 
-    private ClientUserVo loadUserByUserName(String userName) {
-        ClientUserVo user = userService.queryByUserName(userName);
+    private AppUserVo loadUserByUserName(String userName) {
+        AppUserVo user = userService.queryByUserName(userName);
         return validateUser(user, userName);
     }
 
-    private ClientUserVo validateUser(ClientUserVo user, String loginName) {
+    private AppUserVo validateUser(AppUserVo user, String loginName) {
         if (ObjectUtil.isNull(user)) {
             log.info("登录用户：{} 不存在.", loginName);
             throw new UserException("user.not.exists", loginName);
@@ -89,7 +89,7 @@ public class ClientPasswordAuthStrategy implements IClientAuthStrategy {
         return user;
     }
 
-    private ClientLoginVo login(ClientUserVo user, ClientApplicationVo client) {
+    private ClientLoginVo login(AppUserVo user, AppClientVo client) {
         ClientLoginUser loginUser = loginService.buildLoginUser(user);
         loginUser.setClientKey(client.getClientKey());
         loginUser.setDeviceType(client.getDeviceType());

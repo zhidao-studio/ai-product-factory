@@ -11,6 +11,7 @@ export interface ClientUserForm extends BaseEntity {
   avatar?: string | number;
   password?: string;
   status?: string;
+  version?: number;
 }
 
 export interface ClientUserQuery extends PageQuery {
@@ -31,6 +32,7 @@ export interface ClientUserVO extends BaseEntity {
   gender?: string;
   avatar?: string | number;
   status: string;
+  version: number;
   loginIp?: string;
   loginDate?: string;
 }

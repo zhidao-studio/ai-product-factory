@@ -112,7 +112,7 @@ export default function Index() {
   const handleLogout = async () => {
     const { confirm } = await Taro.showModal({
       title: '退出登录',
-      content: '确定退出当前产品用户账号吗？',
+      content: '确定退出当前应用用户账号吗？',
       confirmColor: colors.colorError,
     })
     if (!confirm) return
@@ -130,8 +130,8 @@ export default function Index() {
     <View className={`page page-${resolvedMode}`}>
       <View className='page-content'>
         <View className='page-header'>
-          <Text className={`title title-${resolvedMode}`}>产品 HarmonyOS 端</Text>
-          <Text className={`subtitle subtitle-${resolvedMode}`}>产品用户服务</Text>
+          <Text className={`title title-${resolvedMode}`}>HarmonyOS 客户端</Text>
+          <Text className={`subtitle subtitle-${resolvedMode}`}>应用用户服务</Text>
         </View>
 
         <View className='content-grid'>
@@ -143,7 +143,7 @@ export default function Index() {
 
           {user ? (
             <View className={`card card-${resolvedMode} session-card`}>
-              <Text className={`card-title card-title-${resolvedMode}`}>当前产品用户</Text>
+              <Text className={`card-title card-title-${resolvedMode}`}>当前应用用户</Text>
               <View className={`info-row info-row-${resolvedMode}`}><Text className={`info-label info-label-${resolvedMode}`}>用户 ID</Text><Text className={`body-text-${resolvedMode}`}>{String(user.userId)}</Text></View>
               <View className={`info-row info-row-${resolvedMode}`}><Text className={`info-label info-label-${resolvedMode}`}>用户名</Text><Text className={`body-text-${resolvedMode}`}>{user.userName}</Text></View>
               <View className={`info-row info-row-${resolvedMode}`}><Text className={`info-label info-label-${resolvedMode}`}>昵称</Text><Text className={`body-text-${resolvedMode}`}>{user.nickName}</Text></View>
@@ -153,7 +153,7 @@ export default function Index() {
             </View>
           ) : (
             <View className={`card card-${resolvedMode} session-card`}>
-              <Text className={`card-title card-title-${resolvedMode}`}>产品用户登录</Text>
+              <Text className={`card-title card-title-${resolvedMode}`}>应用用户登录</Text>
               <View className='login-tabs'>
                 <View className={`login-tab login-tab-${resolvedMode} ${mode === 'password' ? `login-tab-active-${resolvedMode}` : ''}`} onClick={() => setMode('password')}>
                   <Text className={mode === 'password' ? `primary-text-${resolvedMode}` : `secondary-text-${resolvedMode}`}>账号密码</Text>
@@ -182,7 +182,7 @@ export default function Index() {
                       </View>
                     </View>
                   ) : null}
-                  <Text className={`helper-text helper-text-${resolvedMode}`}>开发环境产品用户示例：client / admin123。</Text>
+                  <Text className={`helper-text helper-text-${resolvedMode}`}>开发环境应用用户示例：client / admin123。</Text>
                 </View>
               ) : (
                 <View>

@@ -1,4 +1,4 @@
-/** HarmonyOS 产品端运行配置。 */
+/** HarmonyOS 客户端运行配置。 */
 export const appEnv = {
   /** 由 Taro 构建配置静态注入，运行时不依赖 Node process。 */
   baseApi: __CLIENT_API_BASE_URL__,

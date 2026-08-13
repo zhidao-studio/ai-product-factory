@@ -6,10 +6,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.dromara.client.domain.bo.ClientUserBo;
-import org.dromara.client.domain.vo.ClientUserVo;
-import org.dromara.client.domain.vo.ClientUserExportVo;
-import org.dromara.client.service.IClientUserService;
+import org.dromara.client.um.domain.bo.AppUserBo;
+import org.dromara.client.um.domain.vo.AppUserExportVo;
+import org.dromara.client.um.domain.vo.AppUserVo;
+import org.dromara.client.um.service.IAppUserService;
 import org.dromara.common.core.domain.PageResult;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.core.utils.StringUtils;
@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * 产品用户运营管理。
+ * 应用用户运营管理。
  *
  * @author Lion Li
  */
@@ -45,47 +45,47 @@ import java.util.List;
 @RequestMapping("/client/user")
 public class ClientUserController extends BaseController {
 
-    private final IClientUserService userService;
+    private final IAppUserService userService;
 
     /**
-     * 分页查询产品用户。
+     * 分页查询应用用户。
      */
     @SaCheckPermission("client:user:list")
     @GetMapping("/list")
-    public R<PageResult<ClientUserVo>> list(ClientUserBo bo, PageQuery pageQuery) {
+    public R<PageResult<AppUserVo>> list(AppUserBo bo, PageQuery pageQuery) {
         return R.ok(userService.queryPageList(bo, pageQuery));
     }
 
     /**
-     * 导出产品用户。
+     * 导出应用用户。
      */
     @SaCheckPermission("client:user:export")
-    @Log(title = "产品用户", businessType = BusinessType.EXPORT)
+    @Log(title = "应用用户", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(ClientUserBo bo, HttpServletResponse response) {
-        ExcelBuilder.of(userService.queryExportList(bo), ClientUserExportVo.class)
-            .sheetName("产品用户")
+    public void export(AppUserBo bo, HttpServletResponse response) {
+        ExcelBuilder.of(userService.queryExportList(bo), AppUserExportVo.class)
+            .sheetName("应用用户")
             .toResponse(response);
     }
 
     /**
-     * 查询产品用户详情。
+     * 查询应用用户详情。
      */
     @SaCheckPermission("client:user:query")
     @GetMapping("/{userId}")
-    public R<ClientUserVo> getInfo(@NotNull(message = "用户 ID 不能为空")
+    public R<AppUserVo> getInfo(@NotNull(message = "用户 ID 不能为空")
                                    @PathVariable Long userId) {
         return R.ok(userService.queryById(userId));
     }
 
     /**
-     * 新增产品用户。
+     * 新增应用用户。
      */
     @SaCheckPermission("client:user:add")
-    @Log(title = "产品用户", businessType = BusinessType.INSERT)
+    @Log(title = "应用用户", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody ClientUserBo bo) {
+    public R<Void> add(@Validated(AddGroup.class) @RequestBody AppUserBo bo) {
         if (!userService.checkUserNameUnique(bo)) {
             return R.fail("新增用户'" + bo.getUserName() + "'失败，登录账号已存在");
         } else if (StringUtils.isNotBlank(bo.getPhoneNumber()) && !userService.checkPhoneUnique(bo)) {
@@ -98,13 +98,13 @@ public class ClientUserController extends BaseController {
     }
 
     /**
-     * 修改产品用户。
+     * 修改应用用户。
      */
     @SaCheckPermission("client:user:edit")
-    @Log(title = "产品用户", businessType = BusinessType.UPDATE)
+    @Log(title = "应用用户", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping
-    public R<Void> edit(@Validated(EditGroup.class) @RequestBody ClientUserBo bo) {
+    public R<Void> edit(@Validated(EditGroup.class) @RequestBody AppUserBo bo) {
         if (!userService.checkUserNameUnique(bo)) {
             return R.fail("修改用户'" + bo.getUserName() + "'失败，登录账号已存在");
         } else if (StringUtils.isNotBlank(bo.getPhoneNumber()) && !userService.checkPhoneUnique(bo)) {
@@ -116,14 +116,14 @@ public class ClientUserController extends BaseController {
     }
 
     /**
-     * 重置产品用户密码。
+     * 重置应用用户密码。
      */
     @ApiEncrypt
     @SaCheckPermission("client:user:resetPwd")
-    @Log(title = "产品用户", businessType = BusinessType.UPDATE)
+    @Log(title = "应用用户", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping("/resetPwd")
-    public R<Void> resetPassword(@RequestBody ClientUserBo bo) {
+    public R<Void> resetPassword(@RequestBody AppUserBo bo) {
         if (bo.getUserId() == null || StringUtils.isBlank(bo.getPassword())) {
             return R.fail("用户 ID 和新密码不能为空");
         }
@@ -131,21 +131,21 @@ public class ClientUserController extends BaseController {
     }
 
     /**
-     * 修改产品用户状态。
+     * 修改应用用户状态。
      */
     @SaCheckPermission("client:user:edit")
-    @Log(title = "产品用户", businessType = BusinessType.UPDATE)
+    @Log(title = "应用用户", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping("/changeStatus")
-    public R<Void> changeStatus(@RequestBody ClientUserBo bo) {
+    public R<Void> changeStatus(@RequestBody AppUserBo bo) {
         return toAjax(userService.updateStatus(bo.getUserId(), bo.getStatus()));
     }
 
     /**
-     * 删除产品用户。
+     * 删除应用用户。
      */
     @SaCheckPermission("client:user:remove")
-    @Log(title = "产品用户", businessType = BusinessType.DELETE)
+    @Log(title = "应用用户", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userIds}")
     public R<Void> remove(@NotEmpty(message = "用户 ID 不能为空")
                           @PathVariable Long[] userIds) {

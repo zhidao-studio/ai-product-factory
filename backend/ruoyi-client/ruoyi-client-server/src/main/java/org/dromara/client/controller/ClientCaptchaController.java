@@ -36,7 +36,7 @@ import java.time.Duration;
 import java.util.LinkedHashMap;
 
 /**
- * 产品用户验证码控制器。
+ * 应用用户验证码控制器。
  *
  * @author Lion Li
  */

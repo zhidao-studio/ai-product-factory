@@ -7,10 +7,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.dromara.client.api.model.ClientLoginUser;
-import org.dromara.client.domain.vo.ClientApplicationVo;
-import org.dromara.client.domain.vo.ClientUserVo;
-import org.dromara.client.service.IClientApplicationService;
-import org.dromara.client.service.IClientUserService;
+import org.dromara.client.um.domain.vo.AppClientVo;
+import org.dromara.client.um.domain.vo.AppUserVo;
+import org.dromara.client.um.service.IAppClientService;
+import org.dromara.client.um.service.IAppUserService;
 import org.dromara.client.web.service.IClientAuthStrategy;
 import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.utils.StringUtils;
@@ -19,9 +19,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
- * 产品用户会话状态拦截器。
+ * 应用用户会话状态拦截器。
  * <p>
- * Admin 停用或删除产品用户、产品应用后，Client 端已有 Token 必须在下一次请求时立即失效。
+ * Admin 停用或删除应用用户、接入客户端后，Client 端已有 Token 必须在下一次请求时立即失效。
  *
  * @author Lion Li
  */
@@ -29,11 +29,11 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Component
 public class ClientSessionStatusInterceptor implements HandlerInterceptor {
 
-    private final IClientUserService userService;
-    private final IClientApplicationService applicationService;
+    private final IAppUserService userService;
+    private final IAppClientService clientService;
 
     /**
-     * 校验当前 Token 对应的产品用户和产品应用仍然有效。
+     * 校验当前 Token 对应的应用用户和接入客户端仍然有效。
      *
      * @param request  当前请求
      * @param response 当前响应
@@ -45,29 +45,29 @@ public class ClientSessionStatusInterceptor implements HandlerInterceptor {
         StpUtil.checkLogin();
         ClientLoginUser loginUser = LoginHelper.getLoginUser();
         if (ObjectUtil.isNull(loginUser)) {
-            invalidateSession("产品用户会话不存在");
+            invalidateSession("应用用户会话不存在");
         }
-        ClientUserVo user = userService.queryById(loginUser.getUserId());
+        AppUserVo user = userService.queryById(loginUser.getUserId());
         if (ObjectUtil.isNull(user) || !SystemConstants.NORMAL.equals(user.getStatus())) {
-            invalidateSession("产品用户已停用或不存在");
+            invalidateSession("应用用户已停用或不存在");
         }
         String tokenCredentialVersion = getTokenExtra(IClientAuthStrategy.CLIENT_CREDENTIAL_VERSION_KEY);
         if (!StringUtils.equals(String.valueOf(user.getCredentialVersion()), tokenCredentialVersion)) {
-            invalidateSession("产品用户凭证已变更，请重新登录");
+            invalidateSession("应用用户凭证已变更，请重新登录");
         }
 
         Object clientId = StpUtil.getExtra(LoginHelper.CLIENT_KEY);
-        ClientApplicationVo application = ObjectUtil.isNull(clientId)
+        AppClientVo client = ObjectUtil.isNull(clientId)
             ? null
-            : applicationService.queryByClientId(clientId.toString());
-        if (ObjectUtil.isNull(application) || !SystemConstants.NORMAL.equals(application.getStatus())) {
-            invalidateSession("产品应用已停用或不存在");
+            : clientService.queryByClientId(clientId.toString());
+        if (ObjectUtil.isNull(client) || !SystemConstants.NORMAL.equals(client.getStatus())) {
+            invalidateSession("接入客户端已停用或不存在");
         }
         String tokenAccessPath = getTokenExtra(LoginHelper.CLIENT_ACCESS_PATH_KEY);
         String tokenIpWhitelist = getTokenExtra(LoginHelper.CLIENT_IP_WHITELIST_KEY);
-        if (!StringUtils.equals(application.getAccessPath(), tokenAccessPath)
-            || !StringUtils.equals(application.getIpWhitelist(), tokenIpWhitelist)) {
-            invalidateSession("产品应用访问规则已变更，请重新登录");
+        if (!StringUtils.equals(client.getAccessPath(), tokenAccessPath)
+            || !StringUtils.equals(client.getIpWhitelist(), tokenIpWhitelist)) {
+            invalidateSession("接入客户端访问规则已变更，请重新登录");
         }
         return true;
     }

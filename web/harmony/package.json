@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "packageManager": "pnpm@11.2.2",
-  "description": "HarmonyOS 产品端独立工程 (Taro React)",
+  "description": "HarmonyOS 独立客户端工程 (Taro React)",
   "scripts": {
     "build:harmony": "taro build --type harmony_cpp",
     "dev:harmony": "npm run build:harmony -- --watch",

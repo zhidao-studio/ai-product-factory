@@ -5,7 +5,7 @@
 export const appEnv = {
   /** 由 Taro 构建配置静态注入，运行时不依赖 Node process。 */
   baseApi: __CLIENT_API_BASE_URL__,
-  /** 微信小程序产品端 client id */
+  /** 微信小程序客户端 client id */
   clientId: '7f4c1e2d8a9b4c6f9012d3e4f5a6b7c8',
   /** 是否开启登录/注册请求体加密（对应后端 @ApiEncrypt） */
   encryptEnabled: true,

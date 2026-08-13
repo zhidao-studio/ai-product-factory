@@ -42,7 +42,7 @@ export default function Index() {
   const handleLogout = async () => {
     const { confirm } = await Taro.showModal({
       title: '退出登录',
-      content: '确定退出当前产品用户账号吗？',
+      content: '确定退出当前应用用户账号吗？',
       confirmColor: colors.colorError,
     })
     if (!confirm) return
@@ -59,7 +59,7 @@ export default function Index() {
   return (
     <View className={`index theme-${resolvedMode}`}>
       <View className='page-header'>
-        <Text className='title'>产品小程序</Text>
+        <Text className='title'>微信小程序客户端</Text>
         <Text className='subtitle'>微信用户端</Text>
       </View>
 
@@ -73,7 +73,7 @@ export default function Index() {
 
       {user ? (
         <View className='card user-card'>
-          <Text className='card-title'>当前产品用户</Text>
+          <Text className='card-title'>当前应用用户</Text>
           <View className='info-row'><Text className='info-label'>用户 ID</Text><Text>{String(user.userId)}</Text></View>
           <View className='info-row'><Text className='info-label'>用户名</Text><Text>{user.userName}</Text></View>
           <View className='info-row'><Text className='info-label'>昵称</Text><Text>{user.nickName}</Text></View>
@@ -84,7 +84,7 @@ export default function Index() {
       ) : (
         <View className='card login-card'>
           <Text className='card-title'>微信授权登录</Text>
-          <Text className='secondary-text'>使用微信授权码完成产品用户身份认证。</Text>
+          <Text className='secondary-text'>使用微信授权码完成应用用户身份认证。</Text>
           <Button
             className='action-button primary-button'
             type='primary'

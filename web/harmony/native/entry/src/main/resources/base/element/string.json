@@ -1,7 +1,7 @@
 {
   "string": [
-    { "name": "module_desc", "value": "产品用户端" },
-    { "name": "EntryAbility_desc", "value": "产品 HarmonyOS 入口" },
-    { "name": "EntryAbility_label", "value": "产品 HarmonyOS 端" }
+    { "name": "module_desc", "value": "HarmonyOS 客户端" },
+    { "name": "EntryAbility_desc", "value": "HarmonyOS 客户端入口" },
+    { "name": "EntryAbility_label", "value": "HarmonyOS 客户端" }
   ]
 }

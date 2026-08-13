@@ -234,8 +234,8 @@ insert into sys_menu values(1761400000000000109, '在线用户', 176140000000000
 insert into sys_menu values(1761400000000000113, '缓存监控', 1761400000000000002, 5, 'cache', 'monitor/cache/index', '', 'N', 'Y', 'C', '0', '0', 'monitor:cache:list', 'redis', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '缓存监控菜单');
 insert into sys_menu values(1761400000000000115, '代码生成', 1761400000000000003, 2, 'gen', 'tool/gen/index', '', 'N', 'Y', 'C', '0', '0', 'tool:gen:list', 'code', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '代码生成菜单');
 insert into sys_menu values(1761400000000000123, '客户端管理', 1761400000000000001, 11, 'client', 'system/client/index', '', 'N', 'Y', 'C', '0', '0', 'system:client:list', 'international', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '客户端管理菜单');
-insert into sys_menu values(1761400000000000134, '产品用户', 1761400000000000007, 1, 'user', 'client/user/index', '', 'N', 'Y', 'C', '0', '0', 'client:user:list', 'user', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '产品用户管理菜单');
-insert into sys_menu values(1761400000000000135, '产品应用', 1761400000000000007, 2, 'application', 'client/application/index', '', 'N', 'Y', 'C', '0', '0', 'client:application:list', 'international', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '产品应用管理菜单');
+insert into sys_menu values(1761400000000000134, '应用用户', 1761400000000000007, 1, 'user', 'client/user/index', '', 'N', 'Y', 'C', '0', '0', 'client:user:list', 'user', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '应用用户管理菜单');
+insert into sys_menu values(1761400000000000135, '接入应用', 1761400000000000007, 2, 'application', 'client/application/index', '', 'N', 'Y', 'C', '0', '0', 'client:application:list', 'international', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '接入应用管理菜单');
 insert into sys_menu values(1761400000000000116, '修改生成配置', 1761400000000000003, 2, 'gen-edit/index/:tableId', 'tool/gen/editTable', '', 'N', 'N', 'C', '1', '0', 'tool:gen:edit', '#', '/tool/gen', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
 insert into sys_menu values(1761400000000000130, '分配用户', 1761400000000000001, 2, 'role-auth/user/:roleId', 'system/role/authUser', '', 'N', 'N', 'C', '1', '0', 'system:role:edit', '#', '/system/role', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
 insert into sys_menu values(1761400000000000131, '分配角色', 1761400000000000001, 1, 'user-auth/role/:userId', 'system/user/authRole', '', 'N', 'N', 'C', '1', '0', 'system:user:edit', '#', '/system/user', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
@@ -337,16 +337,16 @@ insert into sys_menu values(1761400000000001063, '客户端管理修改', 176140
 insert into sys_menu values(1761400000000001064, '客户端管理删除', 1761400000000000123, 4, '#', '', '', 'N', 'Y', 'F', '0', '0', 'system:client:remove', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
 insert into sys_menu values(1761400000000001065, '客户端管理导出', 1761400000000000123, 5, '#', '', '', 'N', 'Y', 'F', '0', '0', 'system:client:export', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
 -- 产品运营按钮
-insert into sys_menu values(1761400000000001630, '产品用户查询', 1761400000000000134, 1, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:user:query', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
-insert into sys_menu values(1761400000000001631, '产品用户新增', 1761400000000000134, 2, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:user:add', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
-insert into sys_menu values(1761400000000001632, '产品用户修改', 1761400000000000134, 3, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:user:edit', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
-insert into sys_menu values(1761400000000001633, '产品用户删除', 1761400000000000134, 4, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:user:remove', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
-insert into sys_menu values(1761400000000001634, '产品用户导出', 1761400000000000134, 5, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:user:export', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
-insert into sys_menu values(1761400000000001635, '产品用户重置密码', 1761400000000000134, 6, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:user:resetPwd', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
-insert into sys_menu values(1761400000000001640, '产品应用查询', 1761400000000000135, 1, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:application:query', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
-insert into sys_menu values(1761400000000001641, '产品应用新增', 1761400000000000135, 2, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:application:add', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
-insert into sys_menu values(1761400000000001642, '产品应用修改', 1761400000000000135, 3, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:application:edit', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
-insert into sys_menu values(1761400000000001644, '产品应用导出', 1761400000000000135, 5, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:application:export', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
+insert into sys_menu values(1761400000000001630, '应用用户查询', 1761400000000000134, 1, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:user:query', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
+insert into sys_menu values(1761400000000001631, '应用用户新增', 1761400000000000134, 2, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:user:add', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
+insert into sys_menu values(1761400000000001632, '应用用户修改', 1761400000000000134, 3, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:user:edit', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
+insert into sys_menu values(1761400000000001633, '应用用户删除', 1761400000000000134, 4, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:user:remove', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
+insert into sys_menu values(1761400000000001634, '应用用户导出', 1761400000000000134, 5, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:user:export', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
+insert into sys_menu values(1761400000000001635, '应用用户重置密码', 1761400000000000134, 6, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:user:resetPwd', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
+insert into sys_menu values(1761400000000001640, '接入应用查询', 1761400000000000135, 1, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:application:query', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
+insert into sys_menu values(1761400000000001641, '接入应用新增', 1761400000000000135, 2, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:application:add', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
+insert into sys_menu values(1761400000000001642, '接入应用修改', 1761400000000000135, 3, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:application:edit', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
+insert into sys_menu values(1761400000000001644, '接入应用导出', 1761400000000000135, 5, '#', '', '', 'N', 'Y', 'F', '0', '0', 'client:application:export', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
 -- 测试菜单
 insert into sys_menu values(1761400000000001500, '测试单表', 1761400000000000005, 1, 'demo', 'demo/demo/index', '', 'N', 'Y', 'C', '0', '0', 'demo:demo:list', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '测试单表菜单');
 insert into sys_menu values(1761400000000001501, '测试单表查询', 1761400000000001500, 1, '#', '', '', 'N', 'Y', 'F', '0', '0', 'demo:demo:query', '#', '', '', 1761000000000000103, 1761100000000000001, sysdate(), null, null, '');
@@ -904,13 +904,13 @@ create table sys_client (
 insert into sys_client values (1762000000000000001, 'e5cd7e4891bf95d1d19206ce24a7b32e', 'pc', 'pc123', 'password,social', 'pc', null, null, 1800, 604800, 0, 0, 1761000000000000103, 1761100000000000001, sysdate(), 1761100000000000001, sysdate());
 
 -- ----------------------------
--- 产品用户信息表
+-- 应用用户信息表
 -- ----------------------------
-create table client_user (
-    user_id           bigint(20)      not null                   comment '产品用户ID',
+create table app_user (
+    user_id           bigint(20)      not null                   comment '应用用户ID',
     user_name         varchar(30)     not null                   comment '用户账号',
     nick_name         varchar(30)     not null                   comment '用户昵称',
-    user_type         varchar(10)     default 'app_user'         comment '用户类型（app_user产品用户）',
+    user_type         varchar(10)     default 'app_user'         comment '用户类型（app_user应用用户）',
     email             varchar(50)     default ''                 comment '用户邮箱',
     phone_number      varchar(11)     default ''                 comment '手机号码',
     gender            char(1)         default '0'                comment '用户性别（0男 1女 2未知）',
@@ -918,27 +918,28 @@ create table client_user (
     password          varchar(100)    default ''                 comment '密码',
     credential_version int            default 0                  comment '凭证版本（重置密码后递增）',
     status            char(1)         default '0'                comment '账号状态（0正常 1停用）',
-    del_flag          char(1)         default '0'                comment '删除标志（0代表存在 1代表删除）',
     login_ip          varchar(128)    default ''                 comment '最后登录IP',
     login_date        datetime                                   comment '最后登录时间',
+    remark            varchar(500)    default null               comment '备注',
     create_dept       bigint(20)      default null               comment '创建部门',
     create_by         bigint(20)      default null               comment '创建者',
     create_time       datetime                                   comment '创建时间',
     update_by         bigint(20)      default null               comment '更新者',
     update_time       datetime                                   comment '更新时间',
-    remark            varchar(500)    default null               comment '备注',
+    version           int             not null default 0         comment '乐观锁版本号',
+    del_flag          char(1)         default '0'                comment '删除标志（0代表存在 1代表删除）',
     primary key (user_id),
-    key idx_client_user_create_by (create_by),
-    unique key uk_client_user_user_name (user_name),
-    key idx_client_user_phone     (phone_number)
-) engine=innodb comment = '产品用户信息表';
+    key idx_app_user_create_by (create_by),
+    unique key uk_app_user_user_name (user_name),
+    key idx_app_user_phone     (phone_number)
+) engine=innodb comment = '应用用户信息表';
 
-insert into client_user values (1763000000000000001, 'client', '示例产品用户', 'app_user', '', '13800138000', '0', null, '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', 0, '0', '0', '', null, null, null, sysdate(), null, null, '默认产品用户');
+insert into app_user values (1763000000000000001, 'client', '示例应用用户', 'app_user', '', '13800138000', '0', null, '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', 0, '0', '', null, '默认应用用户', null, null, sysdate(), null, null, 0, '0');
 
 -- ----------------------------
--- 用户端应用授权表
+-- 接入应用授权表
 -- ----------------------------
-create table client_application (
+create table app_client (
     id                  bigint(20)    not null            comment '主键',
     client_id           varchar(64)   default null        comment '客户端id',
     client_key          varchar(32)   default null        comment '客户端key',
@@ -950,29 +951,30 @@ create table client_application (
     active_timeout      int(11)       default 1800        comment 'token活跃超时时间',
     timeout             int(11)       default 604800      comment 'token固定超时',
     status              char(1)       default '0'         comment '状态（0正常 1停用）',
-    del_flag            char(1)       default '0'         comment '删除标志（0代表存在 1代表删除）',
+    remark              varchar(500)  default null        comment '备注',
     create_dept         bigint(20)    default null        comment '创建部门',
     create_by           bigint(20)    default null        comment '创建者',
     create_time         datetime      default null        comment '创建时间',
     update_by           bigint(20)    default null        comment '更新者',
     update_time         datetime      default null        comment '更新时间',
-    remark              varchar(500)  default null        comment '备注',
+    version             int           not null default 0  comment '乐观锁版本号',
+    del_flag            char(1)       default '0'         comment '删除标志（0代表存在 1代表删除）',
     primary key (id),
-    unique key uk_client_application_client_id (client_id),
-    unique key uk_client_application_client_key (client_key)
-) engine=innodb comment='用户端应用授权表';
+    unique key uk_app_client_client_id (client_id),
+    unique key uk_app_client_client_key (client_key)
+) engine=innodb comment='接入应用授权表';
 
-insert into client_application values (1763100000000000001, '8f6e7d5c4b3a2910fedcba9876543210', 'h5', 'h5123', 'password,sms', 'h5', '/client/**,/auth/logout', null, 1800, 604800, '0', '0', null, null, sysdate(), null, null, 'H5客户端');
-insert into client_application values (1763100000000000002, '428a8310cd442757ae699df5d894f051', 'app', 'app123', 'phonePassword,sms', 'app', '/client/**,/auth/logout', null, 1800, 604800, '0', '0', null, null, sysdate(), null, null, 'App客户端');
-insert into client_application values (1763100000000000003, '7f4c1e2d8a9b4c6f9012d3e4f5a6b7c8', 'miniapp', 'miniapp123', 'xcx', 'miniapp', '/client/**,/auth/logout', null, 1800, 604800, '0', '0', null, null, sysdate(), null, null, '微信小程序客户端');
-insert into client_application values (1763100000000000004, '9c8b7a6d5e4f3210a1b2c3d4e5f60718', 'harmony', 'harmony123', 'password,sms', 'harmony', '/client/**,/auth/logout', null, 1800, 604800, '0', '0', null, null, sysdate(), null, null, 'HarmonyOS客户端');
+insert into app_client values (1763100000000000001, '8f6e7d5c4b3a2910fedcba9876543210', 'h5', 'h5123', 'password,sms', 'h5', '/client/**,/auth/logout', null, 1800, 604800, '0', 'H5客户端', null, null, sysdate(), null, null, 0, '0');
+insert into app_client values (1763100000000000002, '428a8310cd442757ae699df5d894f051', 'app', 'app123', 'phonePassword,sms', 'app', '/client/**,/auth/logout', null, 1800, 604800, '0', 'App客户端', null, null, sysdate(), null, null, 0, '0');
+insert into app_client values (1763100000000000003, '7f4c1e2d8a9b4c6f9012d3e4f5a6b7c8', 'miniapp', 'miniapp123', 'xcx', 'miniapp', '/client/**,/auth/logout', null, 1800, 604800, '0', '微信小程序客户端', null, null, sysdate(), null, null, 0, '0');
+insert into app_client values (1763100000000000004, '9c8b7a6d5e4f3210a1b2c3d4e5f60718', 'harmony', 'harmony123', 'password,sms', 'harmony', '/client/**,/auth/logout', null, 1800, 604800, '0', 'HarmonyOS客户端', null, null, sysdate(), null, null, 0, '0');
 
 -- ----------------------------
--- 产品用户第三方身份表
+-- 应用用户第三方身份表
 -- ----------------------------
-create table client_identity (
+create table app_user_identity (
     id                 bigint           not null        comment '主键',
-    user_id            bigint           not null        comment '产品用户ID',
+    user_id            bigint           not null        comment '应用用户ID',
     auth_id            varchar(255)     not null        comment '平台+平台唯一id',
     source             varchar(255)     not null        comment '用户来源',
     open_id            varchar(255)     default null    comment '平台编号唯一id',
@@ -998,10 +1000,11 @@ create table client_identity (
     create_time        datetime                         comment '创建时间',
     update_by          bigint(20)                       comment '更新者',
     update_time        datetime                         comment '更新时间',
+    version            int             not null default 0          comment '乐观锁版本号',
     del_flag           char(1)          default '0'     comment '删除标志（0代表存在 1代表删除）',
     primary key (id),
-    unique key uk_client_identity_auth_id (auth_id)
-) engine=innodb comment='产品用户第三方身份表';
+    unique key uk_app_user_identity_auth_id (auth_id)
+) engine=innodb comment='应用用户第三方身份表';
 
 
 CREATE TABLE test_demo

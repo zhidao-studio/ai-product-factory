@@ -101,7 +101,7 @@ export default function ClientApplicationPage() {
   const openAdd = () => {
     form.resetFields();
     form.setFieldsValue(defaultForm);
-    setModalTitle('新增产品应用');
+    setModalTitle('新增接入客户端');
     openModal();
   };
 
@@ -111,7 +111,7 @@ export default function ClientApplicationPage() {
     const res = await getClientApplication(target.id);
     form.resetFields();
     form.setFieldsValue(res.data);
-    setModalTitle('修改产品应用');
+    setModalTitle('修改接入客户端');
     openModal();
   };
 
@@ -127,7 +127,7 @@ export default function ClientApplicationPage() {
     const nextStatus = checked ? '0' : '1';
     const actionText = nextStatus === '0' ? '启用' : '停用';
     try {
-      await confirmAction(`确认要“${actionText}”产品应用“${row.clientKey}”吗？`);
+      await confirmAction(`确认要“${actionText}”接入客户端“${row.clientKey}”吗？`);
       await changeClientApplicationStatus(row.id, nextStatus);
       message.success(`${actionText}成功`);
       actionRef.current?.reload();
@@ -245,7 +245,7 @@ export default function ClientApplicationPage() {
   ];
 
   return (
-    <PageContainer title="产品应用">
+    <PageContainer title="接入客户端">
       <ProTable<ClientApplicationVO, ClientApplicationQuery>
         actionRef={actionRef}
         rowKey="id"
@@ -259,7 +259,7 @@ export default function ClientApplicationPage() {
           const res = await listClientApplication(query);
           return toTableData(res);
         }}
-        toolbar={{ title: '产品应用列表' }}
+        toolbar={{ title: '接入客户端列表' }}
         toolBarRender={() => [
           canAdd && (
             <Button key="add" type="primary" icon={<PlusOutlined />} onClick={openAdd}>
@@ -275,7 +275,7 @@ export default function ClientApplicationPage() {
             <Button
               key="export"
               icon={<DownloadOutlined />}
-              onClick={() => exportFile('/client/application/export', () => `client_application_${Date.now()}.xlsx`)}
+              onClick={() => exportFile('/client/application/export', () => `app_client_${Date.now()}.xlsx`)}
             >
               导出
             </Button>
@@ -295,6 +295,7 @@ export default function ClientApplicationPage() {
         onFinish={submitForm}
       >
         <ProFormText name="id" hidden />
+        <ProFormText name="version" hidden />
         <ProFormText name="clientId" hidden />
         <ProFormText
           name="clientKey"

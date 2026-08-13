@@ -72,7 +72,7 @@ export default function ClientUserPage() {
   const openAdd = () => {
     form.resetFields();
     form.setFieldsValue(defaultForm);
-    setModalTitle('新增产品用户');
+    setModalTitle('新增应用用户');
     openModal();
   };
 
@@ -82,7 +82,7 @@ export default function ClientUserPage() {
     const res = await getClientUser(target.userId);
     form.resetFields();
     form.setFieldsValue(res.data);
-    setModalTitle('修改产品用户');
+    setModalTitle('修改应用用户');
     openModal();
   };
 
@@ -107,7 +107,7 @@ export default function ClientUserPage() {
     const nextStatus = checked ? '0' : '1';
     const actionText = nextStatus === '0' ? '启用' : '停用';
     try {
-      await confirmAction(`确认要“${actionText}”产品用户“${row.userName}”吗？`);
+      await confirmAction(`确认要“${actionText}”应用用户“${row.userName}”吗？`);
       await changeClientUserStatus(row.userId, nextStatus);
       message.success(`${actionText}成功`);
       actionRef.current?.reload();
@@ -224,7 +224,7 @@ export default function ClientUserPage() {
               label: '删除',
               icon: <DeleteOutlined />,
               danger: true,
-              confirm: `是否确认删除产品用户“${row.userName}”？`,
+              confirm: `是否确认删除应用用户“${row.userName}”？`,
               confirmProps: { okText: '删除', okButtonProps: { danger: true } },
               onClick: () => remove(row)
             }
@@ -235,7 +235,7 @@ export default function ClientUserPage() {
   ];
 
   return (
-    <PageContainer title="产品用户">
+    <PageContainer title="应用用户">
       <ProTable<ClientUserVO, ClientUserQuery & { createTimeRange?: [string, string] }>
         actionRef={actionRef}
         rowKey="userId"
@@ -251,7 +251,7 @@ export default function ClientUserPage() {
           const res = await listClientUser(query);
           return toTableData(res);
         }}
-        toolbar={{ title: '产品用户列表' }}
+        toolbar={{ title: '应用用户列表' }}
         toolBarRender={() => [
           canAdd && (
             <Button key="add" type="primary" icon={<PlusOutlined />} onClick={openAdd}>
@@ -266,7 +266,7 @@ export default function ClientUserPage() {
           canRemove && (
             <Popconfirm
               key="delete"
-              title={`是否确认删除选中的 ${selectedIds.length} 个产品用户？`}
+              title={`是否确认删除选中的 ${selectedIds.length} 个应用用户？`}
               okText="删除"
               okButtonProps={{ danger: true }}
               onConfirm={() => remove()}
@@ -280,7 +280,7 @@ export default function ClientUserPage() {
             <Button
               key="export"
               icon={<DownloadOutlined />}
-              onClick={() => exportFile('/client/user/export', () => `client_user_${Date.now()}.xlsx`)}
+              onClick={() => exportFile('/client/user/export', () => `app_user_${Date.now()}.xlsx`)}
             >
               导出
             </Button>

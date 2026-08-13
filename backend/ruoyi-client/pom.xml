@@ -20,7 +20,7 @@
     <modules>
         <module>ruoyi-client-api</module>
         <module>ruoyi-client-server</module>
-        <module>../ruoyi-modules/ruoyi-client-system</module>
+        <module>ruoyi-client-um</module>
     </modules>
 
 </project>

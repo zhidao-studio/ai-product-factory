@@ -4,7 +4,7 @@ mybatis-plus:
     enabled: true
     output: console
 
---- # 产品业务数据源，与 Admin 共享业务数据
+--- # Client 业务数据源，与 Admin 共享业务数据
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
@@ -27,7 +27,7 @@ spring:
         maxLifetime: 1800000
         keepaliveTime: 30000
 
---- # 产品用户会话使用独立 Redis database
+--- # Client 会话使用独立 Redis database
 spring.data:
   redis:
     host: ${CLIENT_REDIS_HOST:localhost}

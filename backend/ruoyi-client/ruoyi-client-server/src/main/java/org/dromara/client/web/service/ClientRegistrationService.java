@@ -5,11 +5,11 @@ import com.baomidou.lock.annotation.Lock4j;
 import lombok.RequiredArgsConstructor;
 import me.zhyd.oauth.model.AuthToken;
 import me.zhyd.oauth.model.AuthUser;
-import org.dromara.client.domain.bo.ClientIdentityBo;
-import org.dromara.client.domain.bo.ClientUserBo;
-import org.dromara.client.domain.vo.ClientIdentityVo;
-import org.dromara.client.service.IClientIdentityService;
-import org.dromara.client.service.IClientUserService;
+import org.dromara.client.um.domain.bo.AppUserBo;
+import org.dromara.client.um.domain.bo.AppUserIdentityBo;
+import org.dromara.client.um.domain.vo.AppUserIdentityVo;
+import org.dromara.client.um.service.IAppUserIdentityService;
+import org.dromara.client.um.service.IAppUserService;
 import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.StringUtils;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 产品用户首次登录注册服务。
+ * 应用用户首次登录注册服务。
  *
  * @author Lion Li
  */
@@ -34,11 +34,11 @@ public class ClientRegistrationService {
 
     private static final int ACCOUNT_HASH_LENGTH = 24;
 
-    private final IClientUserService userService;
-    private final IClientIdentityService identityService;
+    private final IAppUserService userService;
+    private final IAppUserIdentityService identityService;
 
     /**
-     * 首次微信小程序登录时创建产品用户及第三方身份。
+     * 首次微信小程序登录时创建应用用户及第三方身份。
      *
      * @param authId   第三方认证唯一 ID
      * @param source   身份来源
@@ -48,15 +48,15 @@ public class ClientRegistrationService {
      */
     @Lock4j(keys = {"#authId"}, acquireTimeout = 5000)
     @Transactional(rollbackFor = Exception.class)
-    public ClientIdentityVo register(String authId, String source, AuthUser authUser, AuthToken token) {
-        ClientIdentityVo identity = identityService.queryBySourceAndOpenId(source, token.getOpenId());
+    public AppUserIdentityVo register(String authId, String source, AuthUser authUser, AuthToken token) {
+        AppUserIdentityVo identity = identityService.queryBySourceAndOpenId(source, token.getOpenId());
         if (ObjectUtil.isNotNull(identity)) {
             return identity;
         }
 
         String userName = buildUserName(authId);
         String nickName = limitLength(authUser.getNickname(), DEFAULT_NICK_NAME);
-        ClientUserBo userBo = new ClientUserBo();
+        AppUserBo userBo = new AppUserBo();
         userBo.setUserName(userName);
         userBo.setNickName(nickName);
         userBo.setEmail(StringUtils.EMPTY);
@@ -66,23 +66,23 @@ public class ClientRegistrationService {
         userBo.setStatus(SystemConstants.NORMAL);
         userBo.setRemark("微信小程序首次登录自动创建");
         if (!userService.insertByBo(userBo)) {
-            throw new ServiceException("创建产品用户失败");
+            throw new ServiceException("创建应用用户失败");
         }
 
-        ClientIdentityBo identityBo = buildIdentity(authId, source, authUser, token, userBo.getUserId(), userName);
+        AppUserIdentityBo identityBo = buildIdentity(authId, source, authUser, token, userBo.getUserId(), userName);
         if (!identityService.insertByBo(identityBo)) {
-            throw new ServiceException("创建产品用户第三方身份失败");
+            throw new ServiceException("创建应用用户第三方身份失败");
         }
-        ClientIdentityVo result = identityService.queryById(identityBo.getId());
+        AppUserIdentityVo result = identityService.queryById(identityBo.getId());
         if (ObjectUtil.isNull(result)) {
-            throw new ServiceException("查询产品用户第三方身份失败");
+            throw new ServiceException("查询应用用户第三方身份失败");
         }
         return result;
     }
 
-    private ClientIdentityBo buildIdentity(String authId, String source, AuthUser authUser, AuthToken token,
-                                           Long userId, String fallbackUserName) {
-        ClientIdentityBo bo = new ClientIdentityBo();
+    private AppUserIdentityBo buildIdentity(String authId, String source, AuthUser authUser, AuthToken token,
+                                            Long userId, String fallbackUserName) {
+        AppUserIdentityBo bo = new AppUserIdentityBo();
         bo.setUserId(userId);
         bo.setAuthId(authId);
         bo.setSource(source);

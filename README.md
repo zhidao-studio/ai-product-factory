@@ -11,9 +11,10 @@ ai-product-factory/
 │   │   └── ruoyi-admin-server/  # Admin 启动模块，8080
 │   ├── ruoyi-client/         # Client 总工程
 │   │   ├── ruoyi-client-api/    # Client Java 契约
+│   │   ├── ruoyi-client-um/     # 应用用户、接入客户端与第三方身份管理
 │   │   └── ruoyi-client-server/ # Client 启动模块，8082
 │   ├── ruoyi-common/         # Common 通用技术总工程（无业务 API 工程）
-│   ├── ruoyi-modules/        # 既有模块物理目录，归属由 Admin/Client 总工程声明
+│   ├── ruoyi-modules/        # 既有 Admin 业务模块物理目录
 │   ├── ruoyi-extend/         # 根工程直接管理的独立扩展服务
 │   └── script/sql/           # MySQL/Oracle/PostgreSQL/SQL Server 初始化脚本
 ├── web/
@@ -31,7 +32,7 @@ ai-product-factory/
 
 - Admin 是运营管理侧，不是四个用户端的统一容器。
 - Client 是客户端后台，承载 H5、App、微信小程序与 HarmonyOS 的认证和业务接口。
-- 后台管理员使用 `sys_*` 身份表；应用用户当前使用 `client_*` 身份表。
+- 后台管理员使用 `sys_*` 身份表；Client 使用 `app_user`、`app_client`、`app_user_identity`。
 - Admin 运营 Client 的业务数据。两侧工程分别维护自己的 Controller、身份与权限语义。
 - Admin 与 Client 分别维护 `ruoyi-admin-api`、`ruoyi-client-api`；Common 不承载业务 API。
 - 五个前端分别安装依赖、构建、部署，不建立共享前端包。
@@ -96,21 +97,25 @@ App 与 HarmonyOS 还需要各自原生开发工具，详见对应工程 README�
 |---|---|---|
 | 登录 | `POST /auth/login` | `POST /auth/login` |
 | 当前用户 | `GET /system/user/getInfo` | `GET /client/user/info` |
-| 身份数据 | `sys_user/sys_client` | `client_user/client_application/client_identity` |
+| 身份数据 | `sys_user/sys_client` | `app_user/app_client/app_user_identity` |
 | 运营应用用户 | `client:user:*` | 不暴露 |
 | 运营接入客户端 | `client:application:*` | 不暴露 |
 
 两个服务可以使用同名认证路径，因为部署域名和服务入口不同。受保护请求必须同时发送 Token 与对应的 `clientid`。
 
-微信小程序使用 `xcx` 授权；首次有效登录会自动创建应用用户和 `client_identity` 绑定，不会自动授予业务角色或权益。
+微信小程序使用 `xcx` 授权；首次有效登录会自动创建应用用户和 `app_user_identity` 绑定，不会自动授予业务角色或权益。
 
 应用用户或接入客户端被停用、用户密码被重置后，已签发的 Client Token 会在下一次受保护请求时失效。接入客户端标识创建后不可变且不提供删除，运营下线统一使用“停用”。
 
 ## 增加 Client 业务
 
-1. 在 `backend/ruoyi-modules/` 新建真实业务模块，沿用 RuoYi 的 Entity/BO/VO/Mapper/Service 结构。
-2. 将模块加入 Client 总工程；Admin 通过 Client 管理接口或独立数据适配层接入，不共享 Service 实现。
+1. 在 `backend/ruoyi-client/` 新建真实业务模块，沿用 RuoYi 的 Entity/BO/VO/Mapper/Service 结构。
+2. 将模块加入 Client 总工程。当前内嵌部署可由 Admin Server 依赖该模块提供运营接口；拆成独立服务后改为 Client 管理接口或 Admin 专属数据访问适配层。
 3. Admin 管理接口放 `ruoyi-admin-server`，面向用户的接口放 `ruoyi-client-server`，分别定义 DTO、权限和路径。
 4. 每个前端只在自身工程封装需要的 API，不引用其他前端源码。
+
+Client 新表统一使用 `app_*`，并包含七要素：`create_dept`、`create_by`、`create_time`、`update_by`、`update_time`、`version`、`del_flag`。主键与可选的 `remark` 不计入七要素。
+
+已有环境不会因重新启动而自动执行新版初始化 SQL。开发数据可丢弃时重建数据卷；需要保留数据时先备份，再人工迁移至 `app_*` 表。
 
 完整约束见 [CLAUDE.md](./CLAUDE.md)，协作规范见 [CONTRIBUTING.md](./CONTRIBUTING.md)，UI 规范见 [docs/AI-设计系统上下文.md](./docs/AI-设计系统上下文.md)。

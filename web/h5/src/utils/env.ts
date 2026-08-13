@@ -7,7 +7,7 @@ const env = import.meta.env;
 export const appEnv = {
   /** 后端接口代理前缀 */
   baseApi: env.VITE_APP_BASE_API || '/dev-api',
-  /** H5 产品端 client id */
+  /** H5 客户端 client id */
   clientId: env.VITE_APP_CLIENT_ID || '8f6e7d5c4b3a2910fedcba9876543210',
   /** 是否开启登录/注册请求体加密（对应后端 @ApiEncrypt） */
   encryptEnabled: env.VITE_APP_ENCRYPT === 'true',

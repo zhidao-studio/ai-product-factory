@@ -1,4 +1,4 @@
-# 产品用户端服务配置
+# Client 服务配置
 server:
   port: 8082
   servlet:
@@ -87,11 +87,11 @@ springdoc:
   api-docs:
     enabled: true
   info:
-    title: 'RuoYi Client 产品用户端接口文档'
-    description: 'H5、App、微信小程序和 HarmonyOS 共用的产品用户端接口'
+    title: 'RuoYi Client 接口文档'
+    description: 'H5、App、微信小程序和 HarmonyOS 共用的 Client 接口'
     version: '${project.version}'
   group-configs:
-    - group: 1.产品用户端
+    - group: 1.Client
       packages-to-scan: org.dromara.client
 
 xss:

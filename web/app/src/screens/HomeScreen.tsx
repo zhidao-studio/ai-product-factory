@@ -1,7 +1,7 @@
 /**
  * 主页（App 端，已登录态）
  *
- * 进入即拉取当前产品用户信息（/client/user/info）。提供主题切换与退出登录，
+ * 进入即拉取当前应用用户信息（/client/user/info）。提供主题切换与退出登录，
  * 退出或 token 失效时回调 onLogout 回到登录页（路由守卫接管）。
  */
 import { useEffect, useState } from 'react';
@@ -35,7 +35,7 @@ export default function HomeScreen({ onLogout }: { onLogout: () => void }) {
   }, []);
 
   const handleLogout = () => {
-    Alert.alert('退出登录', '确定退出当前产品用户账号吗？', [
+    Alert.alert('退出登录', '确定退出当前应用用户账号吗？', [
       { text: '取消', style: 'cancel' },
       {
         text: '退出',

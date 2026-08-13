@@ -1,4 +1,4 @@
-# HarmonyOS 产品端
+# HarmonyOS 客户端
 
 `web/harmony` 是独立的 Taro + React + TypeScript HarmonyOS 工程，使用 `@tarojs/plugin-platform-harmony-cpp`。它拥有独立源码、依赖、锁文件、存储键和平台登录契约。
 

@@ -44,6 +44,7 @@ export default function ClientUserFormModal({
       onFinish={onFinish}
     >
       <ProFormText name="userId" hidden />
+      <ProFormText name="version" hidden />
       <div className="form-grid">
         <ProFormText
           name="userName"

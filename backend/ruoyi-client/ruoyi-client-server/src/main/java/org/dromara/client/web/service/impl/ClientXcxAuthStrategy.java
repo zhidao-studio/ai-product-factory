@@ -13,12 +13,12 @@ import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.request.AuthWechatMiniProgramRequest;
 import org.dromara.client.api.model.ClientLoginUser;
 import org.dromara.client.api.model.ClientXcxLoginBody;
-import org.dromara.client.domain.bo.ClientIdentityBo;
-import org.dromara.client.domain.vo.ClientApplicationVo;
-import org.dromara.client.domain.vo.ClientIdentityVo;
-import org.dromara.client.domain.vo.ClientUserVo;
-import org.dromara.client.service.IClientIdentityService;
-import org.dromara.client.service.IClientUserService;
+import org.dromara.client.um.domain.bo.AppUserIdentityBo;
+import org.dromara.client.um.domain.vo.AppClientVo;
+import org.dromara.client.um.domain.vo.AppUserIdentityVo;
+import org.dromara.client.um.domain.vo.AppUserVo;
+import org.dromara.client.um.service.IAppUserIdentityService;
+import org.dromara.client.um.service.IAppUserService;
 import org.dromara.client.web.domain.vo.ClientLoginVo;
 import org.dromara.client.web.service.ClientLoginService;
 import org.dromara.client.web.service.ClientRegistrationService;
@@ -35,7 +35,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 /**
- * 产品用户微信小程序认证策略。
+ * 应用用户微信小程序认证策略。
  *
  * @author Lion Li
  */
@@ -58,11 +58,11 @@ public class ClientXcxAuthStrategy implements IClientAuthStrategy {
 
     private final ClientLoginService loginService;
     private final ClientRegistrationService registrationService;
-    private final IClientUserService userService;
-    private final IClientIdentityService identityService;
+    private final IAppUserService userService;
+    private final IAppUserIdentityService identityService;
 
     @Override
-    public ClientLoginVo login(String body, ClientApplicationVo client) {
+    public ClientLoginVo login(String body, AppClientVo client) {
         ClientXcxLoginBody loginBody = JsonUtils.parseObject(body, ClientXcxLoginBody.class);
         ValidatorUtils.validate(loginBody);
         if (StringUtils.isAnyBlank(configuredAppId, appSecret)) {
@@ -90,8 +90,8 @@ public class ClientXcxAuthStrategy implements IClientAuthStrategy {
             throw new ServiceException("微信小程序登录凭证校验失败");
         }
         AuthToken token = authUser.getToken();
-        ClientIdentityVo identity = loadOrRegisterIdentity(authUser, token);
-        ClientUserVo user = userService.queryById(identity.getUserId());
+        AppUserIdentityVo identity = loadOrRegisterIdentity(authUser, token);
+        AppUserVo user = userService.queryById(identity.getUserId());
         validateUser(user, token.getOpenId());
         refreshIdentity(identity, authUser, token);
 
@@ -108,8 +108,8 @@ public class ClientXcxAuthStrategy implements IClientAuthStrategy {
         return loginVo;
     }
 
-    private ClientIdentityVo loadOrRegisterIdentity(AuthUser authUser, AuthToken token) {
-        ClientIdentityVo identity = identityService.queryBySourceAndOpenId(WECHAT_MINIAPP_SOURCE, token.getOpenId());
+    private AppUserIdentityVo loadOrRegisterIdentity(AuthUser authUser, AuthToken token) {
+        AppUserIdentityVo identity = identityService.queryBySourceAndOpenId(WECHAT_MINIAPP_SOURCE, token.getOpenId());
         if (ObjectUtil.isNotNull(identity)) {
             return identity;
         }
@@ -125,9 +125,9 @@ public class ClientXcxAuthStrategy implements IClientAuthStrategy {
         }
     }
 
-    private void validateUser(ClientUserVo user, String openId) {
+    private void validateUser(AppUserVo user, String openId) {
         if (ObjectUtil.isNull(user)) {
-            log.info("微信用户：{} 未关联有效产品用户.", openId);
+            log.info("微信用户：{} 未关联有效应用用户.", openId);
             throw new UserException("user.not.exists", openId);
         }
         if (SystemConstants.DISABLE.equals(user.getStatus())) {
@@ -135,9 +135,10 @@ public class ClientXcxAuthStrategy implements IClientAuthStrategy {
         }
     }
 
-    private void refreshIdentity(ClientIdentityVo identity, AuthUser authUser, AuthToken token) {
-        ClientIdentityBo bo = new ClientIdentityBo();
+    private void refreshIdentity(AppUserIdentityVo identity, AuthUser authUser, AuthToken token) {
+        AppUserIdentityBo bo = new AppUserIdentityBo();
         bo.setId(identity.getId());
+        bo.setVersion(identity.getVersion());
         bo.setUserId(identity.getUserId());
         bo.setAuthId(WECHAT_MINIAPP_SOURCE + token.getOpenId());
         bo.setSource(WECHAT_MINIAPP_SOURCE);

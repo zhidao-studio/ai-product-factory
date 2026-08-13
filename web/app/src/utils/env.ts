@@ -6,13 +6,13 @@ import { Platform } from 'react-native';
  */
 const developmentBaseApi = Platform.OS === 'android' ? 'http://10.0.2.2:8082' : 'http://localhost:8082';
 
-/** 复制脚手架后替换为产品的 Client Gateway HTTPS 域名。 */
+/** 复制脚手架后替换为目标应用的 Client Gateway HTTPS 域名。 */
 const productionBaseApi = 'https://client-api.example.com';
 
 export const appEnv = {
   /** 开发直连 Client；生产只访问 Client Gateway。 */
   baseApi: __DEV__ ? developmentBaseApi : productionBaseApi,
-  /** App 产品端 client id */
+  /** App 客户端 client id */
   clientId: '428a8310cd442757ae699df5d894f051',
   /** 是否开启登录/注册请求体加密（对应后端 @ApiEncrypt） */
   encryptEnabled: true,

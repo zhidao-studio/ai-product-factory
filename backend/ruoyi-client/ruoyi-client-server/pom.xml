@@ -23,10 +23,10 @@
             <artifactId>mysql-connector-j</artifactId>
         </dependency>
 
-        <!-- Client 用户能力 -->
+        <!-- Client 用户与身份管理 -->
         <dependency>
             <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-client-system</artifactId>
+            <artifactId>ruoyi-client-um</artifactId>
         </dependency>
 
         <!-- Client 接口契约 -->

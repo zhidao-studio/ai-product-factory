@@ -5,8 +5,8 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.dromara.client.domain.vo.ClientApplicationVo;
-import org.dromara.client.service.IClientApplicationService;
+import org.dromara.client.um.domain.vo.AppClientVo;
+import org.dromara.client.um.service.IAppClientService;
 import org.dromara.client.web.domain.vo.ClientLoginVo;
 import org.dromara.client.web.service.ClientLoginService;
 import org.dromara.client.web.service.IClientAuthStrategy;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 产品用户认证控制器。
+ * 应用用户认证控制器。
  *
  * @author Lion Li
  */
@@ -34,11 +34,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class ClientAuthController {
 
-    private final IClientApplicationService applicationService;
+    private final IAppClientService clientService;
     private final ClientLoginService loginService;
 
     /**
-     * 产品用户登录。
+     * 应用用户登录。
      *
      * @param body 加密登录请求
      * @return 登录令牌
@@ -49,7 +49,7 @@ public class ClientAuthController {
     public R<ClientLoginVo> login(@RequestBody String body) {
         LoginBody loginBody = JsonUtils.parseObject(body, LoginBody.class);
         ValidatorUtils.validate(loginBody);
-        ClientApplicationVo client = applicationService.queryByClientId(loginBody.getClientId());
+        AppClientVo client = clientService.queryByClientId(loginBody.getClientId());
         if (ObjectUtil.isNull(client)
             || !CollUtil.contains(StringUtils.splitList(client.getGrantType()), loginBody.getGrantType())) {
             log.info("客户端 ID: {} 认证类型: {} 异常.", loginBody.getClientId(), loginBody.getGrantType());
@@ -62,7 +62,7 @@ public class ClientAuthController {
     }
 
     /**
-     * 退出当前产品用户登录态。
+     * 退出当前应用用户登录态。
      *
      * @return 操作结果
      */

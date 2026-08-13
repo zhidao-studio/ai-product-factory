@@ -7,9 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.dromara.client.api.model.ClientLoginUser;
 import org.dromara.client.api.model.ClientSmsLoginBody;
 import org.dromara.client.config.properties.ClientSmsProperties;
-import org.dromara.client.domain.vo.ClientApplicationVo;
-import org.dromara.client.domain.vo.ClientUserVo;
-import org.dromara.client.service.IClientUserService;
+import org.dromara.client.um.domain.vo.AppClientVo;
+import org.dromara.client.um.domain.vo.AppUserVo;
+import org.dromara.client.um.service.IAppUserService;
 import org.dromara.client.web.domain.vo.ClientLoginVo;
 import org.dromara.client.web.service.ClientLoginService;
 import org.dromara.client.web.service.IClientAuthStrategy;
@@ -29,7 +29,7 @@ import org.dromara.common.satoken.utils.LoginHelper;
 import org.springframework.stereotype.Service;
 
 /**
- * 产品用户短信验证码认证策略。
+ * 应用用户短信验证码认证策略。
  *
  * @author Lion Li
  */
@@ -39,17 +39,17 @@ import org.springframework.stereotype.Service;
 public class ClientSmsAuthStrategy implements IClientAuthStrategy {
 
     private final ClientLoginService loginService;
-    private final IClientUserService userService;
+    private final IAppUserService userService;
     private final ClientSmsProperties smsProperties;
 
     @Override
-    public ClientLoginVo login(String body, ClientApplicationVo client) {
+    public ClientLoginVo login(String body, AppClientVo client) {
         if (!smsProperties.isEnabled()) {
             throw new ServiceException("短信服务未启用");
         }
         ClientSmsLoginBody loginBody = JsonUtils.parseObject(body, ClientSmsLoginBody.class);
         ValidatorUtils.validate(loginBody);
-        ClientUserVo user = loadUserByPhoneNumber(loginBody.getPhoneNumber());
+        AppUserVo user = loadUserByPhoneNumber(loginBody.getPhoneNumber());
         loginService.checkLogin(LoginType.SMS, loginBody.getPhoneNumber(),
             () -> !validateSmsCode(loginBody.getPhoneNumber(), loginBody.getSmsCode()));
         ClientLoginUser loginUser = loginService.buildLoginUser(user);
@@ -75,8 +75,8 @@ public class ClientSmsAuthStrategy implements IClientAuthStrategy {
         return StringUtils.equals(code, smsCode);
     }
 
-    private ClientUserVo loadUserByPhoneNumber(String phoneNumber) {
-        ClientUserVo user = userService.queryByPhoneNumber(phoneNumber);
+    private AppUserVo loadUserByPhoneNumber(String phoneNumber) {
+        AppUserVo user = userService.queryByPhoneNumber(phoneNumber);
         if (ObjectUtil.isNull(user)) {
             log.info("登录用户：{} 不存在.", phoneNumber);
             throw new UserException("user.not.exists", phoneNumber);

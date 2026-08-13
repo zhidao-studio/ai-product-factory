@@ -38,9 +38,9 @@ H5 / App / 微信小程序 / HarmonyOS
 
 | 维度 | Admin | Client |
 |---|---|---|
-| 用户 | `sys_user` | 当前为 `client_user`，后续迁移为 `app_user` |
-| 客户端应用 | `sys_client` | 当前为 `client_application`，后续迁移为 `app_client` |
-| 第三方身份 | `sys_social` | 当前为 `client_identity`，后续迁移为 `app_user_identity` |
+| 用户 | `sys_user` | `app_user` |
+| 接入客户端 | `sys_client` | `app_client` |
+| 第三方身份 | `sys_social` | `app_user_identity` |
 | 当前用户接口 | `/system/user/getInfo` | `/client/user/info` |
 | Redis 会话 | Admin database/keyPrefix | Client 独立 database/keyPrefix |
 
@@ -53,12 +53,12 @@ Admin 管理员 Token 不能访问 Client 用户接口，Client Token 也不能�
 - `ruoyi-admin-api` 只承载 Admin 的 System、Workflow 与管理身份 Java 契约；`ruoyi-client-api` 只承载 Client 自己的会话和认证请求契约。
 - Common 不设 `common-api`：跨两侧复用的最小会话和数据权限技术接口属于既有 `ruoyi-common-core`，Common 不得定义 Admin/Client 业务契约，也不得依赖任一侧 API。
 - Admin 管理 Client 时，复杂业务操作调用 Client 管理接口；确需直接访问数据时，通过 Admin 专属适配层访问 Client 所拥有的表。
-- Client 模块由 Client 总工程聚合；Admin 模块由 Admin 总工程聚合。物理上继续使用 `backend/ruoyi-modules/` 存放既有模块，不再使用混合的 `ruoyi-modules` 聚合 POM。
+- Client 模块由 Client 总工程聚合；`ruoyi-client-um` 位于 `backend/ruoyi-client/`，拥有应用用户、接入客户端和第三方身份的数据模型、Mapper 与 Service。既有 Admin 模块继续位于 `backend/ruoyi-modules/`，由 Admin 总工程聚合。
 - 不创建没有真实代码的 API、UM、微服务或分层空壳工程。
 
-当前已完成 Maven 所有权与 Java API 拆分：旧 `ruoyi-api` 已删除，Admin/Client 使用各自登录上下文，Common 不再依赖 System API。仍有一项历史耦合：Admin Server 为现有运营页面直接依赖 `ruoyi-client-system`。它应在后续改为 Client 管理接口或 Admin 专属数据适配层，不是新代码可以继续复制的范例。
+当前已完成 Maven 所有权、Java API 和 Client UM 拆分：旧 `ruoyi-api` 已删除，Admin/Client 使用各自登录上下文，Common 不再依赖 System API。Client Server 使用 `ruoyi-client-um` 完成认证与身份管理；Admin Server 当前直接依赖该模块，对外提供应用用户和接入客户端运营接口。未来拆成独立部署服务时，Admin 应改为调用 Client 管理接口或使用 Admin 专属数据访问适配层，Client 始终不得反向依赖 Admin。
 
-当前受支持的完整构建入口是 `backend/pom.xml`。Admin、Client、Common 的 POM 首先表达模块所有权；在上述历史桥接依赖解除前，不把三个子总工程宣称为可在全新 Maven 仓库中完全独立发布的发行单元。
+当前受支持的完整构建入口是 `backend/pom.xml`。Admin、Client、Common 的 POM 首先表达模块所有权；在 Admin 仍以模块依赖方式管理 Client 数据期间，不把三个子总工程宣称为可在全新 Maven 仓库中完全独立发布的发行单元。
 
 ## 3. 技术栈与目录
 
@@ -83,12 +83,12 @@ backend/
 ├── ruoyi-client/                   # Client 总工程
 │   ├── pom.xml                     # 聚合 Client 所有模块
 │   ├── ruoyi-client-api/           # Client 会话与认证请求契约
+│   ├── ruoyi-client-um/            # 应用用户、接入客户端、第三方身份管理
 │   └── ruoyi-client-server/        # Client Boot、认证与专属 Controller
 ├── ruoyi-common/                   # Common 总工程，无业务 API 子工程
 ├── ruoyi-modules/
 │   ├── ruoyi-system/               # 归 Admin 总工程
-│   ├── ruoyi-client-system/        # 归 Client 总工程，名称待 UM 阶段收口
-│   └── ...                         # 新模块必须归属 Admin 或 Client
+│   └── ...                         # 既有 Admin 业务模块
 ├── ruoyi-extend/                   # 根工程直接管理的独立扩展服务
 └── script/sql/                     # 多数据库初始化脚本
 
@@ -100,7 +100,7 @@ web/
 └── harmony/
 ```
 
-不要批量改名 `ruoyi-modules` 物理目录；代码生成器和仓库 Skill 仍以该目录为模板入口。模块的 Maven 所有权以 Admin/Client 总工程的 `<modules>` 为准。
+不要批量改名 `ruoyi-modules` 物理目录；代码生成器和仓库 Skill 仍以该目录为模板入口。新增 Client 模块放入 `backend/ruoyi-client/`，所有模块的 Maven 所有权以所属总工程的 `<modules>` 为准。
 
 API 模块只放存在真实跨模块消费者的 Java 契约。HTTP Controller、仅启动服务使用的响应 VO 和业务实现不因名称中含“接口”就进入 API 模块；没有消费者时禁止预建空 Service、DTO 或微服务契约。
 
@@ -193,7 +193,7 @@ e5cd7e4891bf95d1d19206ce24a7b32e
 | `sms` | `phoneNumber,smsCode,clientId,grantType` | 先获取短信验证码 |
 | `xcx` | `xcxCode,clientId,grantType` | 仅微信小程序，来自 `Taro.login` |
 
-微信小程序首次使用有效 `xcxCode` 登录时，Client 会在同一事务内创建应用用户与 `client_identity` 绑定；重复请求通过分布式锁和数据库唯一键保证幂等。该行为只建立用户身份，不自动授予业务角色或权益。
+微信小程序首次使用有效 `xcxCode` 登录时，Client 会在同一事务内创建应用用户与 `app_user_identity` 绑定；重复请求通过分布式锁和数据库唯一键保证幂等。该行为只建立用户身份，不自动授予业务角色或权益。
 
 Client 登录成功只返回以下字段，禁止前端声明不存在的 refresh token、scope 或 openid：
 
@@ -232,7 +232,7 @@ Client 登录成功只返回以下字段，禁止前端声明不存在的 refres
 - 登录策略参照原 `IAuthStrategy` 的 Bean 路由写法，不自建另一套框架级安全上下文。
 - 公共技术模块 `ruoyi-common` 不放 Client 密钥、微信 AppID 或业务常量。
 - 新模块必须包含真实能力；没有业务代码时不要建立 package-info 空壳。
-- 已删除的 `ruoyi-product` 不属于本脚手架，禁止恢复；未来模块直接使用真实业务域名称。
+- 新模块必须使用真实业务域名称，禁止使用没有明确职责的泛化占位名称。
 
 ### 5.2 前端
 
@@ -304,10 +304,12 @@ cd web/harmony && pnpm install && pnpm dev:harmony
 - `infra/init/01-init.sql` 是 Docker 新库的初始化事实来源；不要同时偷偷引入另一套 Flyway baseline。
 - MySQL、Oracle、PostgreSQL、SQL Server 脚本的 Client 三表与四端种子必须同步。
 - 表主键沿用雪花 ID，不使用自增；脚手架不建立物理外键。
-- Admin 与 Client 当前使用同一个 `ry-vue` Schema，但各自拥有不同表；新的 Client 表统一使用 `app_*`，不得与 Admin 的 `sys_*` 共表。
+- Admin 与 Client 当前使用同一个 `ry-vue` Schema，但各自拥有不同表；Client 表统一使用 `app_*`，不得与 Admin 的 `sys_*` 共表。
+- Client 表七要素精确定义为：`create_dept`（创建部门）、`create_by`（创建人）、`create_time`（创建时间）、`update_by`（更新人）、`update_time`（更新时间）、`version`（乐观锁版本）、`del_flag`（逻辑删除标记）。主键和 `remark` 不计入七要素。
 - Client Redis 使用独立 database 与 `client` keyPrefix；keyPrefix 不手工追加冒号。
-- 修改 client_application 后无需复用 Admin 的 sys_client 缓存。
-- `client_user.credential_version` 随密码重置递增并写入 Client Token；不得绕过版本校验恢复旧会话。
+- 修改 `app_client` 后无需复用 Admin 的 `sys_client` 缓存。
+- `app_user.credential_version` 随密码重置递增并写入 Client Token；不得绕过版本校验恢复旧会话。
+- Docker 初始化脚本只在空数据卷首次执行。已有开发环境可重建数据卷以获得 `app_*` 新结构；需要保留数据的环境必须先备份并人工迁移，不能依赖重启容器自动改表。
 
 ## 8. 常见问题
 

@@ -1,4 +1,4 @@
-# H5 产品端
+# H5 客户端
 
 `web/h5` 是独立的 React + TypeScript + Vite + antd-mobile 工程，只对接 Client 后端。
 
@@ -20,4 +20,4 @@ pnpm build
 - 当前用户：`GET /client/user/info`
 - 退出：`POST /auth/logout`
 - Token 存储键：`Client-H5-Token`
-- 开发环境产品用户：`client / admin123`
+- 开发环境应用用户：`client / admin123`

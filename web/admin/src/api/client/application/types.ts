@@ -15,6 +15,7 @@ export interface ClientApplicationForm extends BaseEntity {
   activeTimeout?: number;
   timeout?: number;
   status?: string;
+  version?: number;
 }
 
 export interface ClientApplicationQuery extends PageQuery {
@@ -39,4 +40,5 @@ export interface ClientApplicationVO extends BaseEntity {
   activeTimeout?: number;
   timeout?: number;
   status: string;
+  version: number;
 }

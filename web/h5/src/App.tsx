@@ -60,7 +60,7 @@ function App() {
     const confirmed = await new Promise<boolean>((resolve) => {
       Dialog.show({
         title: '退出登录',
-        content: '确定退出当前产品用户账号吗？',
+        content: '确定退出当前应用用户账号吗？',
         closeOnAction: true,
         actions: [[
           { key: 'cancel', text: '取消', onClick: () => resolve(false) },
@@ -81,7 +81,7 @@ function App() {
 
   return (
     <div className="app-shell">
-      <NavBar backArrow={false} className="app-nav">产品 H5 端</NavBar>
+      <NavBar backArrow={false} className="app-nav">H5 客户端</NavBar>
       <main className="page-content">
         <Card title="外观" className="theme-card">
           <p className="theme-status">当前模式：{resolvedMode === 'dark' ? '深色' : '浅色'}</p>
@@ -93,7 +93,7 @@ function App() {
         <Divider />
 
         {user ? (
-          <Card title="当前产品用户">
+          <Card title="当前应用用户">
             <dl className="user-list">
               <div className="user-row"><dt>用户 ID</dt><dd>{user.userId}</dd></div>
               <div className="user-row"><dt>用户名</dt><dd>{user.userName}</dd></div>
@@ -106,7 +106,7 @@ function App() {
             </Button>
           </Card>
         ) : (
-          <Card title="产品用户登录" className="login-card">
+          <Card title="应用用户登录" className="login-card">
             <div className="field">
               <label className="field-label" htmlFor="username">用户名</label>
               <Input id="username" placeholder="请输入用户名" value={username} onChange={setUsername} clearable />
@@ -132,7 +132,7 @@ function App() {
             <Button block color="primary" loading={loading} onClick={handleLogin}>
               登录
             </Button>
-            <p className="helper-text">开发环境产品用户示例：client / admin123。</p>
+            <p className="helper-text">开发环境应用用户示例：client / admin123。</p>
           </Card>
         )}
       </main>

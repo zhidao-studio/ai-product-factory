@@ -7,8 +7,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.client.api.model.ClientLoginUser;
-import org.dromara.client.domain.vo.ClientUserVo;
-import org.dromara.client.service.IClientUserService;
+import org.dromara.client.um.domain.vo.AppUserVo;
+import org.dromara.client.um.service.IAppUserService;
 import org.dromara.common.core.constant.CacheNames;
 import org.dromara.common.core.constant.Constants;
 import org.dromara.common.core.enums.LoginType;
@@ -25,7 +25,7 @@ import java.time.Duration;
 import java.util.function.Supplier;
 
 /**
- * 产品用户登录校验服务。
+ * 应用用户登录校验服务。
  *
  * @author Lion Li
  */
@@ -40,15 +40,15 @@ public class ClientLoginService {
     @Value("${user.password.lockTime}")
     private Integer lockTime;
 
-    private final IClientUserService userService;
+    private final IAppUserService userService;
 
     /**
-     * 构建产品用户登录上下文。
+     * 构建应用用户登录上下文。
      *
-     * @param user 产品用户
+     * @param user 应用用户
      * @return 登录上下文
      */
-    public ClientLoginUser buildLoginUser(ClientUserVo user) {
+    public ClientLoginUser buildLoginUser(AppUserVo user) {
         ClientLoginUser loginUser = new ClientLoginUser();
         loginUser.setUserId(user.getUserId());
         loginUser.setUsername(user.getUserName());
@@ -99,10 +99,10 @@ public class ClientLoginService {
         String ip = request == null ? StringUtils.EMPTY : ServletUtils.getClientIP(request);
         String clientId = request == null ? StringUtils.EMPTY : request.getHeader(LoginHelper.CLIENT_KEY);
         if (Constants.LOGIN_FAIL.equals(status)) {
-            log.warn("产品用户登录事件 => ip: {}, username: {}, status: {}, message: {}, clientId: {}",
+            log.warn("应用用户登录事件 => ip: {}, username: {}, status: {}, message: {}, clientId: {}",
                 ip, username, status, message, clientId);
         } else {
-            log.info("产品用户登录事件 => ip: {}, username: {}, status: {}, message: {}, clientId: {}",
+            log.info("应用用户登录事件 => ip: {}, username: {}, status: {}, message: {}, clientId: {}",
                 ip, username, status, message, clientId);
         }
     }
@@ -110,9 +110,9 @@ public class ClientLoginService {
     /**
      * 完成登录后的审计字段更新。
      *
-     * @param user 产品用户
+     * @param user 应用用户
      */
-    public void recordLoginSuccess(ClientUserVo user) {
+    public void recordLoginSuccess(AppUserVo user) {
         String ip = ServletUtils.getClientIP();
         userService.updateLastLoginInfo(user.getUserId(), ip);
         recordLoginInfo(user.getUserName(), Constants.LOGIN_SUCCESS,

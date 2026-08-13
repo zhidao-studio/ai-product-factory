@@ -12,7 +12,7 @@ export interface LoginResult {
   client_id: string;
 }
 
-/** 产品用户信息 */
+/** 应用用户信息 */
 export interface UserInfo {
   userId: number | string;
   userName: string;

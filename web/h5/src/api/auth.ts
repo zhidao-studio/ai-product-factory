@@ -28,7 +28,7 @@ export interface LoginParams {
   uuid?: string;
 }
 
-/** 产品用户信息 */
+/** 应用用户信息 */
 export interface UserInfo {
   userId: number | string;
   userName: string;

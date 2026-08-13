@@ -59,9 +59,9 @@ ai-product-factory/
 ├── backend/          # RuoYi-Vue-Plus Boot 6.x（Admin/Client 双入口）
 │   ├── pom.xml       # 后端根总工程
 │   ├── ruoyi-admin/  # Admin 总工程，含 admin-api / admin-server
-│   ├── ruoyi-client/ # Client 总工程，含 client-api / client-server
+│   ├── ruoyi-client/ # Client 总工程，含 client-api / client-um / client-server
 │   ├── ruoyi-common/ # Common 技术总工程，不定义业务 API
-│   └── ruoyi-modules/# 既有模块物理目录，所有权由 Admin/Client POM 声明
+│   └── ruoyi-modules/# 既有 Admin 业务模块物理目录
 ├── web/
 │   ├── admin/        # PC 后台 (React + antd, Umi)
 │   ├── h5/           # 移动 H5 (React + antd-mobile)
@@ -123,7 +123,7 @@ docs: 补充 CONTRIBUTING 协作规范
 
 ## 7. 编码约定
 
-- **后端**：遵循 RuoYi 的 Entity / BO / VO / Mapper / Service / Controller 分层，统一返回 `R<T>`，新增接口默认需 Sa-Token 鉴权；登录等敏感接口使用 `@ApiEncrypt`。新增模块必须归属 Admin 或 Client 总工程，Common 只承载中立技术能力。
+- **后端**：遵循 RuoYi 的 Entity / BO / VO / Mapper / Service / Controller 分层，统一返回 `R<T>`，新增接口默认需 Sa-Token 鉴权；登录等敏感接口使用 `@ApiEncrypt`。新增模块必须归属 Admin 或 Client 总工程，Common 只承载中立技术能力。`backend/ruoyi-client/ruoyi-client-um/` 负责 `AppUser`、`AppClient`、`AppUserIdentity` 及其 Mapper/Service；对应表使用 `app_*`，并具备 `create_dept`、`create_by`、`create_time`、`update_by`、`update_time`、`version`、`del_flag` 七要素。
 - **前端**：五个工程分别维护自己的 `src/api/request.ts`，不得跨工程引用源码或建立共享运行包；但每一份实现都必须遵守同一个 `R<T>`、`Authorization + clientid`、AES+RSA 与 401 契约。
 - **设计系统**：颜色/间距/字体/圆角等一律引用 `docs/` Token，不得硬编码。
 - **密钥与配置**：`.env` 含 RuoYi 默认开发密钥，仅用于本地开发；正式环境须替换为独立密钥并通过 CI/密钥管理注入，**不要**把真实生产密钥提交入库。
@@ -144,6 +144,7 @@ docs: 补充 CONTRIBUTING 协作规范
 - **前端登录 401「客户端ID与Token不匹配」**：受保护接口必须带 `clientid` 请求头，确认请求层未被改掉。
 - **前端连错服务**：Admin 连接 `8080`；四个客户端连接 `8082`。
 - **后端随机端口**：6.x 会随机分配端口，启动时显式锁定 Admin `8080`、Client `8082`。
+- **已有数据库仍是旧结构**：初始化 SQL 只在空数据卷首次执行；开发环境可重建数据卷，需要保留数据的环境必须先备份并人工迁移至 `app_*`。
 - **环境代理导致 `git push` 失败**：本仓库历史验证过用「去代理 + 强制 IPv4 直连」推送；如遇网络问题按该方式重试。
 
 更多排障与接口契约细节见 [`CLAUDE.md`](./CLAUDE.md)。

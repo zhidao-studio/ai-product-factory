@@ -415,10 +415,10 @@
                 <version>${revision}</version>
             </dependency>
 
-            <!-- Client 用户能力模块（当前过渡名称） -->
+            <!-- Client 用户与身份管理模块 -->
             <dependency>
                 <groupId>org.dromara</groupId>
-                <artifactId>ruoyi-client-system</artifactId>
+                <artifactId>ruoyi-client-um</artifactId>
                 <version>${revision}</version>
             </dependency>
 

@@ -1,7 +1,7 @@
 {
   "miniprogramRoot": "./dist/",
   "projectname": "miniapp",
-  "description": "独立的微信小程序产品端",
+  "description": "独立的微信小程序客户端",
   "appid": "touristappid",
   "setting": {
     "es6": true,
