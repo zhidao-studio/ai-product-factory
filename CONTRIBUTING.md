@@ -20,14 +20,15 @@
 
 | 依赖 | 版本 | 说明 |
 | --- | --- | --- |
-| JDK | **21** | 后端基于 Spring Boot 4.1 / RuoYi 6.x，须 JDK 21 |
-| Node.js | ≥ 22.12 | 同时满足 React Native App 与 Vite 8 的运行要求 |
-| pnpm | ≥ 10 | Admin、H5、小程序、HarmonyOS 包管理；具体版本以各工程 `packageManager` 为准 |
-| npm | 随 Node.js | React Native App 包管理 |
+| JDK | **25.0.4 LTS** | 后端生产与编译基线；Spring Boot 4.1 支持 Java 25 |
+| Node.js | **24.19.0 LTS** | 五个前端的生产与开发基线；各工程独立 `.node-version` |
+| pnpm | **11.21.0** | Admin、H5、小程序、HarmonyOS；各工程独立声明与锁定 |
+| npm | **12.0.2** | React Native App 唯一包管理器 |
 | Docker | 最新稳定版 | 提供 MySQL 8 / Redis 7 等中间件 |
-| Maven | 3.9+（或仓库内置 `mvnw`） | 后端构建 |
+| Maven | **3.9.16**（仓库内置 `mvnw`） | 后端稳定构建基线，Maven 4 RC 不在范围内 |
 
 > 端口约定：Admin 后端 `8080`、Client 后端 `8082`、MySQL `3306`、Redis `6379`。
+> 精确主框架、TypeScript 和兼容例外见 [`docs/工程版本基线.md`](./docs/工程版本基线.md)。版本升级后必须运行 `node scripts/verify-version-baseline.mjs`。
 
 ---
 

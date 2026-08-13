@@ -2,6 +2,14 @@
 
 `web/miniapp` 是独立的 Taro + React + TypeScript 微信小程序工程，不承载 H5、React Native 或 HarmonyOS 构建。
 
+## 版本基线
+
+- Node.js `24.19.0` LTS（见 `.node-version`），pnpm `11.21.0`
+- Taro 全家桶 `4.2.1`，TypeScript `7.0.2`
+- React `18.3.1`，webpack `5.91.0`
+
+Taro 4.2.1 的 React 插件官方 peer 约束为 React 18，webpack runner 也将 webpack 精确约束为 5.91.0；因此这两项使用 Taro 当前支持的最新稳定组合，不越过官方兼容边界升级到 React 19 或其他 webpack 版本。Taro 发布支持新主版本的稳定版后再整体升级，并重新执行类型检查与微信小程序构建。
+
 ## 开发与构建
 
 ```bash

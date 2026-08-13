@@ -2,6 +2,14 @@
 
 `web/h5` 是独立的 React + TypeScript + Vite + antd-mobile 工程，只对接 Client 后端。
 
+## 版本基线
+
+- Node.js 24.19.0 LTS + pnpm 11.21.0
+- React 19.2.8
+- antd-mobile 5.42.3
+- TypeScript 7.0.2
+- Vite 8.2.1 + `@vitejs/plugin-react` 6.0.5
+
 ## 开发与构建
 
 ```bash

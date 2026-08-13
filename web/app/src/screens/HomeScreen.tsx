@@ -5,33 +5,54 @@
  * 退出或 token 失效时回调 onLogout 回到登录页（路由守卫接管）。
  */
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Platform, StyleSheet, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Card, Text, Toast } from '@ant-design/react-native';
 import { useThemeTokens } from '../theme/useThemeTokens';
 import { useThemeMode } from '../theme/ThemeProvider';
+import {
+  AntdCardBody,
+  useAntdComponentStyles,
+} from '../theme/useAntdComponentStyles';
 import { getInfo, logout, type UserInfo } from '../api/auth';
+import { getToken } from '../utils/auth';
 
-export default function HomeScreen({ onLogout }: { onLogout: () => void }) {
-  const { colors, spacing, font, sizes } = useThemeTokens();
-  const touchHeight = Platform.OS === 'ios' ? sizes.touchMinIos : sizes.touchMinAndroid;
-  const { mode, toggle } = useThemeMode();
+export default function HomeScreen({
+  onLogout,
+}: {
+  onLogout: () => Promise<void>;
+}) {
+  const { breakpoints, colors, spacing, font } = useThemeTokens();
+  const { buttonHeight, buttonStyles, cardStyles } =
+    useAntdComponentStyles();
+  const { preference, toggle } = useThemeMode();
   const [user, setUser] = useState<UserInfo | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loadingInfo, setLoadingInfo] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const loadInfo = async () => {
+    setLoadingInfo(true);
+    setLoadFailed(false);
     try {
       const res = await getInfo();
       setUser(res.data);
     } catch {
-      // token 失效或接口异常：回到登录页
-      onLogout();
+      // 401 由请求层清理 Token；网络或服务异常保留登录态，允许用户重试。
+      setLoadFailed(true);
+    } finally {
+      setLoadingInfo(false);
     }
   };
 
   useEffect(() => {
     loadInfo();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleLogout = () => {
@@ -41,15 +62,16 @@ export default function HomeScreen({ onLogout }: { onLogout: () => void }) {
         text: '退出',
         style: 'destructive',
         onPress: async () => {
-          setLoading(true);
+          setLoggingOut(true);
+          const accessToken = getToken();
+          if (accessToken) logout(accessToken).catch(() => undefined);
           try {
-            await logout();
-          } catch {
-            // 服务端会话已失效时仍需清理本地 Token。
-          } finally {
-            setLoading(false);
-            onLogout();
+            await onLogout();
             Toast.show({ content: '已退出登录' });
+          } catch {
+            Toast.show({ content: '安全凭证清理失败，请重试' });
+          } finally {
+            setLoggingOut(false);
           }
         },
       },
@@ -57,41 +79,116 @@ export default function HomeScreen({ onLogout }: { onLogout: () => void }) {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.colorBgLayout, padding: spacing.base }]}>
-      <Card style={{ backgroundColor: colors.colorBgContainer }}>
-        <Card.Header title="当前账号" />
-        <Card.Body>
-          {user ? (
-            <View style={{ gap: spacing.xs }}>
-              <Text style={{ fontSize: font.fontSize }}>用户ID：{String(user.userId)}</Text>
-              <Text style={{ fontSize: font.fontSize }}>用户名：{user.userName}</Text>
-              <Text style={{ fontSize: font.fontSize }}>昵称：{user.nickName}</Text>
-              <Text style={{ fontSize: font.fontSize }}>
-                角色：{(user.roles || []).join('、') || '-'}
-              </Text>
-              <Text style={{ fontSize: font.fontSize }}>设备类型：{user.deviceType}</Text>
-            </View>
-          ) : (
-            <ActivityIndicator color={colors.colorPrimary} />
-          )}
-          <Button
-            size="small"
-            style={{ marginTop: spacing.sm, minHeight: touchHeight }}
-            onPress={toggle}
-          >
-            切换{mode === 'dark' ? '浅色' : '深色'}模式
-          </Button>
-        </Card.Body>
-      </Card>
-
-      <Button
-        type="warning"
-        loading={loading}
-        onPress={handleLogout}
-        style={{ marginTop: spacing.base, minHeight: touchHeight }}
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.colorBgLayout }]}
+    >
+      <ScrollView
+        contentContainerStyle={[
+          styles.scrollContent,
+          { padding: spacing.base },
+        ]}
       >
-        退出登录
-      </Button>
+        <View style={[styles.content, { maxWidth: breakpoints.xs }]}>
+          <Card
+            styles={cardStyles}
+            style={{ backgroundColor: colors.colorBgContainer }}
+          >
+            <Card.Header styles={cardStyles} title="当前账号" />
+            <AntdCardBody styles={cardStyles}>
+              <View style={{ paddingHorizontal: spacing.base }}>
+                {loadingInfo ? (
+                  <ActivityIndicator color={colors.colorPrimary} />
+                ) : user ? (
+                  <View style={{ gap: spacing.xs }}>
+                    <Text
+                      style={{
+                        color: colors.colorText,
+                        fontSize: font.fontSizeLG,
+                      }}
+                    >
+                      用户ID：{String(user.userId)}
+                    </Text>
+                    <Text
+                      style={{
+                        color: colors.colorText,
+                        fontSize: font.fontSizeLG,
+                      }}
+                    >
+                      用户名：{user.userName}
+                    </Text>
+                    <Text
+                      style={{
+                        color: colors.colorText,
+                        fontSize: font.fontSizeLG,
+                      }}
+                    >
+                      昵称：{user.nickName}
+                    </Text>
+                    <Text
+                      style={{
+                        color: colors.colorText,
+                        fontSize: font.fontSizeLG,
+                      }}
+                    >
+                      角色：{(user.roles || []).join('、') || '-'}
+                    </Text>
+                    <Text
+                      style={{
+                        color: colors.colorText,
+                        fontSize: font.fontSizeLG,
+                      }}
+                    >
+                      设备类型：{user.deviceType}
+                    </Text>
+                  </View>
+                ) : loadFailed ? (
+                  <View style={{ gap: spacing.xs }}>
+                    <Text
+                      style={{
+                        color: colors.colorTextSecondary,
+                        fontSize: font.fontSizeLG,
+                      }}
+                    >
+                      用户信息加载失败，请检查网络后重试
+                    </Text>
+                    <Button
+                      styles={buttonStyles}
+                      size="small"
+                      onPress={loadInfo}
+                      style={{ minHeight: buttonHeight }}
+                    >
+                      重新加载
+                    </Button>
+                  </View>
+                ) : null}
+                <Button
+                  styles={buttonStyles}
+                  size="small"
+                  style={{ marginTop: spacing.sm, minHeight: buttonHeight }}
+                  onPress={toggle}
+                >
+                  主题：
+                  {preference === 'system'
+                    ? '跟随系统'
+                    : preference === 'dark'
+                    ? '深色'
+                    : '浅色'}
+                </Button>
+              </View>
+            </AntdCardBody>
+          </Card>
+
+          <Button
+            styles={buttonStyles}
+            type="warning"
+            loading={loggingOut}
+            onPress={handleLogout}
+            style={{ marginTop: spacing.base, minHeight: buttonHeight }}
+          >
+            退出登录
+          </Button>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -99,6 +196,13 @@ export default function HomeScreen({ onLogout }: { onLogout: () => void }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: 'center',
+  },
+  content: {
+    width: '100%',
+    alignSelf: 'center',
   },
 });

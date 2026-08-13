@@ -5,7 +5,14 @@
  * 颜色随主题模式自动切换到 light / dark 双套。
  */
 import { useThemeMode } from './ThemeProvider';
-import { colors, darkColors, spacing, radius, sizes, font } from './tokens';
+import {
+  breakpoints,
+  font,
+  getSemanticColors,
+  radius,
+  sizes,
+  spacing,
+} from './tokens';
 
 export function useThemeTokens() {
   const { mode } = useThemeMode();
@@ -13,10 +20,11 @@ export function useThemeTokens() {
   return {
     mode,
     isDark,
-    colors: isDark ? darkColors : colors,
+    colors: getSemanticColors(mode),
     spacing,
     radius,
     sizes,
     font,
+    breakpoints,
   };
 }

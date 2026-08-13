@@ -66,7 +66,7 @@ Admin 管理员 Token 不能访问 Client 用户接口，Client Token 也不能�
 
 | 层 | 技术 |
 |---|---|
-| 后端 | RuoYi-Vue-Plus 6.x、Spring Boot 4.1、JDK 21、Sa-Token、MyBatis-Plus、Jetty |
+| 后端 | RuoYi-Vue-Plus 6.0、Spring Boot 4.1、JDK 25 LTS、Sa-Token、MyBatis-Plus、Jetty |
 | PC Admin | UmiJS 4、React、Ant Design/ProComponents，端口 8000 |
 | H5 | Vite、React、antd-mobile，端口 8081 |
 | App | React Native CLI、`@ant-design/react-native` |
@@ -74,6 +74,8 @@ Admin 管理员 Token 不能访问 Client 用户接口，Client Token 也不能�
 | HarmonyOS | 独立 Taro 4 Harmony CPP 工程 |
 | 基础设施 | MySQL 8、Redis 7、Admin/Client 双网关 |
 | 设计系统 | `docs/design-tokens.*` 与 `docs/平台适配/` |
+
+精确版本、兼容例外和升级流程以 [`docs/工程版本基线.md`](./docs/工程版本基线.md) 为准。生产运行时采用最新 LTS 的最新补丁；主框架和 TypeScript 编译器采用官方最新 GA。若最新 GA 尚未进入主框架的正式兼容矩阵，只能使用本文登记的最新兼容稳定组合，并在解除条件满足后升级。禁止 Beta、RC、Canary、Nightly、Snapshot，也禁止为了版本号在同一工程并装一套实际不生效的构建器。
 
 ```text
 backend/
@@ -189,6 +191,8 @@ e5cd7e4891bf95d1d19206ce24a7b32e
 | 微信小程序 | `7f4c1e2d8a9b4c6f9012d3e4f5a6b7c8` | `miniapp` | `xcx` |
 | HarmonyOS | `9c8b7a6d5e4f3210a1b2c3d4e5f60718` | `harmony` | `password,sms` |
 
+Client 种子用户的用户名为 `client`、手机号为 `13800138000`、密码为 `admin123`。H5 的 `password` 使用用户名，App 的 `phonePassword` 必须使用手机号；不要把全局用户名直接填入 App 手机号输入框。
+
 登录参数：
 
 | grantType | 请求字段 | 说明 |
@@ -258,6 +262,9 @@ Client 登录成功只返回以下字段，禁止前端声明不存在的 refres
 - H5/App/HarmonyOS 不能使用小程序的 xcx/AppID/rpx/存储键；微信小程序不能展示账号密码兜底，除非后端应用明确允许该 grant。
 - 登录结果与用户信息逐字段对齐 4.5；验证码 `uuid/img` 在关闭验证码时允许为空。
 - 401 清除本端 Token 并回到登录态；禁止使用 `Admin-Token` 作为任一 Client 端存储键。
+- App 使用 npm 与 `package-lock.json` 作为唯一依赖事实源；Token 必须保存到 iOS Keychain / Android Keystore，冷启动恢复完成前不得发业务请求。
+- App 当前固定使用 `@ant-design/react-native 5.4.3`、`react-native-gesture-handler 2.32.0`、`react-native-reanimated 4.5.3` 与 `react-native-worklets 0.11.4`。该组合用于兼容 Ant Design RN 的公开 Drawer/Swipeable 入口；升级时必须完成双平台原生回归，禁止改用库内部路径或依赖 peer 自动选版。
+- App 的主题偏好可保存到 AsyncStorage，但 Bearer Token 禁止写入该明文存储；Ant Design RN 图标字体必须通过 `react-native.config.js` 同步链接到 iOS 与 Android 原生工程。
 
 ### 5.3 UI
 

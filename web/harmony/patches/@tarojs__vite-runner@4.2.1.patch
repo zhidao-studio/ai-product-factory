@@ -1,0 +1,7 @@
+diff --git a/dist/harmony/template/app.js b/dist/harmony/template/app.js
+index 8d3c3dccfed8f97c9a0ae092512a9a443f499a82..d1379c83ad90a9f59501cda5dcc48afa24856ab6 100644
+--- a/dist/harmony/template/app.js
++++ b/dist/harmony/template/app.js
+@@ -105 +105 @@ class Parser extends base_1.default {
+-    let levelRes: number
++    let levelRes: number = 0

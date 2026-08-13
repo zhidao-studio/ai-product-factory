@@ -5,6 +5,7 @@
  * 供 React Native（@ant-design/react-native）映射成 ThemeProvider 的主题对象。
  * 修改 Token 请回到 docs 单源，再同步本文件。
  */
+import { Platform } from 'react-native';
 
 export const colors = {
   colorPrimary: '#1677FF',
@@ -41,8 +42,16 @@ export const darkColors = {
   colorSplit: 'rgba(255,255,255,0.12)',
 } as const;
 
+const darkSemanticColors = {
+  ...colors,
+  ...darkColors,
+  colorTextDisabled: darkColors.colorTextPlaceholder,
+  colorLink: colors.colorPrimaryHover,
+} as const;
+
 export const font = {
-  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif",
+  fontFamily:
+    "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif",
   fontSize: 14,
   fontSizeLG: 16,
   fontSizeSM: 12,
@@ -57,9 +66,26 @@ export const font = {
   lineHeight: 1.571,
 } as const;
 
-export const spacing = { xxs: 4, xs: 8, sm: 12, base: 16, md: 20, lg: 24, xl: 32, xxl: 48 } as const;
+export const spacing = {
+  xxs: 4,
+  xs: 8,
+  sm: 12,
+  base: 16,
+  md: 20,
+  lg: 24,
+  xl: 32,
+  xxl: 48,
+} as const;
 
-export const radius = { xs: 2, sm: 4, base: 6, lg: 8, outer: 4, circle: '50%', capsule: 'calc(100% / 2)' } as const;
+export const radius = {
+  xs: 2,
+  sm: 4,
+  base: 6,
+  lg: 8,
+  outer: 4,
+  circle: '50%',
+  capsule: 'calc(100% / 2)',
+} as const;
 
 export const sizes = {
   controlHeight: 32,
@@ -77,7 +103,8 @@ export const sizes = {
 
 export const shadows = {
   tertiary: '0 1px 2px 0 rgba(0,0,0,0.05)',
-  default: '0 6px 16px 0 rgba(0,0,0,0.08), 0 3px 6px -4px rgba(0,0,0,0.12), 0 9px 28px 8px rgba(0,0,0,0.05)',
+  default:
+    '0 6px 16px 0 rgba(0,0,0,0.08), 0 3px 6px -4px rgba(0,0,0,0.12), 0 9px 28px 8px rgba(0,0,0,0.05)',
 } as const;
 
 export const motion = {
@@ -89,9 +116,23 @@ export const motion = {
   easeOutBack: 'cubic-bezier(0.12,0.4,0.29,1.46)',
 } as const;
 
-export const zIndex = { base: 0, sticky: 10, popup: 1000, modal: 1000, notification: 2000 } as const;
+export const zIndex = {
+  base: 0,
+  sticky: 10,
+  popup: 1000,
+  modal: 1000,
+  notification: 2000,
+} as const;
 
-export const breakpoints = { xs: 480, sm: 576, md: 768, lg: 992, xl: 1200, xxl: 1600, xxxl: 1920 } as const;
+export const breakpoints = {
+  xs: 480,
+  sm: 576,
+  md: 768,
+  lg: 992,
+  xl: 1200,
+  xxl: 1600,
+  xxxl: 1920,
+} as const;
 
 /** 图表色板（light/dark 双套） */
 export const chartCategorical = [
@@ -107,35 +148,102 @@ export const chartCategorical = [
   { name: 'C10', light: '#5B8FF9', dark: '#85A5FF' },
 ] as const;
 
-export const chartSequentialBlue = ['#E6F4FF', '#69B1FF', '#1677FF', '#0958D9'] as const;
+export const chartSequentialBlue = [
+  '#E6F4FF',
+  '#69B1FF',
+  '#1677FF',
+  '#0958D9',
+] as const;
 export const chartDivergingBlueRed = ['#1677FF', '#F5F5F5', '#FF4D4F'] as const;
-export const chartAxis = { light: 'rgba(5,5,5,0.06)', dark: 'rgba(255,255,255,0.12)' } as const;
+export const chartAxis = {
+  light: 'rgba(5,5,5,0.06)',
+  dark: 'rgba(255,255,255,0.12)',
+} as const;
 
 export type ThemeMode = 'light' | 'dark';
+
+/** 返回结构一致的语义色，页面无需处理暗色色板缺少字段的问题。 */
+export function getSemanticColors(mode: ThemeMode = 'light') {
+  return mode === 'dark' ? darkSemanticColors : colors;
+}
 
 /**
  * 映射为 @ant-design/react-native 的 Provider theme（Partial<Theme>）。
  * 仅覆盖品牌色 / 文本 / 背景 / 边框等核心语义键，其余沿用库默认主题。
  */
 export function getAntdRnTheme(mode: ThemeMode = 'light') {
-  const d = mode === 'dark' ? darkColors : null;
+  const palette = getSemanticColors(mode);
+  const touchHeight =
+    Platform.OS === 'ios' ? sizes.touchMinIos : sizes.touchMinAndroid;
+  // Button 5.x 会在这些字段后拼接 alpha，必须提供六位 HEX，不能传 rgba()。
+  const alphaCompatibleText =
+    mode === 'dark' ? colors.colorBgContainer : darkColors.colorBgLayout;
   return {
-    brand_primary: d ? d.colorPrimary : colors.colorPrimary,
+    color_text_base: alphaCompatibleText,
+    color_text_base_inverse: colors.colorBgContainer,
+    color_text_caption: palette.colorTextSecondary,
+    color_text_paragraph: palette.colorText,
+    color_text_placeholder: palette.colorTextPlaceholder,
+    color_text_disabled: palette.colorTextDisabled,
+    color_link: palette.colorLink,
+    fill_base: palette.colorBgContainer,
+    fill_body: palette.colorBgLayout,
+    fill_tap: palette.colorBorder,
+    fill_disabled: palette.colorBorder,
+    fill_grey: palette.colorBgLayout,
+    fill_mask: palette.colorBgMask,
+    brand_primary: palette.colorPrimary,
     brand_primary_tap: colors.colorPrimaryActive,
-    brand_success: colors.colorSuccess,
-    brand_warning: colors.colorWarning,
-    brand_error: colors.colorError,
-    color_link: colors.colorLink,
-    color_text_base: d ? d.colorText : colors.colorText,
-    color_text_base_inverse: 'rgba(255,255,255,0.85)',
-    color_text_caption: d ? d.colorTextSecondary : colors.colorTextSecondary,
-    color_text_placeholder: d ? d.colorTextPlaceholder : colors.colorTextPlaceholder,
-    fill_base: d ? d.colorBgContainer : colors.colorBgContainer,
-    fill_body: d ? d.colorBgLayout : colors.colorBgLayout,
-    fill_mask: colors.colorBgMask,
-    border_color_base: d ? d.colorBorder : colors.colorBorder,
-    border_color_thin: d ? d.colorSplit : colors.colorSplit,
+    brand_success: palette.colorSuccess,
+    brand_warning: palette.colorWarning,
+    brand_error: palette.colorError,
+    border_color_base: palette.colorBorder,
+    border_color_thin: palette.colorSplit,
+    border_width_sm: sizes.lineWidth,
+    border_width_md: sizes.lineWidth,
+    border_width_lg: sizes.lineWidth,
+    font_size_base: font.fontSizeLG,
+    font_size_subhead: font.fontSizeLG,
+    font_size_caption: font.fontSizeLG,
+    font_size_caption_sm: font.fontSizeSM,
+    font_size_heading: font.fontSizeLG,
+    button_font_size: font.fontSizeLG,
+    button_font_size_sm: font.fontSizeSM,
+    button_height: touchHeight,
+    button_height_sm: touchHeight,
+    primary_button_fill: colors.colorPrimaryActive,
+    primary_button_fill_tap: colors.colorPrimaryActive,
+    ghost_button_color: palette.colorPrimary,
+    ghost_button_fill_tap: colors.colorPrimaryActive,
+    warning_button_fill: palette.colorError,
+    warning_button_fill_tap: palette.colorError,
+    radius_xs: radius.xs,
+    radius_sm: radius.sm,
+    radius_md: radius.lg,
+    radius_lg: radius.lg,
+    h_spacing_sm: spacing.xxs,
+    h_spacing_md: spacing.xs,
+    h_spacing_lg: spacing.base,
+    v_spacing_xs: spacing.xxs,
+    v_spacing_sm: spacing.xs,
+    v_spacing_md: spacing.sm,
+    v_spacing_lg: spacing.base,
+    v_spacing_xl: spacing.md,
+    toast_fill: colors.colorText,
+    toast_zindex: zIndex.notification,
   };
 }
 
-export default { colors, darkColors, font, spacing, radius, sizes, shadows, motion, zIndex, breakpoints, chartCategorical };
+export default {
+  colors,
+  darkColors,
+  font,
+  spacing,
+  radius,
+  sizes,
+  shadows,
+  motion,
+  zIndex,
+  breakpoints,
+  chartCategorical,
+};

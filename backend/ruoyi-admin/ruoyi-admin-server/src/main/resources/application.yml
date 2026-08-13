@@ -47,7 +47,7 @@ spring:
   application:
     name: RuoYi-Vue-Plus
   threads:
-    # 开启虚拟线程 仅jdk21可用
+    # 开启虚拟线程（JDK 21 及以上）
     virtual:
       enabled: false
   task:
