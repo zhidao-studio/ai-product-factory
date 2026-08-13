@@ -1,5 +1,7 @@
 # 多端 UI/UX 设计系统
 
+> 本目录同时包含仓库级 [工程现状与开发导航](./工程现状.md)。设计系统文档只约束 UI/UX，不覆盖根目录 `CLAUDE.md` 已确定的工程边界。
+
 > **版本**: v1.2.0 | **更新日期**: 2026-08-11
 > **技术栈**: React / React Native + Ant Design 全家桶
 > **适用平台**: 移动端（iOS / Android / HarmonyOS）、PC Web、H5、微信小程序

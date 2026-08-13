@@ -341,6 +341,7 @@ cd web/harmony && pnpm install && pnpm dev:harmony
 ## 9. 参考
 
 - Agent 摘要：`AGENTS.md`
+- 当前完成度与开发导航：`docs/工程现状.md`
 - 协作规范：`CONTRIBUTING.md`
 - 设计系统：`docs/AI-设计系统上下文.md`
 - 设计 Token：`docs/design-tokens.json`、`docs/design-tokens.ts`
