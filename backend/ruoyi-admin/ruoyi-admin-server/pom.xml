@@ -81,10 +81,10 @@
             <artifactId>ruoyi-system</artifactId>
         </dependency>
 
-        <!-- Client 用户与身份管理（当前由管理端暴露运营管理接口） -->
+        <!-- Client 管理接口契约 -->
         <dependency>
             <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-client-um</artifactId>
+            <artifactId>ruoyi-client-api</artifactId>
         </dependency>
 
         <!-- 调度任务模块 -->

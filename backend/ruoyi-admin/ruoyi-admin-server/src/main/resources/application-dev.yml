@@ -1,3 +1,9 @@
+--- # Client 内部管理接口
+client-management:
+  base-url: ${CLIENT_MANAGEMENT_BASE_URL:http://localhost:8082}
+  secret: ${CLIENT_MANAGEMENT_SHARED_SECRET:admin-client-development-shared-secret}
+  timeout: ${CLIENT_MANAGEMENT_TIMEOUT:5s}
+
 --- # 监控中心配置
 spring.boot.admin.client:
   # 增加客户端开关

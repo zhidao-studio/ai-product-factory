@@ -1,12 +1,12 @@
 package org.dromara.client.um.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.dromara.client.um.domain.AppUser;
 import org.dromara.client.um.domain.AppUserIdentity;
 import org.dromara.client.um.domain.bo.AppUserBo;
-import org.dromara.client.um.domain.vo.AppUserExportVo;
 import org.dromara.client.um.domain.vo.AppUserVo;
 import org.dromara.client.um.mapper.AppUserIdentityMapper;
 import org.dromara.client.um.mapper.AppUserMapper;
@@ -61,12 +61,6 @@ public class AppUserServiceImpl implements IAppUserService {
     @Override
     public List<AppUserVo> queryList(AppUserBo bo) {
         return userMapper.selectVoList(buildQueryWrapper(bo));
-    }
-
-    @Override
-    public List<AppUserExportVo> queryExportList(AppUserBo bo) {
-        List<AppUser> list = userMapper.selectList(buildQueryWrapper(bo));
-        return MapstructUtils.convert(list, AppUserExportVo.class);
     }
 
     private LambdaQueryWrapper<AppUser> buildQueryWrapper(AppUserBo bo) {
@@ -126,19 +120,20 @@ public class AppUserServiceImpl implements IAppUserService {
 
     @Override
     public Boolean updateStatus(Long userId, String status) {
-        return userMapper.lambda()
-            .set(AppUser::getStatus, status)
-            .eq(AppUser::getUserId, userId)
-            .update();
+        AppUser update = new AppUser();
+        update.setUserId(userId);
+        update.setStatus(status);
+        return userMapper.updateById(update) > 0;
     }
 
     @Override
     public Boolean resetPassword(Long userId, String password) {
-        return userMapper.lambda()
-            .set(AppUser::getPassword, password)
+        AppUser update = new AppUser();
+        update.setUserId(userId);
+        update.setPassword(password);
+        return userMapper.update(update, Wrappers.lambdaUpdate(AppUser.class)
             .setSql("credential_version = credential_version + 1")
-            .eq(AppUser::getUserId, userId)
-            .update();
+            .eq(AppUser::getUserId, userId)) > 0;
     }
 
     @Override

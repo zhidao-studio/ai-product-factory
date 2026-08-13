@@ -1,10 +1,8 @@
-package org.dromara.client.um.domain.vo;
+package org.dromara.web.domain.vo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
-import org.dromara.client.um.domain.AppClient;
+import org.dromara.client.api.admin.domain.AppClientAdminVo;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -12,13 +10,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * 接入客户端视图对象 app_client。
+ * Admin 接入客户端管理视图对象。
  *
  * @author Lion Li
  */
 @Data
-@AutoMapper(target = AppClient.class)
-public class AppClientVo implements Serializable {
+@AutoMapper(target = AppClientAdminVo.class)
+public class AppClientManagementVo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -37,13 +35,6 @@ public class AppClientVo implements Serializable {
      * 客户端 key。
      */
     private String clientKey;
-
-    /**
-     * 客户端密钥，仅供认证模块读取，不写入 JSON。
-     */
-    @JsonIgnore
-    @JsonProperty
-    private String clientSecret;
 
     /**
      * 允许的授权类型。

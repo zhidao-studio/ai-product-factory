@@ -31,7 +31,7 @@ public class FilterConfig {
     @FilterRegistration(
         name = "xssFilter",
         urlPatterns = "/*",
-        order = FilterRegistrationBean.HIGHEST_PRECEDENCE + 1,
+        order = FilterRegistrationBean.HIGHEST_PRECEDENCE + 2,
         dispatcherTypes = DispatcherType.REQUEST
     )
     public XssFilter xssFilter(XssProperties xssProperties) {

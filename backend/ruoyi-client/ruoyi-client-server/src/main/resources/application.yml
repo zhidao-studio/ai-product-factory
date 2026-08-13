@@ -67,6 +67,7 @@ security:
     - /error
     - /*/api-docs
     - /*/api-docs/**
+    - /internal/admin/**
 
 mybatis-plus:
   enableLogicDelete: true
@@ -96,7 +97,6 @@ springdoc:
 
 xss:
   enabled: true
-  excludeUrls: []
 
 management:
   endpoints:
@@ -116,6 +116,9 @@ spring.boot.admin.client:
 
 --- # 微信小程序配置
 client:
+  internal-admin:
+    max-clock-skew: 5m
+    nonce-ttl: 10m
   wechat:
     miniapp:
       app-id: ${CLIENT_WECHAT_MINIAPP_APP_ID:}

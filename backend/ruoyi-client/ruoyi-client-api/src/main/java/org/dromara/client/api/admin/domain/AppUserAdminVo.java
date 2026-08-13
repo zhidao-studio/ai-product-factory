@@ -1,23 +1,18 @@
-package org.dromara.client.um.domain.vo;
+package org.dromara.client.api.admin.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
-import org.dromara.client.um.domain.AppUser;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 应用用户视图对象 app_user。
+ * 应用用户管理视图。
  *
  * @author Lion Li
  */
 @Data
-@AutoMapper(target = AppUser.class)
-public class AppUserVo implements Serializable {
+public class AppUserAdminVo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -61,19 +56,6 @@ public class AppUserVo implements Serializable {
      * 头像 OSS ID。
      */
     private Long avatar;
-
-    /**
-     * 密码，仅供认证模块读取，不写入 JSON。
-     */
-    @JsonIgnore
-    @JsonProperty
-    private String password;
-
-    /**
-     * 凭证版本，仅用于 Client 会话有效性校验。
-     */
-    @JsonIgnore
-    private Integer credentialVersion;
 
     /**
      * 账号状态。

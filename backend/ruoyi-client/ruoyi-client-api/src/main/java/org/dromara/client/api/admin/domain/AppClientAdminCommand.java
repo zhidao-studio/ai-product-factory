@@ -1,24 +1,23 @@
-package org.dromara.client.um.domain.vo;
+package org.dromara.client.api.admin.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.github.linpeilie.annotations.AutoMapper;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
-import org.dromara.client.um.domain.AppClient;
+import org.dromara.common.core.validate.AddGroup;
+import org.dromara.common.core.validate.EditGroup;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * 接入客户端视图对象 app_client。
+ * 接入客户端管理写入命令。
  *
  * @author Lion Li
  */
 @Data
-@AutoMapper(target = AppClient.class)
-public class AppClientVo implements Serializable {
+public class AppClientAdminCommand implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -26,6 +25,7 @@ public class AppClientVo implements Serializable {
     /**
      * 主键。
      */
+    @NotNull(message = "主键不能为空", groups = EditGroup.class)
     private Long id;
 
     /**
@@ -36,13 +36,13 @@ public class AppClientVo implements Serializable {
     /**
      * 客户端 key。
      */
+    @NotBlank(message = "客户端 key 不能为空", groups = AddGroup.class)
     private String clientKey;
 
     /**
-     * 客户端密钥，仅供认证模块读取，不写入 JSON。
+     * 客户端密钥。
      */
-    @JsonIgnore
-    @JsonProperty
+    @NotBlank(message = "客户端密钥不能为空", groups = AddGroup.class)
     private String clientSecret;
 
     /**
@@ -53,11 +53,14 @@ public class AppClientVo implements Serializable {
     /**
      * 允许的授权类型列表。
      */
+    @NotNull(message = "授权类型不能为空", groups = {AddGroup.class, EditGroup.class})
+    @Size(min = 1, message = "授权类型不能为空", groups = {AddGroup.class, EditGroup.class})
     private List<String> grantTypeList;
 
     /**
      * 设备类型。
      */
+    @NotBlank(message = "设备类型不能为空", groups = {AddGroup.class, EditGroup.class})
     private String deviceType;
 
     /**
@@ -98,21 +101,12 @@ public class AppClientVo implements Serializable {
     /**
      * 乐观锁版本号。
      */
+    @NotNull(message = "乐观锁版本号不能为空", groups = EditGroup.class)
     private Long version;
 
     /**
      * 备注。
      */
     private String remark;
-
-    /**
-     * 创建时间。
-     */
-    private LocalDateTime createTime;
-
-    /**
-     * 更新时间。
-     */
-    private LocalDateTime updateTime;
 
 }

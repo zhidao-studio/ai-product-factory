@@ -29,7 +29,6 @@ export interface ClientApplicationVO extends BaseEntity {
   id: string | number;
   clientId: string;
   clientKey: string;
-  clientSecret: string;
   grantType?: string;
   grantTypeList?: string[];
   deviceType?: string;

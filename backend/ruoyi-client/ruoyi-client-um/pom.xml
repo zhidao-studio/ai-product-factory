@@ -29,18 +29,6 @@
             <artifactId>ruoyi-common-mybatis</artifactId>
         </dependency>
 
-        <!-- Excel 导出 -->
-        <dependency>
-            <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-common-excel</artifactId>
-        </dependency>
-
-        <!-- 敏感数据脱敏 -->
-        <dependency>
-            <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-common-sensitive</artifactId>
-        </dependency>
-
     </dependencies>
 
 </project>

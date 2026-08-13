@@ -119,10 +119,10 @@ public class AppClientServiceImpl implements IAppClientService {
 
     @Override
     public Boolean updateStatus(Long id, String status) {
-        return clientMapper.lambda()
-            .set(AppClient::getStatus, status)
-            .eq(AppClient::getId, id)
-            .update();
+        AppClient update = new AppClient();
+        update.setId(id);
+        update.setStatus(status);
+        return clientMapper.updateById(update) > 0;
     }
 
     private void fillEntityRules(AppClient entity, AppClientBo bo) {

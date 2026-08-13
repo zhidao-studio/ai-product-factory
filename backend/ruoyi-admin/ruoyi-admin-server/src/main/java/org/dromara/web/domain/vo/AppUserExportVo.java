@@ -1,10 +1,9 @@
-package org.dromara.client.um.domain.vo;
+package org.dromara.web.domain.vo;
 
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import org.apache.fesod.sheet.annotation.ExcelIgnoreUnannotated;
 import org.apache.fesod.sheet.annotation.ExcelProperty;
-import org.dromara.client.um.domain.AppUser;
 import org.dromara.common.excel.annotation.ExcelDictFormat;
 import org.dromara.common.excel.convert.ExcelDictConvert;
 
@@ -13,13 +12,13 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 应用用户导出视图对象。
+ * Admin 应用用户导出视图对象。
  *
  * @author Lion Li
  */
 @Data
 @ExcelIgnoreUnannotated
-@AutoMapper(target = AppUser.class)
+@AutoMapper(target = AppUserManagementVo.class)
 public class AppUserExportVo implements Serializable {
 
     @Serial

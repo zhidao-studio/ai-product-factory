@@ -1,7 +1,6 @@
 package org.dromara.client.um.service;
 
 import org.dromara.client.um.domain.bo.AppUserBo;
-import org.dromara.client.um.domain.vo.AppUserExportVo;
 import org.dromara.client.um.domain.vo.AppUserVo;
 import org.dromara.common.core.domain.PageResult;
 import org.dromara.common.mybatis.core.page.PageQuery;
@@ -43,11 +42,6 @@ public interface IAppUserService {
      * 查询应用用户列表。
      */
     List<AppUserVo> queryList(AppUserBo bo);
-
-    /**
-     * 查询应用用户导出列表。
-     */
-    List<AppUserExportVo> queryExportList(AppUserBo bo);
 
     /**
      * 校验用户账号是否唯一。

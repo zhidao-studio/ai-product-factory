@@ -63,3 +63,8 @@ sms:
       access-key-secret: ${CLIENT_SMS_ACCESS_KEY_SECRET:}
       signature: ${CLIENT_SMS_SIGNATURE:}
       sdk-app-id: ${CLIENT_SMS_SDK_APP_ID:}
+
+--- # Admin 调用 Client 的内部管理接口认证
+client:
+  internal-admin:
+    secret: ${CLIENT_INTERNAL_ADMIN_SHARED_SECRET:admin-client-development-shared-secret}

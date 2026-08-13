@@ -9,6 +9,8 @@ import org.dromara.common.core.domain.model.DataPermissionUser;
 import org.dromara.common.core.domain.model.LoginUserContext;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.ObjectUtils;
+import org.dromara.common.mybatis.context.AuditOperatorContext;
+import org.dromara.common.mybatis.context.AuditOperatorContext.AuditOperator;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.satoken.utils.LoginHelper;
 
@@ -45,20 +47,29 @@ public class InjectionMetaObjectHandler implements MetaObjectHandler {
 
                 // 如果创建人为空，则填充当前登录用户的信息
                 if (ObjectUtil.isNull(baseEntity.getCreateBy())) {
-                    LoginUserContext loginUser = getLoginUser();
-                    if (ObjectUtil.isNotNull(loginUser)) {
-                        Long userId = loginUser.getUserId();
-                        // 填充创建人、更新人和创建部门信息
-                        baseEntity.setCreateBy(userId);
-                        baseEntity.setUpdateBy(userId);
-                        Long deptId = loginUser instanceof DataPermissionUser permissionUser
-                            ? permissionUser.getDeptId() : DEFAULT_USER_ID;
-                        baseEntity.setCreateDept(ObjectUtils.notNull(baseEntity.getCreateDept(), deptId));
+                    AuditOperator auditOperator = AuditOperatorContext.get();
+                    if (ObjectUtil.isNotNull(auditOperator)) {
+                        Long operatorId = ObjectUtils.notNull(auditOperator.operatorId(), DEFAULT_USER_ID);
+                        Long operatorDeptId = ObjectUtils.notNull(auditOperator.operatorDeptId(), DEFAULT_USER_ID);
+                        baseEntity.setCreateBy(operatorId);
+                        baseEntity.setUpdateBy(operatorId);
+                        baseEntity.setCreateDept(ObjectUtils.notNull(baseEntity.getCreateDept(), operatorDeptId));
                     } else {
-                        // 填充创建人、更新人和创建部门信息
-                        baseEntity.setCreateBy(DEFAULT_USER_ID);
-                        baseEntity.setUpdateBy(DEFAULT_USER_ID);
-                        baseEntity.setCreateDept(ObjectUtils.notNull(baseEntity.getCreateDept(), DEFAULT_USER_ID));
+                        LoginUserContext loginUser = getLoginUser();
+                        if (ObjectUtil.isNotNull(loginUser)) {
+                            Long userId = loginUser.getUserId();
+                            // 填充创建人、更新人和创建部门信息
+                            baseEntity.setCreateBy(userId);
+                            baseEntity.setUpdateBy(userId);
+                            Long deptId = loginUser instanceof DataPermissionUser permissionUser
+                                ? permissionUser.getDeptId() : DEFAULT_USER_ID;
+                            baseEntity.setCreateDept(ObjectUtils.notNull(baseEntity.getCreateDept(), deptId));
+                        } else {
+                            // 填充创建人、更新人和创建部门信息
+                            baseEntity.setCreateBy(DEFAULT_USER_ID);
+                            baseEntity.setUpdateBy(DEFAULT_USER_ID);
+                            baseEntity.setCreateDept(ObjectUtils.notNull(baseEntity.getCreateDept(), DEFAULT_USER_ID));
+                        }
                     }
                 }
             } else {
@@ -88,8 +99,11 @@ public class InjectionMetaObjectHandler implements MetaObjectHandler {
                 baseEntity.setUpdateTime(current);
 
                 // 获取当前登录用户的ID，并填充更新人信息
-                LoginUserContext loginUser = getLoginUser();
-                Long userId = ObjectUtil.isNotNull(loginUser) ? loginUser.getUserId() : DEFAULT_USER_ID;
+                AuditOperator auditOperator = AuditOperatorContext.get();
+                LoginUserContext loginUser = ObjectUtil.isNull(auditOperator) ? getLoginUser() : null;
+                Long userId = ObjectUtil.isNotNull(auditOperator)
+                    ? ObjectUtils.notNull(auditOperator.operatorId(), DEFAULT_USER_ID)
+                    : ObjectUtil.isNotNull(loginUser) ? loginUser.getUserId() : DEFAULT_USER_ID;
                 baseEntity.setUpdateBy(userId);
             } else {
                 this.strictUpdateFill(metaObject, "updateTime", LocalDateTime.class, LocalDateTime.now());

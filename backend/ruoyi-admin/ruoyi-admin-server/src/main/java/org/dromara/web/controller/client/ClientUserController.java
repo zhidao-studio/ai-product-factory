@@ -1,18 +1,17 @@
 package org.dromara.web.controller.client;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.hutool.crypto.digest.BCrypt;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.dromara.client.um.domain.bo.AppUserBo;
-import org.dromara.client.um.domain.vo.AppUserExportVo;
-import org.dromara.client.um.domain.vo.AppUserVo;
-import org.dromara.client.um.service.IAppUserService;
+import org.dromara.client.api.admin.domain.AppUserAdminCommand;
+import org.dromara.client.api.admin.domain.AppUserAdminQuery;
+import org.dromara.client.api.admin.domain.AppUserPasswordCommand;
+import org.dromara.client.api.admin.domain.AppUserStatusCommand;
 import org.dromara.common.core.domain.PageResult;
 import org.dromara.common.core.domain.R;
-import org.dromara.common.core.utils.StringUtils;
+import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.encrypt.annotation.ApiEncrypt;
@@ -22,6 +21,9 @@ import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.redis.annotation.RepeatSubmit;
 import org.dromara.common.web.core.BaseController;
+import org.dromara.web.domain.vo.AppUserExportVo;
+import org.dromara.web.domain.vo.AppUserManagementVo;
+import org.dromara.web.service.ClientManagementService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,15 +47,15 @@ import java.util.List;
 @RequestMapping("/client/user")
 public class ClientUserController extends BaseController {
 
-    private final IAppUserService userService;
+    private final ClientManagementService clientManagementService;
 
     /**
      * 分页查询应用用户。
      */
     @SaCheckPermission("client:user:list")
     @GetMapping("/list")
-    public R<PageResult<AppUserVo>> list(AppUserBo bo, PageQuery pageQuery) {
-        return R.ok(userService.queryPageList(bo, pageQuery));
+    public R<PageResult<AppUserManagementVo>> list(AppUserAdminQuery query, PageQuery pageQuery) {
+        return R.ok(clientManagementService.queryUserPage(query, pageQuery));
     }
 
     /**
@@ -62,8 +64,11 @@ public class ClientUserController extends BaseController {
     @SaCheckPermission("client:user:export")
     @Log(title = "应用用户", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(AppUserBo bo, HttpServletResponse response) {
-        ExcelBuilder.of(userService.queryExportList(bo), AppUserExportVo.class)
+    public void export(AppUserAdminQuery query, HttpServletResponse response) {
+        List<AppUserExportVo> exportList = clientManagementService.queryUserList(query).stream()
+            .map(this::toUserExportVo)
+            .toList();
+        ExcelBuilder.of(exportList, AppUserExportVo.class)
             .sheetName("应用用户")
             .toResponse(response);
     }
@@ -73,9 +78,9 @@ public class ClientUserController extends BaseController {
      */
     @SaCheckPermission("client:user:query")
     @GetMapping("/{userId}")
-    public R<AppUserVo> getInfo(@NotNull(message = "用户 ID 不能为空")
-                                   @PathVariable Long userId) {
-        return R.ok(userService.queryById(userId));
+    public R<AppUserManagementVo> getInfo(@NotNull(message = "用户 ID 不能为空")
+                                          @PathVariable Long userId) {
+        return R.ok(clientManagementService.queryUserById(userId));
     }
 
     /**
@@ -85,16 +90,9 @@ public class ClientUserController extends BaseController {
     @Log(title = "应用用户", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping
-    public R<Void> add(@Validated(AddGroup.class) @RequestBody AppUserBo bo) {
-        if (!userService.checkUserNameUnique(bo)) {
-            return R.fail("新增用户'" + bo.getUserName() + "'失败，登录账号已存在");
-        } else if (StringUtils.isNotBlank(bo.getPhoneNumber()) && !userService.checkPhoneUnique(bo)) {
-            return R.fail("新增用户'" + bo.getUserName() + "'失败，手机号码已存在");
-        } else if (StringUtils.isNotBlank(bo.getEmail()) && !userService.checkEmailUnique(bo)) {
-            return R.fail("新增用户'" + bo.getUserName() + "'失败，邮箱账号已存在");
-        }
-        bo.setPassword(BCrypt.hashpw(bo.getPassword()));
-        return toAjax(userService.insertByBo(bo));
+    public R<Void> add(@Validated(AddGroup.class) @RequestBody AppUserAdminCommand command) {
+        clientManagementService.addUser(command);
+        return R.ok();
     }
 
     /**
@@ -104,15 +102,9 @@ public class ClientUserController extends BaseController {
     @Log(title = "应用用户", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping
-    public R<Void> edit(@Validated(EditGroup.class) @RequestBody AppUserBo bo) {
-        if (!userService.checkUserNameUnique(bo)) {
-            return R.fail("修改用户'" + bo.getUserName() + "'失败，登录账号已存在");
-        } else if (StringUtils.isNotBlank(bo.getPhoneNumber()) && !userService.checkPhoneUnique(bo)) {
-            return R.fail("修改用户'" + bo.getUserName() + "'失败，手机号码已存在");
-        } else if (StringUtils.isNotBlank(bo.getEmail()) && !userService.checkEmailUnique(bo)) {
-            return R.fail("修改用户'" + bo.getUserName() + "'失败，邮箱账号已存在");
-        }
-        return toAjax(userService.updateByBo(bo));
+    public R<Void> edit(@Validated(EditGroup.class) @RequestBody AppUserAdminCommand command) {
+        clientManagementService.updateUser(command);
+        return R.ok();
     }
 
     /**
@@ -123,11 +115,9 @@ public class ClientUserController extends BaseController {
     @Log(title = "应用用户", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping("/resetPwd")
-    public R<Void> resetPassword(@RequestBody AppUserBo bo) {
-        if (bo.getUserId() == null || StringUtils.isBlank(bo.getPassword())) {
-            return R.fail("用户 ID 和新密码不能为空");
-        }
-        return toAjax(userService.resetPassword(bo.getUserId(), BCrypt.hashpw(bo.getPassword())));
+    public R<Void> resetPassword(@Validated @RequestBody AppUserPasswordCommand command) {
+        clientManagementService.resetUserPassword(command);
+        return R.ok();
     }
 
     /**
@@ -137,8 +127,9 @@ public class ClientUserController extends BaseController {
     @Log(title = "应用用户", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping("/changeStatus")
-    public R<Void> changeStatus(@RequestBody AppUserBo bo) {
-        return toAjax(userService.updateStatus(bo.getUserId(), bo.getStatus()));
+    public R<Void> changeStatus(@Validated @RequestBody AppUserStatusCommand command) {
+        clientManagementService.updateUserStatus(command);
+        return R.ok();
     }
 
     /**
@@ -149,7 +140,12 @@ public class ClientUserController extends BaseController {
     @DeleteMapping("/{userIds}")
     public R<Void> remove(@NotEmpty(message = "用户 ID 不能为空")
                           @PathVariable Long[] userIds) {
-        return toAjax(userService.deleteWithValidByIds(List.of(userIds), true));
+        clientManagementService.deleteUsers(userIds);
+        return R.ok();
+    }
+
+    private AppUserExportVo toUserExportVo(AppUserManagementVo source) {
+        return MapstructUtils.convert(source, AppUserExportVo.class);
     }
 
 }

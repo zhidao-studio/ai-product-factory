@@ -150,13 +150,6 @@ export default function ClientApplicationPage() {
       render: (_, row) => <EllipsisText value={row.clientKey} maxWidth={150} />
     },
     {
-      title: '客户端密钥',
-      dataIndex: 'clientSecret',
-      search: false,
-      width: 180,
-      render: (_, row) => <EllipsisText value={row.clientSecret} maxWidth={160} />
-    },
-    {
       title: '授权类型',
       dataIndex: 'grantType',
       search: false,
@@ -303,12 +296,13 @@ export default function ClientApplicationPage() {
           rules={[{ required: true, message: '客户端 Key 不能为空' }]}
           fieldProps={{ disabled: editingApplication }}
         />
-        <ProFormText.Password
-          name="clientSecret"
-          label="客户端密钥"
-          rules={[{ required: true, message: '客户端密钥不能为空' }]}
-          fieldProps={{ disabled: editingApplication }}
-        />
+        {!editingApplication && (
+          <ProFormText.Password
+            name="clientSecret"
+            label="客户端密钥"
+            rules={[{ required: true, message: '客户端密钥不能为空' }]}
+          />
+        )}
         <ProFormSelect
           name="deviceType"
           label="设备类型"
