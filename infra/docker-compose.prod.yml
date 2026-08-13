@@ -53,7 +53,7 @@ services:
   admin-backend:
     image: ai-product-factory/ruoyi-admin:${APP_VERSION:-local}
     build:
-      context: ../backend/ruoyi-admin
+      context: ../backend/ruoyi-admin/ruoyi-admin-server
       dockerfile: Dockerfile
     init: true
     restart: unless-stopped
@@ -96,7 +96,7 @@ services:
   client-backend:
     image: ai-product-factory/ruoyi-client:${APP_VERSION:-local}
     build:
-      context: ../backend/ruoyi-client
+      context: ../backend/ruoyi-client/ruoyi-client-server
       dockerfile: Dockerfile
     init: true
     restart: unless-stopped

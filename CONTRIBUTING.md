@@ -22,7 +22,7 @@
 | --- | --- | --- |
 | JDK | **21** | 后端基于 Spring Boot 4.1 / RuoYi 6.x，须 JDK 21 |
 | Node.js | ≥ 22.12 | 同时满足 React Native App 与 Vite 8 的运行要求 |
-| pnpm | ≥ 8 | Admin、H5、小程序、HarmonyOS 包管理 |
+| pnpm | ≥ 10 | Admin、H5、小程序、HarmonyOS 包管理；具体版本以各工程 `packageManager` 为准 |
 | npm | 随 Node.js | React Native App 包管理 |
 | Docker | 最新稳定版 | 提供 MySQL 8 / Redis 7 等中间件 |
 | Maven | 3.9+（或仓库内置 `mvnw`） | 后端构建 |
@@ -57,9 +57,11 @@ Admin 开发账号：`admin / admin123`；Client 开发账号：`client / admin1
 ```
 ai-product-factory/
 ├── backend/          # RuoYi-Vue-Plus Boot 6.x（Admin/Client 双入口）
-│   ├── ruoyi-admin/  # 后台管理服务
-│   ├── ruoyi-client/ # 产品用户服务
-│   └── ruoyi-modules/# 原框架模块与共享产品业务模块
+│   ├── pom.xml       # 后端根总工程
+│   ├── ruoyi-admin/  # Admin 总工程，含 ruoyi-admin-server
+│   ├── ruoyi-client/ # Client 总工程，含 ruoyi-client-server
+│   ├── ruoyi-common/ # Common 技术总工程
+│   └── ruoyi-modules/# 既有模块物理目录，所有权由 Admin/Client POM 声明
 ├── web/
 │   ├── admin/        # PC 后台 (React + antd, Umi)
 │   ├── h5/           # 移动 H5 (React + antd-mobile)
@@ -121,7 +123,7 @@ docs: 补充 CONTRIBUTING 协作规范
 
 ## 7. 编码约定
 
-- **后端**：遵循 RuoYi 的 Entity / BO / VO / Mapper / Service / Controller 分层，统一返回 `R<T>`，新增接口默认需 Sa-Token 鉴权；登录等敏感接口使用 `@ApiEncrypt`。共享业务能力放 `ruoyi-modules`，Admin/Client Controller 和认证逻辑放各自启动工程。
+- **后端**：遵循 RuoYi 的 Entity / BO / VO / Mapper / Service / Controller 分层，统一返回 `R<T>`，新增接口默认需 Sa-Token 鉴权；登录等敏感接口使用 `@ApiEncrypt`。新增模块必须归属 Admin 或 Client 总工程，Common 只承载中立技术能力。
 - **前端**：五个工程分别维护自己的 `src/api/request.ts`，不得跨工程引用源码或建立共享运行包；但每一份实现都必须遵守同一个 `R<T>`、`Authorization + clientid`、AES+RSA 与 401 契约。
 - **设计系统**：颜色/间距/字体/圆角等一律引用 `docs/` Token，不得硬编码。
 - **密钥与配置**：`.env` 含 RuoYi 默认开发密钥，仅用于本地开发；正式环境须替换为独立密钥并通过 CI/密钥管理注入，**不要**把真实生产密钥提交入库。
@@ -140,7 +142,7 @@ docs: 补充 CONTRIBUTING 协作规范
 
 - **后端起不来 / 连不上库**：确认 `docker compose up -d` 已执行且 MySQL 健康（`mysqladmin ping`），端口应为标准 `3306/6379`。
 - **前端登录 401「客户端ID与Token不匹配」**：受保护接口必须带 `clientid` 请求头，确认请求层未被改掉。
-- **前端连错服务**：Admin 连接 `8080`；四个产品用户端连接 `8082`。
+- **前端连错服务**：Admin 连接 `8080`；四个客户端连接 `8082`。
 - **后端随机端口**：6.x 会随机分配端口，启动时显式锁定 Admin `8080`、Client `8082`。
 - **环境代理导致 `git push` 失败**：本仓库历史验证过用「去代理 + 强制 IPv4 直连」推送；如遇网络问题按该方式重试。
 

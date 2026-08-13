@@ -15,7 +15,7 @@ client-backend ─┘
 - 只有 `admin-gateway` 和 `client-gateway` 发布宿主机端口。
 - 两个后端只有容器网络内的 `expose`，没有宿主机 `ports`。
 - MySQL、Redis 没有宿主机端口，并分别接入 Admin/Client 内部数据网络。
-- Admin 与 Client 共用 `ry-vue` 产品业务库，但使用不同 Redis database/keyPrefix 和不同 JWT 密钥。
+- Admin 与 Client 当前共用 `ry-vue` Schema，但使用各自的数据表、Redis database/keyPrefix 和 JWT 密钥。
 - Gateway 只负责入口路由、请求标识和粗粒度限流；身份、应用范围与数据权限仍由后端校验。
 - 五个前端仍按独立工程分别构建和部署，不放进这份后端基础设施编排；两个 Gateway 的根路径不会托管静态页面。
 
@@ -25,7 +25,7 @@ client-backend ─┘
 
 ```bash
 cd backend
-./mvnw -pl ruoyi-admin,ruoyi-client -am clean package -DskipTests
+./mvnw -pl :ruoyi-admin-server,:ruoyi-client-server -am clean package -DskipTests
 cd ../infra
 ```
 

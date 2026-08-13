@@ -4,15 +4,16 @@
 
 ## 1. 项目定位
 
-`ai-product-factory` 是一个供复制后填充产品业务的中大型多端脚手架，不是“AI 产品工厂”自身的业务系统。
+`ai-product-factory` 是一个供复制后填充真实业务的中大型多端脚手架，不是仓库名称所描述的业务系统。
 
 工程包含两个 Spring Boot 应用与五个独立前端：
 
-- `ruoyi-admin`：后台管理服务，只对接 `web/admin`，固定端口 `8080`。
-- `ruoyi-client`：产品用户服务，对接 H5、App、微信小程序、HarmonyOS，固定端口 `8082`。
+- `ruoyi-admin`：Admin 总工程；`ruoyi-admin-server` 只对接 `web/admin`，固定端口 `8080`。
+- `ruoyi-client`：Client 总工程；`ruoyi-client-server` 对接 H5、App、微信小程序、HarmonyOS，固定端口 `8082`。
+- `ruoyi-common`：Common 总工程，只承载两侧可复用的技术能力。
 - `web/admin`、`web/h5`、`web/app`、`web/miniapp`、`web/harmony` 是五个独立工程，不共享运行时源码、依赖包或构建产物。
 
-业务关系不是“先有 Admin，再有 Client”，而是：产品业务首先为 Client 用户提供能力，Admin 对同一份产品业务做运营和管理。
+Client 是客户端后台业务主体；Admin 是独立的运营管理后台。Admin 可以通过 Client 管理接口或独立的数据访问适配层管理 Client 数据，Client 不反向依赖 Admin。
 
 ### 1.1 两条不可违反的铁律
 
@@ -22,36 +23,41 @@
 ## 2. 架构与职责边界
 
 ```text
-PC Admin ── Admin Gateway ── ruoyi-admin:8080 ── sys_* 管理身份
+PC Admin ── Admin Gateway ── ruoyi-admin-server:8080 ── sys_* 管理身份
                                       │
-                                      ├─ 运营 client_* 产品用户身份
-                                      └─ 运营共享产品业务数据
+                                      ├─ 调用 Client 管理接口
+                                      └─ 经独立适配层管理 Client 数据
 
 H5 / App / 微信小程序 / HarmonyOS
-         └─ Client Gateway ── ruoyi-client:8082 ── client_* 产品用户身份
+         └─ Client Gateway ── ruoyi-client-server:8082 ── Client API
                                       │
-                                      └─ 使用共享产品业务数据
+                                      └─ Client 用户与业务数据
 ```
 
 ### 2.1 身份隔离
 
 | 维度 | Admin | Client |
 |---|---|---|
-| 用户 | `sys_user` | `client_user` |
-| 客户端应用 | `sys_client` | `client_application` |
-| 第三方身份 | `sys_social` | `client_identity` |
+| 用户 | `sys_user` | 当前为 `client_user`，后续迁移为 `app_user` |
+| 客户端应用 | `sys_client` | 当前为 `client_application`，后续迁移为 `app_client` |
+| 第三方身份 | `sys_social` | 当前为 `client_identity`，后续迁移为 `app_user_identity` |
 | 当前用户接口 | `/system/user/getInfo` | `/client/user/info` |
 | Redis 会话 | Admin database/keyPrefix | Client 独立 database/keyPrefix |
 
 Admin 管理员 Token 不能访问 Client 用户接口，Client Token 也不能访问 Admin 管理接口。两个应用即使复用 Sa-Token 技术底座，也必须通过不同 Redis 命名空间和不同 clientid 数据源隔离。
 
-### 2.2 产品业务共享规则
+### 2.2 目标边界与当前阶段
 
-- 产品业务表、Entity、BO、VO、Mapper、Service 只维护一份，放在 `backend/ruoyi-modules/<真实业务模块>`。
-- Admin 和 Client 按需依赖同一个产品业务模块，不复制数据库 Schema 与 Service。
-- Admin 管理接口放 `ruoyi-admin`；Client 用户接口放 `ruoyi-client`。两侧 Controller、请求 DTO、响应 DTO、权限标识和限流策略可以不同。
-- `ruoyi-client-system` 只承载产品用户/应用/第三方身份的共享数据能力；Client 登录 Controller 与认证策略属于 `ruoyi-client`。
-- 不创建没有真实代码的 application/domain/interface/security 等空壳聚合工程。
+- 根总工程主要负责版本、依赖与插件治理；当前还暂管历史 `ruoyi-api` 桥接模块和既有独立扩展服务。Admin、Client、Common 分别由自己的聚合 POM 管理。
+- 目标边界：Admin 与 Client 是两套工程，分别拥有身份、接口、业务模块和运行配置，不共享 Entity、Service、LoginUser 或安全会话模型。
+- 目标边界：Common 只放与业务和身份无关的技术能力，不得新增对 Admin 或 Client 业务实现的依赖。
+- Admin 管理 Client 时，复杂业务操作调用 Client 管理接口；确需直接访问数据时，通过 Admin 专属适配层访问 Client 所拥有的表。
+- Client 模块由 Client 总工程聚合；Admin 模块由 Admin 总工程聚合。物理上继续使用 `backend/ruoyi-modules/` 存放既有模块，不再使用混合的 `ruoyi-modules` 聚合 POM。
+- 不创建没有真实代码的 API、UM、微服务或分层空壳工程。
+
+当前阶段只完成 Maven 所有权划分，仍有两项历史耦合：Admin Server 直接依赖 `ruoyi-client-system`；Client 与部分 Common 模块仍依赖根工程暂管的 `ruoyi-api` 和其中的 System 登录模型。它们是后续解耦对象，不是新代码可以继续复制的范例，也不得通过修改文档宣称已经完成隔离。
+
+当前受支持的完整构建入口是 `backend/pom.xml`。Admin、Client、Common 的 POM 首先表达模块所有权；在上述历史桥接依赖解除前，不把三个子总工程宣称为可在全新 Maven 仓库中完全独立发布的发行单元。
 
 ## 3. 技术栈与目录
 
@@ -68,14 +74,20 @@ Admin 管理员 Token 不能访问 Client 用户接口，Client Token 也不能�
 
 ```text
 backend/
-├── ruoyi-admin/                    # Admin Boot 与 Admin 专属 Controller
-├── ruoyi-client/                   # Client Boot、认证与 Client 专属 Controller
-├── ruoyi-api/                      # 原框架内部 API
-├── ruoyi-common/                   # 原框架技术通用层，不放 Client 业务配置
+├── pom.xml                         # 后端根总工程
+├── ruoyi-admin/                    # Admin 总工程
+│   ├── pom.xml                     # 聚合 Admin 所有模块
+│   └── ruoyi-admin-server/         # Admin Boot 与专属 Controller
+├── ruoyi-client/                   # Client 总工程
+│   ├── pom.xml                     # 聚合 Client 所有模块
+│   └── ruoyi-client-server/        # Client Boot、认证与专属 Controller
+├── ruoyi-common/                   # Common 总工程
+├── ruoyi-api/                      # 根工程暂管的历史契约桥接模块
 ├── ruoyi-modules/
-│   ├── ruoyi-system/               # Admin 系统管理
-│   ├── ruoyi-client-system/        # 产品用户身份共享数据能力
-│   └── ...                         # 真实产品业务模块继续放这里
+│   ├── ruoyi-system/               # 归 Admin 总工程
+│   ├── ruoyi-client-system/        # 归 Client 总工程，名称待 UM 阶段收口
+│   └── ...                         # 新模块必须归属 Admin 或 Client
+├── ruoyi-extend/                   # 根工程直接管理的独立扩展服务
 └── script/sql/                     # 多数据库初始化脚本
 
 web/
@@ -86,7 +98,7 @@ web/
 └── harmony/
 ```
 
-不要把 `ruoyi-modules` 改名；代码生成器、仓库 Skill 和既有文档都以该目录为标准入口。
+不要批量改名 `ruoyi-modules` 物理目录；代码生成器和仓库 Skill 仍以该目录为模板入口。模块的 Maven 所有权以 Admin/Client 总工程的 `<modules>` 为准。
 
 ## 4. 后端接口契约
 
@@ -115,7 +127,7 @@ clientid: <当前前端对应的 client id>
 
 后端会校验请求头 clientid 与 Token 中的 clientid，并继续校验该应用的允许路径和 IP 白名单。Gateway 是第一道入口控制，后端校验仍然保留，防止绕过网关。
 
-Client 受保护请求还会实时复核产品用户、产品应用状态与凭证版本；停用用户/应用或重置密码后，已有 Token 在下一次请求时失效。
+Client 受保护请求还会实时复核应用用户、接入客户端状态与凭证版本；停用用户/应用或重置密码后，已有 Token 在下一次请求时失效。
 
 ### 4.3 `@ApiEncrypt` 登录加密
 
@@ -142,22 +154,22 @@ e5cd7e4891bf95d1d19206ce24a7b32e
 | 后台登录 | `POST /auth/login` | 无，`@ApiEncrypt` |
 | 后台退出 | `POST /auth/logout` | Admin Token |
 | 管理员信息 | `GET /system/user/getInfo` | Admin Token + clientid |
-| 产品用户运营 | `/client/user/**` | Admin Token + `client:user:*` |
-| 产品应用运营 | `/client/application/**` | Admin Token + `client:application:*` |
+| 应用用户运营 | `/client/user/**` | Admin Token + `client:user:*` |
+| 接入客户端运营 | `/client/application/**` | Admin Token + `client:application:*` |
 
-`/system/client` 管理的是 Admin 自身授权客户端；`/client/application` 管理的是四个产品用户端应用，两者不能合并或混用。
+`/system/client` 管理的是 Admin 自身授权客户端；`/client/application` 当前管理四个 Client 接入配置，两者不能合并或混用。
 
-产品应用的 clientid、key 和 secret 创建后不可变，且不提供删除操作；下线应用统一使用“停用”，避免已发布前端的身份标识被不可逆破坏。
+接入客户端的 clientid、key 和 secret 创建后不可变，且不提供删除操作；下线统一使用“停用”，避免已发布前端的身份标识被不可逆破坏。
 
 ### 4.5 Client 接口（8082）
 
 | 用途 | 方法与路径 | 鉴权 |
 |---|---|---|
 | 验证码 | `GET /auth/code` | 无 |
-| 产品用户登录 | `POST /auth/login` | 无，`@ApiEncrypt` |
+| 应用用户登录 | `POST /auth/login` | 无，`@ApiEncrypt` |
 | 短信验证码 | `GET /resource/sms/code` | 无，带手机号参数；`sms.enabled=false` 时返回“短信服务未启用” |
-| 产品用户退出 | `POST /auth/logout` | Client Token + clientid |
-| 当前产品用户 | `GET /client/user/info` | Client Token + clientid |
+| 应用用户退出 | `POST /auth/logout` | Client Token + clientid |
+| 当前应用用户 | `GET /client/user/info` | Client Token + clientid |
 
 四端应用契约：
 
@@ -177,7 +189,7 @@ e5cd7e4891bf95d1d19206ce24a7b32e
 | `sms` | `phoneNumber,smsCode,clientId,grantType` | 先获取短信验证码 |
 | `xcx` | `xcxCode,clientId,grantType` | 仅微信小程序，来自 `Taro.login` |
 
-微信小程序首次使用有效 `xcxCode` 登录时，Client 会在同一事务内创建产品用户与 `client_identity` 绑定；重复请求通过分布式锁和数据库唯一键保证幂等。该行为只建立产品身份，不自动授予业务角色或权益。
+微信小程序首次使用有效 `xcxCode` 登录时，Client 会在同一事务内创建应用用户与 `client_identity` 绑定；重复请求通过分布式锁和数据库唯一键保证幂等。该行为只建立用户身份，不自动授予业务角色或权益。
 
 Client 登录成功只返回以下字段，禁止前端声明不存在的 refresh token、scope 或 openid：
 
@@ -195,7 +207,7 @@ Client 登录成功只返回以下字段，禁止前端声明不存在的 refres
 {
   "userId": 1763000000000000001,
   "userName": "client",
-  "nickName": "示例产品用户",
+  "nickName": "示例应用用户",
   "avatar": null,
   "clientId": "...",
   "deviceType": "h5",
@@ -204,7 +216,7 @@ Client 登录成功只返回以下字段，禁止前端声明不存在的 refres
 }
 ```
 
-脚手架只建立产品身份边界，不预设未来业务角色/权益模型，所以默认 roles/permissions 为空；后续产品按真实业务补充。
+脚手架只建立应用用户身份边界，不预设未来业务角色/权益模型，所以默认 roles/permissions 为空；复制后按真实业务补充。
 
 ## 5. 编码规范
 
@@ -216,7 +228,7 @@ Client 登录成功只返回以下字段，禁止前端声明不存在的 refres
 - 登录策略参照原 `IAuthStrategy` 的 Bean 路由写法，不自建另一套框架级安全上下文。
 - 公共技术模块 `ruoyi-common` 不放 Client 密钥、微信 AppID 或业务常量。
 - 新模块必须包含真实能力；没有业务代码时不要建立 package-info 空壳。
-- `ruoyi-product` 不属于本脚手架，禁止恢复；未来以真实产品业务域命名模块。
+- 已删除的 `ruoyi-product` 不属于本脚手架，禁止恢复；未来模块直接使用真实业务域名称。
 
 ### 5.2 前端
 
@@ -248,12 +260,12 @@ MySQL：`root/root`、数据库 `ry-vue`；Redis 密码：`ruoyi123`。
 
 ```bash
 cd backend
-./mvnw -pl ruoyi-admin,ruoyi-client -am package -DskipTests
+./mvnw -pl :ruoyi-admin-server,:ruoyi-client-server -am package -DskipTests
 
-java -jar ruoyi-admin/target/ruoyi-admin.jar \
+java -jar ruoyi-admin/ruoyi-admin-server/target/ruoyi-admin.jar \
   --server.port=8080 --captcha.enable=false
 
-java -jar ruoyi-client/target/ruoyi-client.jar \
+java -jar ruoyi-client/ruoyi-client-server/target/ruoyi-client.jar \
   --server.port=8082 --captcha.enable=false
 ```
 
@@ -288,7 +300,7 @@ cd web/harmony && pnpm install && pnpm dev:harmony
 - `infra/init/01-init.sql` 是 Docker 新库的初始化事实来源；不要同时偷偷引入另一套 Flyway baseline。
 - MySQL、Oracle、PostgreSQL、SQL Server 脚本的 Client 三表与四端种子必须同步。
 - 表主键沿用雪花 ID，不使用自增；脚手架不建立物理外键。
-- Admin 与 Client 当前共享 `ry-vue` 中的产品业务数据，但身份表明确分区。
+- Admin 与 Client 当前使用同一个 `ry-vue` Schema，但各自拥有不同表；新的 Client 表统一使用 `app_*`，不得与 Admin 的 `sys_*` 共表。
 - Client Redis 使用独立 database 与 `client` keyPrefix；keyPrefix 不手工追加冒号。
 - 修改 client_application 后无需复用 Admin 的 sys_client 缓存。
 - `client_user.credential_version` 随密码重置递增并写入 Client Token；不得绕过版本校验恢复旧会话。
@@ -302,7 +314,7 @@ cd web/harmony && pnpm install && pnpm dev:harmony
 - **登录脚本 NPE**：登录请求必须带有效 `User-Agent`。
 - **RSA 解密失败**：前端公私钥和后端 `application.yml` 必须成对一致。
 - **HarmonyOS 加密失败**：运行时必须提供安全随机能力；禁止降级到 `Math.random()`，需在 DevEco 真机/模拟器验证。
-- **小程序登录失败**：确认微信 AppID/Secret 已通过环境注入、grantType 只有 `xcx`，并检查微信 code 换取响应；首次成功登录会自动创建产品用户和第三方身份绑定。
+- **小程序登录失败**：确认微信 AppID/Secret 已通过环境注入、grantType 只有 `xcx`，并检查微信 code 换取响应；首次成功登录会自动创建应用用户和第三方身份绑定。
 
 ## 9. 参考
 

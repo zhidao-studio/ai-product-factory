@@ -4,8 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.dromara</groupId>
-        <artifactId>ruoyi-modules</artifactId>
+        <artifactId>ruoyi-admin</artifactId>
         <version>${revision}</version>
+        <relativePath>../../ruoyi-admin/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -32,4 +33,3 @@
     </dependencies>
 
 </project>
-

@@ -23,7 +23,7 @@ echo " MySQL OK"
 
 echo "==> [2/4] 构建 Admin 与 Client 后端"
 cd "$BACKEND_DIR"
-./mvnw -pl ruoyi-admin,ruoyi-client -am package -DskipTests
+./mvnw -pl :ruoyi-admin-server,:ruoyi-client-server -am package -DskipTests
 
 start_backend() {
   local service_name="$1"
@@ -57,8 +57,8 @@ start_backend() {
   echo "    $service_name 已启动（PID $service_pid，日志 $log_file）"
 }
 
-start_backend "ruoyi-admin" "$BACKEND_DIR/ruoyi-admin/target/ruoyi-admin.jar" 8080
-start_backend "ruoyi-client" "$BACKEND_DIR/ruoyi-client/target/ruoyi-client.jar" 8082
+start_backend "ruoyi-admin" "$BACKEND_DIR/ruoyi-admin/ruoyi-admin-server/target/ruoyi-admin.jar" 8080
+start_backend "ruoyi-client" "$BACKEND_DIR/ruoyi-client/ruoyi-client-server/target/ruoyi-client.jar" 8082
 
 echo "==> [3/4] 等待两个后端就绪"
 wait_backend() {

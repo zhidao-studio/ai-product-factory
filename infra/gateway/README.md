@@ -26,7 +26,7 @@ App、小程序和 HarmonyOS 也可以在各自独立域名上直接请求以下
 - `GET /resource/sms/code`
 - `/client/**`
 
-新增面向产品用户的业务接口统一放在 `/client/**`。Admin 管理接口不会通过 Client Gateway。
+新增面向应用用户的业务接口统一放在 `/client/**`。Admin 管理接口不会通过 Client Gateway。
 
 ## TLS 与代理头
 

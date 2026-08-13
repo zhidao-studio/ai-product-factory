@@ -11,9 +11,8 @@
     <artifactId>ruoyi-common</artifactId>
     <packaging>pom</packaging>
 
-    <description>
-        common 通用模块
-    </description>
+    <name>ruoyi-common</name>
+    <description>Common 通用技术总工程</description>
 
     <modules>
         <module>ruoyi-common-bom</module>

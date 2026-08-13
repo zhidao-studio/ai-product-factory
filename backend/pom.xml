@@ -8,9 +8,9 @@
     <artifactId>ruoyi-vue-plus</artifactId>
     <version>${revision}</version>
 
-    <name>RuoYi-Vue-Plus</name>
+    <name>ai-product-factory-backend</name>
     <url>https://gitee.com/dromara/RuoYi-Vue-Plus</url>
-    <description>Dromara RuoYi-Vue-Plus后台管理系统</description>
+    <description>Admin、Client 与 Common 后端总工程</description>
 
     <properties>
         <!-- 项目基础配置 -->
@@ -415,7 +415,7 @@
                 <version>${revision}</version>
             </dependency>
 
-            <!-- 产品用户体系模块 -->
+            <!-- Client 用户能力模块（当前过渡名称） -->
             <dependency>
                 <groupId>org.dromara</groupId>
                 <artifactId>ruoyi-client-system</artifactId>
@@ -468,18 +468,16 @@
     </dependencyManagement>
 
     <modules>
-        <!-- web服务入口 -->
+        <!-- Admin 后台管理总工程 -->
         <module>ruoyi-admin</module>
-        <!-- 产品用户端服务入口 -->
+        <!-- Client 客户端后台总工程 -->
         <module>ruoyi-client</module>
-        <!-- common 通用模块 -->
+        <!-- Common 通用技术总工程 -->
         <module>ruoyi-common</module>
-        <!-- 扩展模块 -->
-        <module>ruoyi-extend</module>
-        <!-- 业务模块 -->
-        <module>ruoyi-modules</module>
-        <!-- api模块 -->
+        <!-- 历史跨模块契约桥接，待 Admin/Client 契约真正拆分后移除 -->
         <module>ruoyi-api</module>
+        <!-- 既有独立扩展服务聚合器，暂不参与 Admin/Client 业务划分 -->
+        <module>ruoyi-extend</module>
     </modules>
     <packaging>pom</packaging>
 
