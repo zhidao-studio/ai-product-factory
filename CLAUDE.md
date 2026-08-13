@@ -133,7 +133,7 @@ clientid: <当前前端对应的 client id>
 
 后端会校验请求头 clientid 与 Token 中的 clientid，并继续校验该应用的允许路径和 IP 白名单。Gateway 是第一道入口控制，后端校验仍然保留，防止绕过网关。
 
-Client 受保护请求还会实时复核应用用户、接入客户端状态与凭证版本；停用用户/应用或重置密码后，已有 Token 在下一次请求时失效。
+Client 受保护请求还会实时复核应用用户、接入客户端的有效标志与凭证版本；用户/应用被设为无效或重置密码后，已有 Token 在下一次请求时失效。
 
 ### 4.3 `@ApiEncrypt` 登录加密
 
@@ -165,7 +165,7 @@ e5cd7e4891bf95d1d19206ce24a7b32e
 
 `/system/client` 管理的是 Admin 自身授权客户端；`/client/application` 当前管理四个 Client 接入配置，两者不能合并或混用。
 
-接入客户端的 clientid、key 和 secret 创建后不可变，且不提供删除操作；下线统一使用“停用”，避免已发布前端的身份标识被不可逆破坏。
+接入客户端的 clientid、key 和 secret 创建后不可变，且不提供删除操作；下线统一设为无效，避免已发布前端的身份标识被不可逆破坏。
 
 ### 4.5 Client 接口（8082）
 
@@ -228,10 +228,11 @@ Client 登录成功只返回以下字段，禁止前端声明不存在的 refres
 
 - Admin 对浏览器继续暴露 `/client/user/**` 与 `/client/application/**`，权限、操作日志、防重复提交和响应脱敏均属于 Admin。
 - Admin 通过 `/internal/admin/v1/users/**`、`/internal/admin/v1/clients/**` 调用 Client；这些路径不是前端契约，不进入 OpenAPI，也不得经过 Admin Gateway 或 Client Gateway。
+- 应用用户和接入客户端均使用 `validFlag` 表达有效性，固定为 `1=有效、0=无效`。Admin 对外变更路径为 `/client/user/changeValidFlag`、`/client/application/changeValidFlag`，对应 Client 私有管理路径为 `/internal/admin/v1/users/validFlag`、`/internal/admin/v1/clients/validFlag`；不得复用 `sys_normal_disable` 的反向状态语义。
 - `ruoyi-client-api` 只放真实跨应用使用的管理命令、查询和响应，不放 Entity、Mapper、Service、Excel 或脱敏注解。
-- Client 负责唯一性校验、密码哈希、授权类型规则、乐观锁和 `app_*` 写入；Admin 不复制这些业务规则。
+- Client 负责唯一性校验、密码哈希、授权类型规则、有效性校验和 `app_*` 写入；Admin 不复制这些业务规则。
 - 内部请求使用独立共享密钥完成 HMAC-SHA256 签名，并校验时间戳、nonce 和请求体摘要；nonce 由 Client Redis 防重放。禁止转发浏览器的 Authorization、clientid 或 Admin Token。
-- Admin 操作人 ID 与部门 ID 包含在签名范围内，由 Client 写入七要素审计字段；不能通过构造 Client 登录态模拟管理员。
+- 内部管理请求只传递并签名 Admin 操作人 ID，由 Client 写入创建人或修改人审计字段；Client 不接收 Admin 部门 ID，也不能通过构造 Client 登录态模拟管理员。
 - 内部共享密钥不得进入前端、Gateway、日志或数据库。跨主机部署时，除服务签名外还必须使用内部 HTTPS 或 mTLS。
 
 ## 5. 编码规范
@@ -319,10 +320,10 @@ cd web/harmony && pnpm install && pnpm dev:harmony
 - MySQL、Oracle、PostgreSQL、SQL Server 脚本的 Client 三表与四端种子必须同步。
 - 表主键沿用雪花 ID，不使用自增；脚手架不建立物理外键。
 - Admin 与 Client 当前使用同一个 `ry-vue` Schema，但各自拥有不同表；Client 表统一使用 `app_*`，不得与 Admin 的 `sys_*` 共表。
-- Client 表七要素精确定义为：`create_dept`（创建部门）、`create_by`（创建人）、`create_time`（创建时间）、`update_by`（更新人）、`update_time`（更新时间）、`version`（乐观锁版本）、`del_flag`（逻辑删除标记）。主键和 `remark` 不计入七要素。
+- Client `app_*` 表七要素精确定义为：`id`（主键）、`valid_flag`（是否有效，`1=有效、0=无效`）、`del_flag`（是否删除）、`create_by`（创建人）、`create_time`（创建时间）、`update_by`（修改人）、`update_time`（修改时间）。Client 表不设 `create_dept`，也不设通用 `version`；Admin `sys_*` 表继续沿用各表原有的 RuoYi 字段规范，两套体系允许存在结构差异。
 - Client Redis 使用独立 database 与 `client` keyPrefix；keyPrefix 不手工追加冒号。
 - 修改 `app_client` 后无需复用 Admin 的 `sys_client` 缓存。
-- `app_user.credential_version` 随密码重置递增并写入 Client Token；不得绕过版本校验恢复旧会话。
+- `app_user.credential_version` 是密码重置后使旧会话失效的凭证安全字段，不是七要素中的通用乐观锁版本；它随密码重置递增并写入 Client Token，不得绕过校验恢复旧会话。
 - Docker 初始化脚本只在空数据卷首次执行。已有开发环境可重建数据卷以获得 `app_*` 新结构；需要保留数据的环境必须先备份并人工迁移，不能依赖重启容器自动改表。
 
 ## 8. 常见问题

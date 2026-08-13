@@ -34,19 +34,17 @@ public final class InternalAdminHmacSigner {
      * @param rawQuery       原始查询串，无查询参数时传空
      * @param timestamp      毫秒级 Unix 时间戳
      * @param nonce          一次性随机数
-     * @param operatorId     操作人 ID
-     * @param operatorDeptId 操作人部门 ID
-     * @param rawBody        原始请求体字节
+     * @param operatorId 操作人 ID
+     * @param rawBody    原始请求体字节
      * @return 小写十六进制 HMAC-SHA256 签名
      */
     public static String sign(String secret, String method, String rawPath, String rawQuery,
-                              String timestamp, String nonce, String operatorId, String operatorDeptId,
-                              byte[] rawBody) {
+                              String timestamp, String nonce, String operatorId, byte[] rawBody) {
         try {
             Mac mac = Mac.getInstance(HMAC_SHA256);
             mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), HMAC_SHA256));
             return HexFormat.of().formatHex(mac.doFinal(canonicalize(method, rawPath, rawQuery, timestamp,
-                nonce, operatorId, operatorDeptId, rawBody).getBytes(StandardCharsets.UTF_8)));
+                nonce, operatorId, rawBody).getBytes(StandardCharsets.UTF_8)));
         } catch (GeneralSecurityException e) {
             throw new IllegalStateException("无法生成内部服务请求签名", e);
         }
@@ -76,8 +74,7 @@ public final class InternalAdminHmacSigner {
      * 构造签名原文。
      */
     private static String canonicalize(String method, String rawPath, String rawQuery,
-                                       String timestamp, String nonce, String operatorId,
-                                       String operatorDeptId, byte[] rawBody) {
+                                       String timestamp, String nonce, String operatorId, byte[] rawBody) {
         return String.join("\n",
             value(method).toUpperCase(Locale.ROOT),
             value(rawPath),
@@ -85,7 +82,6 @@ public final class InternalAdminHmacSigner {
             value(timestamp),
             value(nonce),
             value(operatorId),
-            value(operatorDeptId),
             sha256Hex(rawBody));
     }
 

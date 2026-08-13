@@ -11,6 +11,7 @@ import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.ObjectUtils;
 import org.dromara.common.mybatis.context.AuditOperatorContext;
 import org.dromara.common.mybatis.context.AuditOperatorContext.AuditOperator;
+import org.dromara.common.mybatis.core.domain.BaseAuditEntity;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.satoken.utils.LoginHelper;
 
@@ -39,37 +40,35 @@ public class InjectionMetaObjectHandler implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
         try {
-            if (ObjectUtil.isNotNull(metaObject) && metaObject.getOriginalObject() instanceof BaseEntity baseEntity) {
+            if (ObjectUtil.isNotNull(metaObject)
+                && metaObject.getOriginalObject() instanceof BaseAuditEntity auditEntity) {
                 // 获取当前时间作为创建时间和更新时间，如果创建时间不为空，则使用创建时间，否则使用当前时间
-                LocalDateTime current = ObjectUtils.notNull(baseEntity.getCreateTime(), LocalDateTime.now());
-                baseEntity.setCreateTime(current);
-                baseEntity.setUpdateTime(current);
+                LocalDateTime current = ObjectUtils.notNull(auditEntity.getCreateTime(), LocalDateTime.now());
+                auditEntity.setCreateTime(current);
+                auditEntity.setUpdateTime(current);
 
                 // 如果创建人为空，则填充当前登录用户的信息
-                if (ObjectUtil.isNull(baseEntity.getCreateBy())) {
+                if (ObjectUtil.isNull(auditEntity.getCreateBy())) {
                     AuditOperator auditOperator = AuditOperatorContext.get();
+                    LoginUserContext loginUser = ObjectUtil.isNull(auditOperator) ? getLoginUser() : null;
                     if (ObjectUtil.isNotNull(auditOperator)) {
                         Long operatorId = ObjectUtils.notNull(auditOperator.operatorId(), DEFAULT_USER_ID);
-                        Long operatorDeptId = ObjectUtils.notNull(auditOperator.operatorDeptId(), DEFAULT_USER_ID);
-                        baseEntity.setCreateBy(operatorId);
-                        baseEntity.setUpdateBy(operatorId);
-                        baseEntity.setCreateDept(ObjectUtils.notNull(baseEntity.getCreateDept(), operatorDeptId));
+                        auditEntity.setCreateBy(operatorId);
+                        auditEntity.setUpdateBy(operatorId);
+                    } else if (ObjectUtil.isNotNull(loginUser)) {
+                        Long userId = loginUser.getUserId();
+                        auditEntity.setCreateBy(userId);
+                        auditEntity.setUpdateBy(userId);
                     } else {
-                        LoginUserContext loginUser = getLoginUser();
-                        if (ObjectUtil.isNotNull(loginUser)) {
-                            Long userId = loginUser.getUserId();
-                            // 填充创建人、更新人和创建部门信息
-                            baseEntity.setCreateBy(userId);
-                            baseEntity.setUpdateBy(userId);
-                            Long deptId = loginUser instanceof DataPermissionUser permissionUser
-                                ? permissionUser.getDeptId() : DEFAULT_USER_ID;
-                            baseEntity.setCreateDept(ObjectUtils.notNull(baseEntity.getCreateDept(), deptId));
-                        } else {
-                            // 填充创建人、更新人和创建部门信息
-                            baseEntity.setCreateBy(DEFAULT_USER_ID);
-                            baseEntity.setUpdateBy(DEFAULT_USER_ID);
-                            baseEntity.setCreateDept(ObjectUtils.notNull(baseEntity.getCreateDept(), DEFAULT_USER_ID));
-                        }
+                        auditEntity.setCreateBy(DEFAULT_USER_ID);
+                        auditEntity.setUpdateBy(DEFAULT_USER_ID);
+                    }
+
+                    // Admin 实体继续填充部门；App 实体没有部门字段。
+                    if (auditEntity instanceof BaseEntity baseEntity) {
+                        Long deptId = loginUser instanceof DataPermissionUser permissionUser
+                            ? permissionUser.getDeptId() : DEFAULT_USER_ID;
+                        baseEntity.setCreateDept(ObjectUtils.notNull(baseEntity.getCreateDept(), deptId));
                     }
                 }
             } else {
@@ -93,10 +92,11 @@ public class InjectionMetaObjectHandler implements MetaObjectHandler {
     @Override
     public void updateFill(MetaObject metaObject) {
         try {
-            if (ObjectUtil.isNotNull(metaObject) && metaObject.getOriginalObject() instanceof BaseEntity baseEntity) {
+            if (ObjectUtil.isNotNull(metaObject)
+                && metaObject.getOriginalObject() instanceof BaseAuditEntity auditEntity) {
                 // 获取当前时间作为更新时间，无论原始对象中的更新时间是否为空都填充
                 LocalDateTime current = LocalDateTime.now();
-                baseEntity.setUpdateTime(current);
+                auditEntity.setUpdateTime(current);
 
                 // 获取当前登录用户的ID，并填充更新人信息
                 AuditOperator auditOperator = AuditOperatorContext.get();
@@ -104,7 +104,7 @@ public class InjectionMetaObjectHandler implements MetaObjectHandler {
                 Long userId = ObjectUtil.isNotNull(auditOperator)
                     ? ObjectUtils.notNull(auditOperator.operatorId(), DEFAULT_USER_ID)
                     : ObjectUtil.isNotNull(loginUser) ? loginUser.getUserId() : DEFAULT_USER_ID;
-                baseEntity.setUpdateBy(userId);
+                auditEntity.setUpdateBy(userId);
             } else {
                 this.strictUpdateFill(metaObject, "updateTime", LocalDateTime.class, LocalDateTime.now());
                 this.strictUpdateFill(metaObject, "updateTime", Date.class, new Date());

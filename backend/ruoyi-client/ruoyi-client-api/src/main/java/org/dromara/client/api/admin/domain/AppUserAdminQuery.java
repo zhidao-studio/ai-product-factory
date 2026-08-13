@@ -1,5 +1,6 @@
 package org.dromara.client.api.admin.domain;
 
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 import java.io.Serial;
@@ -39,9 +40,10 @@ public class AppUserAdminQuery implements Serializable {
     private String phoneNumber;
 
     /**
-     * 账号状态。
+     * 是否有效（1 有效、0 无效）。
      */
-    private String status;
+    @Pattern(regexp = "[01]", message = "有效标志值不正确")
+    private String validFlag;
 
     /**
      * 扩展查询参数，例如创建时间范围。

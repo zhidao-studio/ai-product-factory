@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.dromara.client.api.admin.domain.AppUserAdminCommand;
 import org.dromara.client.api.admin.domain.AppUserAdminQuery;
 import org.dromara.client.api.admin.domain.AppUserPasswordCommand;
-import org.dromara.client.api.admin.domain.AppUserStatusCommand;
+import org.dromara.client.api.admin.domain.AppUserValidFlagCommand;
 import org.dromara.common.core.domain.PageResult;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.core.utils.MapstructUtils;
@@ -121,14 +121,14 @@ public class ClientUserController extends BaseController {
     }
 
     /**
-     * 修改应用用户状态。
+     * 修改应用用户有效标志。
      */
     @SaCheckPermission("client:user:edit")
     @Log(title = "应用用户", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
-    @PutMapping("/changeStatus")
-    public R<Void> changeStatus(@Validated @RequestBody AppUserStatusCommand command) {
-        clientManagementService.updateUserStatus(command);
+    @PutMapping("/changeValidFlag")
+    public R<Void> changeValidFlag(@Validated @RequestBody AppUserValidFlagCommand command) {
+        clientManagementService.updateUserValidFlag(command);
         return R.ok();
     }
 

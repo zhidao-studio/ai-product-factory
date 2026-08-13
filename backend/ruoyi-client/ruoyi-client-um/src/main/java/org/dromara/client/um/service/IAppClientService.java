@@ -50,8 +50,8 @@ public interface IAppClientService {
     Boolean updateByBo(AppClientBo bo);
 
     /**
-     * 修改接入客户端状态。
+     * 修改接入客户端有效标志。
      */
-    Boolean updateStatus(Long id, String status);
+    Boolean updateValidFlag(Long id, String validFlag);
 
 }

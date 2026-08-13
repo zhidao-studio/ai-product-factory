@@ -36,23 +36,17 @@ public class ClientHttpRequestInterceptor implements org.springframework.http.cl
         String timestamp = Long.toString(System.currentTimeMillis());
         String nonce = UUID.randomUUID().toString().replace("-", "");
         String operatorId = currentUserId.toString();
-        String operatorDeptId = value(LoginHelper.getDeptId());
         URI uri = request.getURI();
         String signature = InternalAdminHmacSigner.sign(secret, request.getMethod().name(),
-            uri.getRawPath(), uri.getRawQuery(), timestamp, nonce, operatorId, operatorDeptId, body);
+            uri.getRawPath(), uri.getRawQuery(), timestamp, nonce, operatorId, body);
 
         request.getHeaders().set(InternalAdminAuthConstants.HEADER_CALLER,
             InternalAdminAuthConstants.ADMIN_CALLER);
         request.getHeaders().set(InternalAdminAuthConstants.HEADER_TIMESTAMP, timestamp);
         request.getHeaders().set(InternalAdminAuthConstants.HEADER_NONCE, nonce);
         request.getHeaders().set(InternalAdminAuthConstants.HEADER_OPERATOR_ID, operatorId);
-        request.getHeaders().set(InternalAdminAuthConstants.HEADER_OPERATOR_DEPT_ID, operatorDeptId);
         request.getHeaders().set(InternalAdminAuthConstants.HEADER_SIGNATURE, signature);
         return execution.execute(request, body);
-    }
-
-    private String value(Long value) {
-        return value == null ? "-1" : value.toString();
     }
 
 }

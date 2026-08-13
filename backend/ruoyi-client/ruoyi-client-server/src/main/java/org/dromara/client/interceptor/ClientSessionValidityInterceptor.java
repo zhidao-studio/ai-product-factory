@@ -7,27 +7,27 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.dromara.client.api.model.ClientLoginUser;
+import org.dromara.client.um.constant.AppDataConstants;
 import org.dromara.client.um.domain.vo.AppClientVo;
 import org.dromara.client.um.domain.vo.AppUserVo;
 import org.dromara.client.um.service.IAppClientService;
 import org.dromara.client.um.service.IAppUserService;
 import org.dromara.client.web.service.IClientAuthStrategy;
-import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
- * 应用用户会话状态拦截器。
+ * 应用用户会话有效性拦截器。
  * <p>
- * Admin 停用或删除应用用户、接入客户端后，Client 端已有 Token 必须在下一次请求时立即失效。
+ * Admin 将应用用户、接入客户端设为无效或删除后，Client 端已有 Token 必须在下一次请求时立即失效。
  *
  * @author Lion Li
  */
 @RequiredArgsConstructor
 @Component
-public class ClientSessionStatusInterceptor implements HandlerInterceptor {
+public class ClientSessionValidityInterceptor implements HandlerInterceptor {
 
     private final IAppUserService userService;
     private final IAppClientService clientService;
@@ -48,8 +48,8 @@ public class ClientSessionStatusInterceptor implements HandlerInterceptor {
             invalidateSession("应用用户会话不存在");
         }
         AppUserVo user = userService.queryById(loginUser.getUserId());
-        if (ObjectUtil.isNull(user) || !SystemConstants.NORMAL.equals(user.getStatus())) {
-            invalidateSession("应用用户已停用或不存在");
+        if (ObjectUtil.isNull(user) || !AppDataConstants.VALID.equals(user.getValidFlag())) {
+            invalidateSession("应用用户已无效或不存在");
         }
         String tokenCredentialVersion = getTokenExtra(IClientAuthStrategy.CLIENT_CREDENTIAL_VERSION_KEY);
         if (!StringUtils.equals(String.valueOf(user.getCredentialVersion()), tokenCredentialVersion)) {
@@ -60,8 +60,8 @@ public class ClientSessionStatusInterceptor implements HandlerInterceptor {
         AppClientVo client = ObjectUtil.isNull(clientId)
             ? null
             : clientService.queryByClientId(clientId.toString());
-        if (ObjectUtil.isNull(client) || !SystemConstants.NORMAL.equals(client.getStatus())) {
-            invalidateSession("接入客户端已停用或不存在");
+        if (ObjectUtil.isNull(client) || !AppDataConstants.VALID.equals(client.getValidFlag())) {
+            invalidateSession("接入客户端已无效或不存在");
         }
         String tokenAccessPath = getTokenExtra(LoginHelper.CLIENT_ACCESS_PATH_KEY);
         String tokenIpWhitelist = getTokenExtra(LoginHelper.CLIENT_IP_WHITELIST_KEY);

@@ -1,12 +1,8 @@
 package org.dromara.client.um.domain;
 
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.Version;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.dromara.common.mybatis.core.domain.BaseEntity;
 
 /**
  * 应用用户第三方身份对象 app_user_identity。
@@ -16,13 +12,7 @@ import org.dromara.common.mybatis.core.domain.BaseEntity;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("app_user_identity")
-public class AppUserIdentity extends BaseEntity {
-
-    /**
-     * 主键。
-     */
-    @TableId(value = "id")
-    private Long id;
+public class AppUserIdentity extends AppBaseEntity {
 
     /**
      * 应用用户 ID。
@@ -128,17 +118,5 @@ public class AppUserIdentity extends BaseEntity {
      * OAuth Token Secret。
      */
     private String oauthTokenSecret;
-
-    /**
-     * 乐观锁版本号。
-     */
-    @Version
-    private Long version;
-
-    /**
-     * 删除标志（0 存在、1 删除）。
-     */
-    @TableLogic
-    private String delFlag;
 
 }

@@ -4,6 +4,7 @@ import io.github.linpeilie.annotations.AutoMapper;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.dromara.client.um.domain.AppUser;
@@ -29,10 +30,10 @@ public class AppUserBo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 用户 ID。
+     * 主键。
      */
-    @NotNull(message = "用户 ID 不能为空", groups = {EditGroup.class})
-    private Long userId;
+    @NotNull(message = "主键不能为空", groups = {EditGroup.class})
+    private Long id;
 
     /**
      * 用户账号。
@@ -84,14 +85,10 @@ public class AppUserBo implements Serializable {
     private String password;
 
     /**
-     * 账号状态。
+     * 是否有效（1 有效、0 无效）。
      */
-    private String status;
-
-    /**
-     * 乐观锁版本号。
-     */
-    private Long version;
+    @Pattern(regexp = "[01]", message = "有效标志值不正确")
+    private String validFlag;
 
     /**
      * 备注。

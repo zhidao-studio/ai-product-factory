@@ -33,13 +33,13 @@ export function updateClientApplication(data: ClientApplicationForm) {
   });
 }
 
-export function changeClientApplicationStatus(id: string | number, status: string) {
+export function changeClientApplicationValidFlag(id: string | number, validFlag: string) {
   return request<R>({
-    url: '/client/application/changeStatus',
+    url: '/client/application/changeValidFlag',
     method: 'put',
     data: {
       id,
-      status
+      validFlag
     }
   });
 }

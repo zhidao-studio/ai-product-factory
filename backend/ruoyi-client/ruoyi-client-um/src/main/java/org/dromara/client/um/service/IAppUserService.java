@@ -69,9 +69,9 @@ public interface IAppUserService {
     Boolean updateByBo(AppUserBo bo);
 
     /**
-     * 修改应用用户状态。
+     * 修改应用用户有效标志。
      */
-    Boolean updateStatus(Long userId, String status);
+    Boolean updateValidFlag(Long userId, String validFlag);
 
     /**
      * 重置应用用户密码。

@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.dromara.client.api.admin.domain.AppClientAdminCommand;
 import org.dromara.client.api.admin.domain.AppClientAdminQuery;
 import org.dromara.client.api.admin.domain.AppClientAdminVo;
-import org.dromara.client.api.admin.domain.AppClientStatusCommand;
+import org.dromara.client.api.admin.domain.AppClientValidFlagCommand;
 import org.dromara.client.internal.service.ClientInternalAdminService;
 import org.dromara.common.core.domain.PageResult;
 import org.dromara.common.core.domain.R;
@@ -80,11 +80,11 @@ public class InternalAppClientAdminController extends BaseController {
     }
 
     /**
-     * 修改接入客户端状态。
+     * 修改接入客户端有效标志。
      */
-    @PutMapping("/status")
-    public R<Void> changeStatus(@Validated @RequestBody AppClientStatusCommand command) {
-        return toAjax(internalAdminService.updateClientStatus(command));
+    @PutMapping("/validFlag")
+    public R<Void> changeValidFlag(@Validated @RequestBody AppClientValidFlagCommand command) {
+        return toAjax(internalAdminService.updateClientValidFlag(command));
     }
 
 }

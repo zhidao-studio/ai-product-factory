@@ -13,6 +13,7 @@ import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.request.AuthWechatMiniProgramRequest;
 import org.dromara.client.api.model.ClientLoginUser;
 import org.dromara.client.api.model.ClientXcxLoginBody;
+import org.dromara.client.um.constant.AppDataConstants;
 import org.dromara.client.um.domain.bo.AppUserIdentityBo;
 import org.dromara.client.um.domain.vo.AppClientVo;
 import org.dromara.client.um.domain.vo.AppUserIdentityVo;
@@ -23,7 +24,6 @@ import org.dromara.client.web.domain.vo.ClientLoginVo;
 import org.dromara.client.web.service.ClientLoginService;
 import org.dromara.client.web.service.ClientRegistrationService;
 import org.dromara.client.web.service.IClientAuthStrategy;
-import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.exception.user.UserException;
 import org.dromara.common.core.utils.StringUtils;
@@ -111,6 +111,7 @@ public class ClientXcxAuthStrategy implements IClientAuthStrategy {
     private AppUserIdentityVo loadOrRegisterIdentity(AuthUser authUser, AuthToken token) {
         AppUserIdentityVo identity = identityService.queryBySourceAndOpenId(WECHAT_MINIAPP_SOURCE, token.getOpenId());
         if (ObjectUtil.isNotNull(identity)) {
+            validateIdentity(identity);
             return identity;
         }
         String authId = WECHAT_MINIAPP_SOURCE + token.getOpenId();
@@ -119,6 +120,7 @@ public class ClientXcxAuthStrategy implements IClientAuthStrategy {
         } catch (DuplicateKeyException ex) {
             identity = identityService.queryBySourceAndOpenId(WECHAT_MINIAPP_SOURCE, token.getOpenId());
             if (ObjectUtil.isNotNull(identity)) {
+                validateIdentity(identity);
                 return identity;
             }
             throw ex;
@@ -130,16 +132,22 @@ public class ClientXcxAuthStrategy implements IClientAuthStrategy {
             log.info("微信用户：{} 未关联有效应用用户.", openId);
             throw new UserException("user.not.exists", openId);
         }
-        if (SystemConstants.DISABLE.equals(user.getStatus())) {
+        if (!AppDataConstants.VALID.equals(user.getValidFlag())) {
             throw new UserException("user.blocked", user.getUserName());
+        }
+    }
+
+    private void validateIdentity(AppUserIdentityVo identity) {
+        if (!AppDataConstants.VALID.equals(identity.getValidFlag())) {
+            throw new ServiceException("微信用户身份已无效");
         }
     }
 
     private void refreshIdentity(AppUserIdentityVo identity, AuthUser authUser, AuthToken token) {
         AppUserIdentityBo bo = new AppUserIdentityBo();
         bo.setId(identity.getId());
-        bo.setVersion(identity.getVersion());
         bo.setUserId(identity.getUserId());
+        bo.setValidFlag(identity.getValidFlag());
         bo.setAuthId(WECHAT_MINIAPP_SOURCE + token.getOpenId());
         bo.setSource(WECHAT_MINIAPP_SOURCE);
         bo.setAccessToken(StringUtils.blankToDefault(token.getAccessToken(), identity.getAccessToken()));

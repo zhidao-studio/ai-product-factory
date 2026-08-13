@@ -1,5 +1,6 @@
 package org.dromara.client.api.admin.domain;
 
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 import java.io.Serial;
@@ -32,8 +33,9 @@ public class AppClientAdminQuery implements Serializable {
     private String deviceType;
 
     /**
-     * 状态。
+     * 是否有效（1 有效、0 无效）。
      */
-    private String status;
+    @Pattern(regexp = "[01]", message = "有效标志值不正确")
+    private String validFlag;
 
 }

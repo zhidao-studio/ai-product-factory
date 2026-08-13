@@ -4,12 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.dromara.client.api.admin.domain.AppClientAdminCommand;
 import org.dromara.client.api.admin.domain.AppClientAdminQuery;
 import org.dromara.client.api.admin.domain.AppClientAdminVo;
-import org.dromara.client.api.admin.domain.AppClientStatusCommand;
+import org.dromara.client.api.admin.domain.AppClientValidFlagCommand;
 import org.dromara.client.api.admin.domain.AppUserAdminCommand;
 import org.dromara.client.api.admin.domain.AppUserAdminQuery;
 import org.dromara.client.api.admin.domain.AppUserAdminVo;
 import org.dromara.client.api.admin.domain.AppUserPasswordCommand;
-import org.dromara.client.api.admin.domain.AppUserStatusCommand;
+import org.dromara.client.api.admin.domain.AppUserValidFlagCommand;
 import org.dromara.common.core.constant.HttpStatus;
 import org.dromara.common.core.domain.PageResult;
 import org.dromara.common.core.domain.R;
@@ -131,9 +131,9 @@ public class ClientManagementHttpServiceImpl implements ClientManagementService 
     }
 
     @Override
-    public void updateUserStatus(AppUserStatusCommand command) {
+    public void updateUserValidFlag(AppUserValidFlagCommand command) {
         executeVoid(() -> clientManagementRestClient.put()
-            .uri(USERS_PATH + "/status")
+            .uri(USERS_PATH + "/validFlag")
             .body(command)
             .retrieve()
             .body(VOID_TYPE));
@@ -197,9 +197,9 @@ public class ClientManagementHttpServiceImpl implements ClientManagementService 
     }
 
     @Override
-    public void updateClientStatus(AppClientStatusCommand command) {
+    public void updateClientValidFlag(AppClientValidFlagCommand command) {
         executeVoid(() -> clientManagementRestClient.put()
-            .uri(CLIENTS_PATH + "/status")
+            .uri(CLIENTS_PATH + "/validFlag")
             .body(command)
             .retrieve()
             .body(VOID_TYPE));
@@ -248,7 +248,7 @@ public class ClientManagementHttpServiceImpl implements ClientManagementService 
         addQueryParam(builder, "nickName", query.getNickName());
         addQueryParam(builder, "email", query.getEmail());
         addQueryParam(builder, "phoneNumber", query.getPhoneNumber());
-        addQueryParam(builder, "status", query.getStatus());
+        addQueryParam(builder, "validFlag", query.getValidFlag());
         if (query.getParams() != null) {
             for (Map.Entry<String, Object> entry : query.getParams().entrySet()) {
                 addQueryParam(builder, "params[" + entry.getKey() + "]", entry.getValue());
@@ -262,7 +262,7 @@ public class ClientManagementHttpServiceImpl implements ClientManagementService 
         addQueryParam(builder, "clientId", query.getClientId());
         addQueryParam(builder, "clientKey", query.getClientKey());
         addQueryParam(builder, "deviceType", query.getDeviceType());
-        addQueryParam(builder, "status", query.getStatus());
+        addQueryParam(builder, "validFlag", query.getValidFlag());
         addPageQuery(builder, pageQuery);
         return builder.build();
     }

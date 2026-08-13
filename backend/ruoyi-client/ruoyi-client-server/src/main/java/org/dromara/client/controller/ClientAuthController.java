@@ -5,12 +5,12 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dromara.client.um.constant.AppDataConstants;
 import org.dromara.client.um.domain.vo.AppClientVo;
 import org.dromara.client.um.service.IAppClientService;
 import org.dromara.client.web.domain.vo.ClientLoginVo;
 import org.dromara.client.web.service.ClientLoginService;
 import org.dromara.client.web.service.IClientAuthStrategy;
-import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.core.domain.model.LoginBody;
 import org.dromara.common.core.utils.MessageUtils;
@@ -55,7 +55,7 @@ public class ClientAuthController {
             log.info("客户端 ID: {} 认证类型: {} 异常.", loginBody.getClientId(), loginBody.getGrantType());
             return R.fail(MessageUtils.message("auth.grant.type.error"));
         }
-        if (!SystemConstants.NORMAL.equals(client.getStatus())) {
+        if (!AppDataConstants.VALID.equals(client.getValidFlag())) {
             return R.fail(MessageUtils.message("auth.grant.type.blocked"));
         }
         return R.ok(IClientAuthStrategy.login(body, client, loginBody.getGrantType()));

@@ -14,15 +14,14 @@ export interface ClientApplicationForm extends BaseEntity {
   ipWhitelistList?: string[];
   activeTimeout?: number;
   timeout?: number;
-  status?: string;
-  version?: number;
+  validFlag?: string;
 }
 
 export interface ClientApplicationQuery extends PageQuery {
   clientId?: string;
   clientKey?: string;
   deviceType?: string;
-  status?: string;
+  validFlag?: string;
 }
 
 export interface ClientApplicationVO extends BaseEntity {
@@ -38,6 +37,5 @@ export interface ClientApplicationVO extends BaseEntity {
   ipWhitelistList?: string[];
   activeTimeout?: number;
   timeout?: number;
-  status: string;
-  version: number;
+  validFlag: string;
 }

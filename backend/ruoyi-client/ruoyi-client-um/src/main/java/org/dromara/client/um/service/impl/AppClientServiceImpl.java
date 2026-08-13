@@ -6,6 +6,7 @@ import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
+import org.dromara.client.um.constant.AppDataConstants;
 import org.dromara.client.um.domain.AppClient;
 import org.dromara.client.um.domain.bo.AppClientBo;
 import org.dromara.client.um.domain.vo.AppClientVo;
@@ -75,11 +76,14 @@ public class AppClientServiceImpl implements IAppClientService {
     }
 
     private LambdaQueryWrapper<AppClient> buildQueryWrapper(AppClientBo bo) {
+        if (bo.getValidFlag() != null) {
+            validateValidFlag(bo.getValidFlag());
+        }
         return QueryBuilder.lambda(AppClient.class)
             .eqIfText(AppClient::getClientId, bo.getClientId())
             .eqIfText(AppClient::getClientKey, bo.getClientKey())
             .eqIfText(AppClient::getDeviceType, bo.getDeviceType())
-            .eqIfText(AppClient::getStatus, bo.getStatus())
+            .eqIfText(AppClient::getValidFlag, bo.getValidFlag())
             .orderByAsc(AppClient::getId)
             .build();
     }
@@ -98,6 +102,7 @@ public class AppClientServiceImpl implements IAppClientService {
         AppClient add = MapstructUtils.convert(bo, AppClient.class);
         fillEntityRules(add, bo);
         add.setClientId(SecureUtil.md5(bo.getClientKey() + bo.getClientSecret()));
+        add.setValidFlag(normalizeValidFlag(add.getValidFlag()));
         boolean flag = clientMapper.insert(add) > 0;
         if (flag) {
             bo.setId(add.getId());
@@ -108,6 +113,9 @@ public class AppClientServiceImpl implements IAppClientService {
 
     @Override
     public Boolean updateByBo(AppClientBo bo) {
+        if (bo.getValidFlag() != null) {
+            validateValidFlag(bo.getValidFlag());
+        }
         validateClientRules(bo);
         AppClient update = MapstructUtils.convert(bo, AppClient.class);
         update.setClientId(null);
@@ -118,10 +126,11 @@ public class AppClientServiceImpl implements IAppClientService {
     }
 
     @Override
-    public Boolean updateStatus(Long id, String status) {
+    public Boolean updateValidFlag(Long id, String validFlag) {
+        validateValidFlag(validFlag);
         AppClient update = new AppClient();
         update.setId(id);
-        update.setStatus(status);
+        update.setValidFlag(validFlag);
         return clientMapper.updateById(update) > 0;
     }
 
@@ -185,6 +194,20 @@ public class AppClientServiceImpl implements IAppClientService {
         }
         String accessPath = StringUtils.trim(path);
         return accessPath.startsWith(StringUtils.SLASH) ? accessPath : StringUtils.SLASH + accessPath;
+    }
+
+    private String normalizeValidFlag(String validFlag) {
+        if (StringUtils.isBlank(validFlag)) {
+            return AppDataConstants.VALID;
+        }
+        validateValidFlag(validFlag);
+        return validFlag;
+    }
+
+    private void validateValidFlag(String validFlag) {
+        if (!AppDataConstants.isValidFlag(validFlag)) {
+            throw new ServiceException("有效标志值不正确");
+        }
     }
 
 }

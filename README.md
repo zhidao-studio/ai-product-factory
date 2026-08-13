@@ -103,11 +103,11 @@ App 与 HarmonyOS 还需要各自原生开发工具，详见对应工程 README�
 
 两个服务可以使用同名认证路径，因为部署域名和服务入口不同。受保护请求必须同时发送 Token 与对应的 `clientid`。
 
-Admin 调用 Client 时不转发浏览器 Token，而是通过仅两个 Backend 加入的内部网络，使用独立服务签名、时间窗口和 nonce 防重放。`/internal/**` 不属于任何前端契约，两个 Gateway 都会固定拒绝。
+Admin 调用 Client 时不转发浏览器 Token，而是通过仅两个 Backend 加入的内部网络，使用独立服务签名、时间窗口和 nonce 防重放。内部审计只传递并签名操作人 ID，不传 Admin 部门 ID。`/internal/**` 不属于任何前端契约，两个 Gateway 都会固定拒绝。
 
 微信小程序使用 `xcx` 授权；首次有效登录会自动创建应用用户和 `app_user_identity` 绑定，不会自动授予业务角色或权益。
 
-应用用户或接入客户端被停用、用户密码被重置后，已签发的 Client Token 会在下一次受保护请求时失效。接入客户端标识创建后不可变且不提供删除，运营下线统一使用“停用”。
+应用用户或接入客户端被设为无效、用户密码被重置后，已签发的 Client Token 会在下一次受保护请求时失效。有效性统一使用 `validFlag`，取值为 `1=有效、0=无效`；接入客户端标识创建后不可变且不提供删除，运营下线统一设为无效。
 
 ## 增加 Client 业务
 
@@ -116,7 +116,7 @@ Admin 调用 Client 时不转发浏览器 Token，而是通过仅两个 Backend 
 3. Admin 对浏览器的管理接口放在 `ruoyi-admin-server`，通过 `ruoyi-client-api` 契约和 HTTP 适配层调用 Client；Admin 不依赖 Client Entity、Mapper 或 Service。
 4. 每个前端只在自身工程封装需要的 API，不引用其他前端源码。
 
-Client 新表统一使用 `app_*`，并包含七要素：`create_dept`、`create_by`、`create_time`、`update_by`、`update_time`、`version`、`del_flag`。主键与可选的 `remark` 不计入七要素。
+Client 新表统一使用 `app_*`，七要素固定为 `id`、`valid_flag`、`del_flag`、`create_by`、`create_time`、`update_by`、`update_time`，不包含部门和通用乐观锁版本。Admin `sys_*` 表继续沿用原 RuoYi 字段，两套表允许存在结构差异；`app_user.credential_version` 仅用于密码重置后的会话失效，不是通用 `version`。
 
 已有环境不会因重新启动而自动执行新版初始化 SQL。开发数据可丢弃时重建数据卷；需要保留数据时先备份，再人工迁移至 `app_*` 表。
 

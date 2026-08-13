@@ -23,9 +23,9 @@ public class AppUserVo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 用户 ID。
+     * 主键。
      */
-    private Long userId;
+    private Long id;
 
     /**
      * 用户账号。
@@ -76,14 +76,9 @@ public class AppUserVo implements Serializable {
     private Integer credentialVersion;
 
     /**
-     * 账号状态。
+     * 是否有效（1 有效、0 无效）。
      */
-    private String status;
-
-    /**
-     * 乐观锁版本号。
-     */
-    private Long version;
+    private String validFlag;
 
     /**
      * 最后登录 IP。

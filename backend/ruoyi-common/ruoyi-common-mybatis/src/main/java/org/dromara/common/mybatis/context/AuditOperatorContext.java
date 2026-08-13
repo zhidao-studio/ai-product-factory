@@ -16,11 +16,10 @@ public final class AuditOperatorContext {
     /**
      * 设置当前线程的审计操作者。
      *
-     * @param operatorId     操作人 ID
-     * @param operatorDeptId 操作人部门 ID
+     * @param operatorId 操作人 ID
      */
-    public static void set(Long operatorId, Long operatorDeptId) {
-        CONTEXT.set(new AuditOperator(operatorId, operatorDeptId));
+    public static void set(Long operatorId) {
+        CONTEXT.set(new AuditOperator(operatorId));
     }
 
     /**
@@ -42,10 +41,9 @@ public final class AuditOperatorContext {
     /**
      * 审计操作者。
      *
-     * @param operatorId     操作人 ID
-     * @param operatorDeptId 操作人部门 ID
+     * @param operatorId 操作人 ID
      */
-    public record AuditOperator(Long operatorId, Long operatorDeptId) {
+    public record AuditOperator(Long operatorId) {
     }
 
 }

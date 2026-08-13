@@ -3,10 +3,9 @@ package org.dromara.common.mybatis.core.domain;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
-import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * Entity基类
@@ -14,7 +13,8 @@ import java.time.LocalDateTime;
  * @author Lion Li
  */
 @Data
-public class BaseEntity implements Serializable {
+@EqualsAndHashCode(callSuper = true)
+public class BaseEntity extends BaseAuditEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -24,29 +24,5 @@ public class BaseEntity implements Serializable {
      */
     @TableField(fill = FieldFill.INSERT)
     private Long createDept;
-
-    /**
-     * 创建者
-     */
-    @TableField(fill = FieldFill.INSERT)
-    private Long createBy;
-
-    /**
-     * 创建时间
-     */
-    @TableField(fill = FieldFill.INSERT)
-    private LocalDateTime createTime;
-
-    /**
-     * 更新者
-     */
-    @TableField(fill = FieldFill.INSERT_UPDATE)
-    private Long updateBy;
-
-    /**
-     * 更新时间
-     */
-    @TableField(fill = FieldFill.INSERT_UPDATE)
-    private LocalDateTime updateTime;
 
 }

@@ -903,7 +903,7 @@ insert into sys_client values (1762000000000000001, 'e5cd7e4891bf95d1d19206ce24a
 -- 应用用户信息表
 -- ----------------------------
 create table app_user (
-    user_id           bigint(20)      not null                   comment '应用用户ID',
+    id                bigint(20)      not null                   comment '主键',
     user_name         varchar(30)     not null                   comment '用户账号',
     nick_name         varchar(30)     not null                   comment '用户昵称',
     user_type         varchar(10)     default 'app_user'         comment '用户类型（app_user应用用户）',
@@ -913,24 +913,30 @@ create table app_user (
     avatar            bigint(20)                                 comment '头像地址',
     password          varchar(100)    default ''                 comment '密码',
     credential_version int            default 0                  comment '凭证版本（重置密码后递增）',
-    status            char(1)         default '0'                comment '账号状态（0正常 1停用）',
     login_ip          varchar(128)    default ''                 comment '最后登录IP',
     login_date        datetime                                   comment '最后登录时间',
     remark            varchar(500)    default null               comment '备注',
-    create_dept       bigint(20)      default null               comment '创建部门',
+    valid_flag        char(1)         not null default '1'       comment '有效标志（1有效 0无效）',
+    del_flag          char(1)         not null default '0'       comment '删除标志（0存在 1删除）',
     create_by         bigint(20)      default null               comment '创建者',
     create_time       datetime                                   comment '创建时间',
     update_by         bigint(20)      default null               comment '更新者',
     update_time       datetime                                   comment '更新时间',
-    version           int             not null default 0         comment '乐观锁版本号',
-    del_flag          char(1)         default '0'                comment '删除标志（0代表存在 1代表删除）',
-    primary key (user_id),
+    primary key (id),
     key idx_app_user_create_by (create_by),
     unique key uk_app_user_user_name (user_name),
     key idx_app_user_phone     (phone_number)
 ) engine=innodb comment = '应用用户信息表';
 
-insert into app_user values (1763000000000000001, 'client', '示例应用用户', 'app_user', '', '13800138000', '0', null, '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', 0, '0', '', null, '默认应用用户', null, null, sysdate(), null, null, 0, '0');
+insert into app_user (
+    id, user_name, nick_name, user_type, email, phone_number, gender, avatar, password,
+    credential_version, login_ip, login_date, remark,
+    valid_flag, del_flag, create_by, create_time, update_by, update_time
+) values (
+    1763000000000000001, 'client', '示例应用用户', 'app_user', '', '13800138000', '0', null,
+    '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', 0, '', null, '默认应用用户',
+    '1', '0', null, sysdate(), null, null
+);
 
 -- ----------------------------
 -- 接入应用授权表
@@ -946,24 +952,27 @@ create table app_client (
     ip_whitelist        varchar(1000) default null        comment 'IP白名单',
     active_timeout      int(11)       default 1800        comment 'token活跃超时时间',
     timeout             int(11)       default 604800      comment 'token固定超时',
-    status              char(1)       default '0'         comment '状态（0正常 1停用）',
     remark              varchar(500)  default null        comment '备注',
-    create_dept         bigint(20)    default null        comment '创建部门',
+    valid_flag          char(1)       not null default '1' comment '有效标志（1有效 0无效）',
+    del_flag            char(1)       not null default '0' comment '删除标志（0存在 1删除）',
     create_by           bigint(20)    default null        comment '创建者',
     create_time         datetime      default null        comment '创建时间',
     update_by           bigint(20)    default null        comment '更新者',
     update_time         datetime      default null        comment '更新时间',
-    version             int           not null default 0  comment '乐观锁版本号',
-    del_flag            char(1)       default '0'         comment '删除标志（0代表存在 1代表删除）',
     primary key (id),
     unique key uk_app_client_client_id (client_id),
     unique key uk_app_client_client_key (client_key)
 ) engine=innodb comment='接入应用授权表';
 
-insert into app_client values (1763100000000000001, '8f6e7d5c4b3a2910fedcba9876543210', 'h5', 'h5123', 'password,sms', 'h5', '/client/**,/auth/logout', null, 1800, 604800, '0', 'H5客户端', null, null, sysdate(), null, null, 0, '0');
-insert into app_client values (1763100000000000002, '428a8310cd442757ae699df5d894f051', 'app', 'app123', 'phonePassword,sms', 'app', '/client/**,/auth/logout', null, 1800, 604800, '0', 'App客户端', null, null, sysdate(), null, null, 0, '0');
-insert into app_client values (1763100000000000003, '7f4c1e2d8a9b4c6f9012d3e4f5a6b7c8', 'miniapp', 'miniapp123', 'xcx', 'miniapp', '/client/**,/auth/logout', null, 1800, 604800, '0', '微信小程序客户端', null, null, sysdate(), null, null, 0, '0');
-insert into app_client values (1763100000000000004, '9c8b7a6d5e4f3210a1b2c3d4e5f60718', 'harmony', 'harmony123', 'password,sms', 'harmony', '/client/**,/auth/logout', null, 1800, 604800, '0', 'HarmonyOS客户端', null, null, sysdate(), null, null, 0, '0');
+insert into app_client (
+    id, client_id, client_key, client_secret, grant_type, device_type, access_path, ip_whitelist,
+    active_timeout, timeout, remark,
+    valid_flag, del_flag, create_by, create_time, update_by, update_time
+) values
+    (1763100000000000001, '8f6e7d5c4b3a2910fedcba9876543210', 'h5', 'h5123', 'password,sms', 'h5', '/client/**,/auth/logout', null, 1800, 604800, 'H5客户端', '1', '0', null, sysdate(), null, null),
+    (1763100000000000002, '428a8310cd442757ae699df5d894f051', 'app', 'app123', 'phonePassword,sms', 'app', '/client/**,/auth/logout', null, 1800, 604800, 'App客户端', '1', '0', null, sysdate(), null, null),
+    (1763100000000000003, '7f4c1e2d8a9b4c6f9012d3e4f5a6b7c8', 'miniapp', 'miniapp123', 'xcx', 'miniapp', '/client/**,/auth/logout', null, 1800, 604800, '微信小程序客户端', '1', '0', null, sysdate(), null, null),
+    (1763100000000000004, '9c8b7a6d5e4f3210a1b2c3d4e5f60718', 'harmony', 'harmony123', 'password,sms', 'harmony', '/client/**,/auth/logout', null, 1800, 604800, 'HarmonyOS客户端', '1', '0', null, sysdate(), null, null);
 
 -- ----------------------------
 -- 应用用户第三方身份表
@@ -991,13 +1000,12 @@ create table app_user_identity (
     code               varchar(255)     default null    comment '用户的授权code，部分平台可能没有',
     oauth_token        varchar(255)     default null    comment 'Twitter平台用户的附带属性，部分平台可能没有',
     oauth_token_secret varchar(255)     default null    comment 'Twitter平台用户的附带属性，部分平台可能没有',
-    create_dept        bigint(20)                       comment '创建部门',
+    valid_flag         char(1)         not null default '1' comment '有效标志（1有效 0无效）',
+    del_flag           char(1)         not null default '0' comment '删除标志（0存在 1删除）',
     create_by          bigint(20)                       comment '创建者',
     create_time        datetime                         comment '创建时间',
     update_by          bigint(20)                       comment '更新者',
     update_time        datetime                         comment '更新时间',
-    version            int             not null default 0          comment '乐观锁版本号',
-    del_flag           char(1)          default '0'     comment '删除标志（0代表存在 1代表删除）',
     primary key (id),
     unique key uk_app_user_identity_auth_id (auth_id)
 ) engine=innodb comment='应用用户第三方身份表';

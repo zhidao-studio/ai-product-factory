@@ -9,12 +9,12 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * 应用用户状态变更命令。
+ * 应用用户有效标志变更命令。
  *
  * @author Lion Li
  */
 @Data
-public class AppUserStatusCommand implements Serializable {
+public class AppUserValidFlagCommand implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -26,10 +26,10 @@ public class AppUserStatusCommand implements Serializable {
     private Long userId;
 
     /**
-     * 账号状态。
+     * 是否有效（1 有效、0 无效）。
      */
-    @NotBlank(message = "账号状态不能为空")
-    @Pattern(regexp = "[01]", message = "状态值不正确")
-    private String status;
+    @NotBlank(message = "有效标志不能为空")
+    @Pattern(regexp = "[01]", message = "有效标志值不正确")
+    private String validFlag;
 
 }

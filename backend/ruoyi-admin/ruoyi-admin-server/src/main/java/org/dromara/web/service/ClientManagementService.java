@@ -2,11 +2,11 @@ package org.dromara.web.service;
 
 import org.dromara.client.api.admin.domain.AppClientAdminCommand;
 import org.dromara.client.api.admin.domain.AppClientAdminQuery;
-import org.dromara.client.api.admin.domain.AppClientStatusCommand;
+import org.dromara.client.api.admin.domain.AppClientValidFlagCommand;
 import org.dromara.client.api.admin.domain.AppUserAdminCommand;
 import org.dromara.client.api.admin.domain.AppUserAdminQuery;
 import org.dromara.client.api.admin.domain.AppUserPasswordCommand;
-import org.dromara.client.api.admin.domain.AppUserStatusCommand;
+import org.dromara.client.api.admin.domain.AppUserValidFlagCommand;
 import org.dromara.common.core.domain.PageResult;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.web.domain.vo.AppClientManagementVo;
@@ -52,9 +52,9 @@ public interface ClientManagementService {
     void resetUserPassword(AppUserPasswordCommand command);
 
     /**
-     * 修改应用用户状态。
+     * 修改应用用户有效标志。
      */
-    void updateUserStatus(AppUserStatusCommand command);
+    void updateUserValidFlag(AppUserValidFlagCommand command);
 
     /**
      * 删除应用用户。
@@ -87,8 +87,8 @@ public interface ClientManagementService {
     void updateClient(AppClientAdminCommand command);
 
     /**
-     * 修改接入客户端状态。
+     * 修改接入客户端有效标志。
      */
-    void updateClientStatus(AppClientStatusCommand command);
+    void updateClientValidFlag(AppClientValidFlagCommand command);
 
 }

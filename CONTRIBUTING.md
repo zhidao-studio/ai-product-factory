@@ -123,7 +123,7 @@ docs: 补充 CONTRIBUTING 协作规范
 
 ## 7. 编码约定
 
-- **后端**：遵循 RuoYi 的 Entity / BO / VO / Mapper / Service / Controller 分层，统一返回 `R<T>`，新增接口默认需 Sa-Token 鉴权；登录等敏感接口使用 `@ApiEncrypt`。新增模块必须归属 Admin 或 Client 总工程，Common 只承载中立技术能力。`backend/ruoyi-client/ruoyi-client-um/` 负责 `AppUser`、`AppClient`、`AppUserIdentity` 及其 Mapper/Service；对应表使用 `app_*`，并具备 `create_dept`、`create_by`、`create_time`、`update_by`、`update_time`、`version`、`del_flag` 七要素。Admin 运营 Client 时只依赖 `ruoyi-client-api`，经私有 HTTP 适配层调用 Client，禁止直接依赖 UM 实现。
+- **后端**：遵循 RuoYi 的 Entity / BO / VO / Mapper / Service / Controller 分层，统一返回 `R<T>`，新增接口默认需 Sa-Token 鉴权；登录等敏感接口使用 `@ApiEncrypt`。新增模块必须归属 Admin 或 Client 总工程，Common 只承载中立技术能力。`backend/ruoyi-client/ruoyi-client-um/` 负责 `AppUser`、`AppClient`、`AppUserIdentity` 及其 Mapper/Service；对应 `app_*` 表的七要素为 `id`、`valid_flag`、`del_flag`、`create_by`、`create_time`、`update_by`、`update_time`，不含部门和通用 `version`，Admin `sys_*` 表继续沿用原 RuoYi 字段。Admin 运营 Client 时只依赖 `ruoyi-client-api`，经私有 HTTP 适配层调用 Client；内部请求只传递并签名操作人 ID，不传部门 ID，禁止直接依赖 UM 实现。
 - **前端**：五个工程分别维护自己的 `src/api/request.ts`，不得跨工程引用源码或建立共享运行包；但每一份实现都必须遵守同一个 `R<T>`、`Authorization + clientid`、AES+RSA 与 401 契约。
 - **设计系统**：颜色/间距/字体/圆角等一律引用 `docs/` Token，不得硬编码。
 - **密钥与配置**：`.env` 含 RuoYi 默认开发密钥，仅用于本地开发；正式环境须替换为独立密钥并通过 CI/密钥管理注入，**不要**把真实生产密钥提交入库。

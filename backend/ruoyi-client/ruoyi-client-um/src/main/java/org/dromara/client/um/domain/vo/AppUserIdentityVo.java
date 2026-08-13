@@ -26,6 +26,11 @@ public class AppUserIdentityVo implements Serializable {
     private Long id;
 
     /**
+     * 是否有效（1 有效、0 无效）。
+     */
+    private String validFlag;
+
+    /**
      * 应用用户 ID。
      */
     private Long userId;
@@ -129,11 +134,6 @@ public class AppUserIdentityVo implements Serializable {
      * OAuth Token Secret。
      */
     private String oauthTokenSecret;
-
-    /**
-     * 乐观锁版本号。
-     */
-    private Long version;
 
     /**
      * 创建时间。

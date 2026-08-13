@@ -5,12 +5,12 @@ import com.baomidou.lock.annotation.Lock4j;
 import lombok.RequiredArgsConstructor;
 import me.zhyd.oauth.model.AuthToken;
 import me.zhyd.oauth.model.AuthUser;
+import org.dromara.client.um.constant.AppDataConstants;
 import org.dromara.client.um.domain.bo.AppUserBo;
 import org.dromara.client.um.domain.bo.AppUserIdentityBo;
 import org.dromara.client.um.domain.vo.AppUserIdentityVo;
 import org.dromara.client.um.service.IAppUserIdentityService;
 import org.dromara.client.um.service.IAppUserService;
-import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.encrypt.utils.EncryptUtils;
@@ -51,6 +51,9 @@ public class ClientRegistrationService {
     public AppUserIdentityVo register(String authId, String source, AuthUser authUser, AuthToken token) {
         AppUserIdentityVo identity = identityService.queryBySourceAndOpenId(source, token.getOpenId());
         if (ObjectUtil.isNotNull(identity)) {
+            if (!AppDataConstants.VALID.equals(identity.getValidFlag())) {
+                throw new ServiceException("微信用户身份已无效");
+            }
             return identity;
         }
 
@@ -63,13 +66,13 @@ public class ClientRegistrationService {
         userBo.setPhoneNumber(StringUtils.EMPTY);
         userBo.setGender(UNKNOWN_GENDER);
         userBo.setPassword(StringUtils.EMPTY);
-        userBo.setStatus(SystemConstants.NORMAL);
+        userBo.setValidFlag(AppDataConstants.VALID);
         userBo.setRemark("微信小程序首次登录自动创建");
         if (!userService.insertByBo(userBo)) {
             throw new ServiceException("创建应用用户失败");
         }
 
-        AppUserIdentityBo identityBo = buildIdentity(authId, source, authUser, token, userBo.getUserId(), userName);
+        AppUserIdentityBo identityBo = buildIdentity(authId, source, authUser, token, userBo.getId(), userName);
         if (!identityService.insertByBo(identityBo)) {
             throw new ServiceException("创建应用用户第三方身份失败");
         }
@@ -84,6 +87,7 @@ public class ClientRegistrationService {
                                             Long userId, String fallbackUserName) {
         AppUserIdentityBo bo = new AppUserIdentityBo();
         bo.setUserId(userId);
+        bo.setValidFlag(AppDataConstants.VALID);
         bo.setAuthId(authId);
         bo.setSource(source);
         bo.setAccessToken(StringUtils.blankToDefault(token.getAccessToken(), StringUtils.EMPTY));

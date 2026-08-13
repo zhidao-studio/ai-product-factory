@@ -55,13 +55,13 @@ export function resetClientUserPwd(userId: string | number, password: string) {
   });
 }
 
-export function changeClientUserStatus(userId: string | number, status: string) {
+export function changeClientUserValidFlag(userId: string | number, validFlag: string) {
   return request<R>({
-    url: '/client/user/changeStatus',
+    url: '/client/user/changeValidFlag',
     method: 'put',
     data: {
       userId,
-      status
+      validFlag
     }
   });
 }

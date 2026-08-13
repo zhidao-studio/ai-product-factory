@@ -20,8 +20,8 @@
 3. 后端沿用 RuoYi 的 `controller / service / mapper / domain.bo / domain.vo`、MyBatis-Plus、`R<T>` 与现有认证策略写法，禁止另造 DDD/Port/JdbcTemplate 体系。
 4. Admin 与 Client 的业务模块和 API 契约分别由各自总工程拥有；Common 不得定义业务 API，也不得依赖任何一侧的业务实现。
 5. 新增模块必须加入其所属总工程的 `pom.xml`；不要提前创建无实现的 API、UM 或微服务空壳。
-6. 新增 Client 表统一使用 `app_*`；表七要素固定为 `create_dept`、`create_by`、`create_time`、`update_by`、`update_time`、`version`、`del_flag`。
-7. Admin 调用 Client 的 `/internal/admin/**` 只允许后端私有网络访问，必须使用独立服务签名与防重放校验，禁止经过任一 Gateway 或转发浏览器 Token。
+6. 新增 Client 表统一使用 `app_*`；表七要素固定为 `id`、`valid_flag`、`del_flag`、`create_by`、`create_time`、`update_by`、`update_time`，不含部门和通用乐观锁版本。Admin 的 `sys_*` 表继续沿用原 RuoYi 字段，两套表允许存在结构差异。
+7. Admin 调用 Client 的 `/internal/admin/**` 只允许后端私有网络访问，必须使用独立服务签名与防重放校验；内部审计只传并签名操作人 ID，不传 Admin 部门 ID，禁止经过任一 Gateway 或转发浏览器 Token。
 
 ## 关键目录
 
@@ -57,6 +57,7 @@
 
 - Admin 固定 `8080`，Client 固定 `8082`，不要把用户端代理回 Admin。
 - Admin clientid 位于 `sys_client`，四个 Client clientid 位于 `app_client`，不能混用。
+- Client 的 `valid_flag` 固定使用 `1=有效、0=无效`；不要复用 Admin `sys_normal_disable` 的反向状态语义。
 - Client Redis 使用独立数据库与键前缀，避免 Admin/Client 会话互相读取。
 - Admin 与 Client 的内部管理共享密钥只存在于两个 Backend；本地两侧值必须一致，生产环境必须使用独立高熵密钥。
 - Docker 初始化 SQL 只在空数据卷首次执行；已有开发环境需重建数据卷，需保留数据的环境必须备份后人工迁移至 `app_*`。

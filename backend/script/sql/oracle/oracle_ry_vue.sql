@@ -1282,9 +1282,9 @@ insert into sys_client values (1762000000000000001, 'e5cd7e4891bf95d1d19206ce24a
 -- 应用用户信息表
 -- ----------------------------
 create table app_user (
-  user_id           number(20)      not null,
-  user_name         varchar2(40)    not null,
-  nick_name         varchar2(40)    not null,
+  id                number(20)      not null,
+  user_name         varchar2(30)    not null,
+  nick_name         varchar2(30)    not null,
   user_type         varchar2(10)    default 'app_user',
   email             varchar2(50)    default '',
   phone_number      varchar2(11)    default '',
@@ -1292,55 +1292,59 @@ create table app_user (
   avatar            number(20)      default null,
   password          varchar2(100)   default '',
   credential_version number(10)     default 0,
-  status            char(1)         default '0',
   login_ip          varchar2(128)   default '',
   login_date        date,
   remark            varchar2(500)   default '',
-  create_dept       number(20)      default null,
+  valid_flag        char(1)         default '1' not null,
+  del_flag          char(1)         default '0' not null,
   create_by         number(20)      default null,
   create_time       date,
   update_by         number(20)      default null,
-  update_time       date,
-  version           number(10)      default 0 not null,
-  del_flag          char(1)         default '0'
+  update_time       date
 );
 
-alter table app_user add constraint pk_app_user primary key (user_id);
+alter table app_user add constraint pk_app_user primary key (id);
 
 create index idx_app_user_create_by on app_user (create_by);
 create unique index uk_app_user_user_name on app_user (user_name);
 create index idx_app_user_phone on app_user (phone_number);
 
 comment on table  app_user                    is '应用用户信息表';
-comment on column app_user.user_id            is '应用用户ID';
+comment on column app_user.id                 is '主键';
 comment on column app_user.user_name          is '用户账号';
 comment on column app_user.nick_name          is '用户昵称';
 comment on column app_user.user_type          is '用户类型（app_user应用用户）';
 comment on column app_user.email              is '用户邮箱';
 comment on column app_user.phone_number       is '手机号码';
 comment on column app_user.gender             is '用户性别（0男 1女 2未知）';
-comment on column app_user.avatar             is '头像路径';
+comment on column app_user.avatar             is '头像地址';
 comment on column app_user.password           is '密码';
 comment on column app_user.credential_version is '凭证版本（重置密码后递增）';
-comment on column app_user.status             is '账号状态（0正常 1停用）';
 comment on column app_user.login_ip           is '最后登录IP';
 comment on column app_user.login_date         is '最后登录时间';
 comment on column app_user.remark             is '备注';
-comment on column app_user.create_dept        is '创建部门';
+comment on column app_user.valid_flag         is '有效标志（1有效 0无效）';
+comment on column app_user.del_flag           is '删除标志（0存在 1删除）';
 comment on column app_user.create_by          is '创建者';
 comment on column app_user.create_time        is '创建时间';
 comment on column app_user.update_by          is '更新者';
 comment on column app_user.update_time        is '更新时间';
-comment on column app_user.version            is '乐观锁版本号';
-comment on column app_user.del_flag           is '删除标志（0代表存在 1代表删除）';
 
-insert into app_user values (1763000000000000001, 'client', '示例应用用户', 'app_user', '', '13800138000', '0', null, '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', 0, '0', '', null, '默认应用用户', null, null, sysdate, null, null, 0, '0');
+insert into app_user (
+  id, user_name, nick_name, user_type, email, phone_number, gender, avatar, password,
+  credential_version, login_ip, login_date, remark,
+  valid_flag, del_flag, create_by, create_time, update_by, update_time
+) values (
+  1763000000000000001, 'client', '示例应用用户', 'app_user', '', '13800138000', '0', null,
+  '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', 0, '', null, '默认应用用户',
+  '1', '0', null, sysdate, null, null
+);
 
 -- ----------------------------
 -- 接入应用授权表
 -- ----------------------------
 create table app_client (
-    id                  number(20),
+    id                  number(20)     not null,
     client_id           varchar2(64)   default '',
     client_key          varchar2(32)   default '',
     client_secret       varchar2(255)  default '',
@@ -1350,15 +1354,13 @@ create table app_client (
     ip_whitelist        varchar2(1000) default '',
     active_timeout      number(11)     default 1800,
     timeout             number(11)     default 604800,
-    status              char(1)        default '0',
     remark              varchar2(500)  default '',
-    create_dept         number(20),
+    valid_flag          char(1)        default '1' not null,
+    del_flag            char(1)        default '0' not null,
     create_by           number(20),
     create_time         date,
     update_by           number(20),
-    update_time         date,
-    version             number(10)     default 0 not null,
-    del_flag            char(1)        default '0'
+    update_time         date
 );
 
 alter table app_client add constraint pk_app_client primary key (id);
@@ -1377,20 +1379,34 @@ comment on column app_client.access_path            is '允许访问路径';
 comment on column app_client.ip_whitelist           is 'IP白名单';
 comment on column app_client.active_timeout         is 'token活跃超时时间';
 comment on column app_client.timeout                is 'token固定超时';
-comment on column app_client.status                 is '状态（0正常 1停用）';
 comment on column app_client.remark                 is '备注';
-comment on column app_client.create_dept            is '创建部门';
+comment on column app_client.valid_flag             is '有效标志（1有效 0无效）';
+comment on column app_client.del_flag               is '删除标志（0存在 1删除）';
 comment on column app_client.create_by              is '创建者';
 comment on column app_client.create_time            is '创建时间';
 comment on column app_client.update_by              is '更新者';
 comment on column app_client.update_time            is '更新时间';
-comment on column app_client.version                is '乐观锁版本号';
-comment on column app_client.del_flag               is '删除标志（0代表存在 1代表删除）';
 
-insert into app_client values (1763100000000000001, '8f6e7d5c4b3a2910fedcba9876543210', 'h5', 'h5123', 'password,sms', 'h5', '/client/**,/auth/logout', null, 1800, 604800, '0', 'H5客户端', null, null, sysdate, null, null, 0, '0');
-insert into app_client values (1763100000000000002, '428a8310cd442757ae699df5d894f051', 'app', 'app123', 'phonePassword,sms', 'app', '/client/**,/auth/logout', null, 1800, 604800, '0', 'App客户端', null, null, sysdate, null, null, 0, '0');
-insert into app_client values (1763100000000000003, '7f4c1e2d8a9b4c6f9012d3e4f5a6b7c8', 'miniapp', 'miniapp123', 'xcx', 'miniapp', '/client/**,/auth/logout', null, 1800, 604800, '0', '微信小程序客户端', null, null, sysdate, null, null, 0, '0');
-insert into app_client values (1763100000000000004, '9c8b7a6d5e4f3210a1b2c3d4e5f60718', 'harmony', 'harmony123', 'password,sms', 'harmony', '/client/**,/auth/logout', null, 1800, 604800, '0', 'HarmonyOS客户端', null, null, sysdate, null, null, 0, '0');
+insert into app_client (
+  id, client_id, client_key, client_secret, grant_type, device_type, access_path, ip_whitelist,
+  active_timeout, timeout, remark,
+  valid_flag, del_flag, create_by, create_time, update_by, update_time
+) values (1763100000000000001, '8f6e7d5c4b3a2910fedcba9876543210', 'h5', 'h5123', 'password,sms', 'h5', '/client/**,/auth/logout', null, 1800, 604800, 'H5客户端', '1', '0', null, sysdate, null, null);
+insert into app_client (
+  id, client_id, client_key, client_secret, grant_type, device_type, access_path, ip_whitelist,
+  active_timeout, timeout, remark,
+  valid_flag, del_flag, create_by, create_time, update_by, update_time
+) values (1763100000000000002, '428a8310cd442757ae699df5d894f051', 'app', 'app123', 'phonePassword,sms', 'app', '/client/**,/auth/logout', null, 1800, 604800, 'App客户端', '1', '0', null, sysdate, null, null);
+insert into app_client (
+  id, client_id, client_key, client_secret, grant_type, device_type, access_path, ip_whitelist,
+  active_timeout, timeout, remark,
+  valid_flag, del_flag, create_by, create_time, update_by, update_time
+) values (1763100000000000003, '7f4c1e2d8a9b4c6f9012d3e4f5a6b7c8', 'miniapp', 'miniapp123', 'xcx', 'miniapp', '/client/**,/auth/logout', null, 1800, 604800, '微信小程序客户端', '1', '0', null, sysdate, null, null);
+insert into app_client (
+  id, client_id, client_key, client_secret, grant_type, device_type, access_path, ip_whitelist,
+  active_timeout, timeout, remark,
+  valid_flag, del_flag, create_by, create_time, update_by, update_time
+) values (1763100000000000004, '9c8b7a6d5e4f3210a1b2c3d4e5f60718', 'harmony', 'harmony123', 'password,sms', 'harmony', '/client/**,/auth/logout', null, 1800, 604800, 'HarmonyOS客户端', '1', '0', null, sysdate, null, null);
 
 -- ----------------------------
 -- 应用用户第三方身份表
@@ -1407,7 +1423,7 @@ create table app_user_identity
     email              varchar2(255)     default '',
     avatar             varchar2(500)     default '',
     access_token       varchar2(2000)    not null,
-    expire_in          number(20)        default null,
+    expire_in          number(10)        default null,
     refresh_token      varchar2(2000)    default null,
     access_code        varchar2(255)     default null,
     union_id           varchar2(255)     default null,
@@ -1419,13 +1435,12 @@ create table app_user_identity
     code               varchar2(255)     default null,
     oauth_token        varchar2(255)     default null,
     oauth_token_secret varchar2(255)     default null,
-    create_dept        number(20),
+    valid_flag         char(1)          default '1' not null,
+    del_flag           char(1)          default '0' not null,
     create_by          number(20),
     create_time        date,
     update_by          number(20),
-    update_time        date,
-    version            number(10)       default 0 not null,
-    del_flag           char(1)           default '0'
+    update_time        date
 );
 
 alter table app_user_identity add constraint pk_app_user_identity primary key (id);
@@ -1454,13 +1469,12 @@ comment on column app_user_identity.mac_key                is '小米平台用�
 comment on column app_user_identity.code                   is '用户的授权code，部分平台可能没有';
 comment on column app_user_identity.oauth_token            is 'Twitter平台用户的附带属性，部分平台可能没有';
 comment on column app_user_identity.oauth_token_secret     is 'Twitter平台用户的附带属性，部分平台可能没有';
-comment on column app_user_identity.create_dept            is '创建部门';
+comment on column app_user_identity.valid_flag             is '有效标志（1有效 0无效）';
+comment on column app_user_identity.del_flag               is '删除标志（0存在 1删除）';
 comment on column app_user_identity.create_by              is '创建者';
 comment on column app_user_identity.create_time            is '创建时间';
 comment on column app_user_identity.update_by              is '更新者';
 comment on column app_user_identity.update_time            is '更新时间';
-comment on column app_user_identity.version                is '乐观锁版本号';
-comment on column app_user_identity.del_flag               is '删除标志（0代表存在 1代表删除）';
 
 create table test_demo (
     id          number(20)      not null,

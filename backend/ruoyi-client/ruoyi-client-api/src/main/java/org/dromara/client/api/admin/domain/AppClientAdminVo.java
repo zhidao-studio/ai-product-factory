@@ -79,14 +79,9 @@ public class AppClientAdminVo implements Serializable {
     private Long timeout;
 
     /**
-     * 状态。
+     * 是否有效（1 有效、0 无效）。
      */
-    private String status;
-
-    /**
-     * 乐观锁版本号。
-     */
-    private Long version;
+    private String validFlag;
 
     /**
      * 备注。

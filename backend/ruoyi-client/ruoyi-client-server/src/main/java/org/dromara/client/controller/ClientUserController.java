@@ -39,7 +39,7 @@ public class ClientUserController {
             return R.fail("没有权限访问用户数据!");
         }
         ClientSessionVo session = new ClientSessionVo();
-        session.setUserId(user.getUserId());
+        session.setUserId(user.getId());
         session.setUserName(user.getUserName());
         session.setNickName(user.getNickName());
         session.setAvatar(null);

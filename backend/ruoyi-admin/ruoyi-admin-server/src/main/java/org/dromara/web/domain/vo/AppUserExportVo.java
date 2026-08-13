@@ -62,11 +62,11 @@ public class AppUserExportVo implements Serializable {
     private String gender;
 
     /**
-     * 账号状态。
+     * 是否有效。
      */
-    @ExcelProperty(value = "账号状态", converter = ExcelDictConvert.class)
-    @ExcelDictFormat(readConverterExp = "0=正常,1=停用")
-    private String status;
+    @ExcelProperty(value = "是否有效", converter = ExcelDictConvert.class)
+    @ExcelDictFormat(readConverterExp = "1=有效,0=无效")
+    private String validFlag;
 
     /**
      * 最后登录 IP。

@@ -4,7 +4,7 @@ import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 import org.dromara.client.config.properties.ClientInternalAdminProperties;
 import org.dromara.client.internal.security.InternalAdminAuthFilter;
-import org.dromara.client.interceptor.ClientSessionStatusInterceptor;
+import org.dromara.client.interceptor.ClientSessionValidityInterceptor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistration;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -23,7 +23,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableConfigurationProperties(ClientInternalAdminProperties.class)
 public class ClientWebMvcConfig implements WebMvcConfigurer {
 
-    private final ClientSessionStatusInterceptor sessionStatusInterceptor;
+    private final ClientSessionValidityInterceptor sessionValidityInterceptor;
 
     /**
      * 内部管理接口必须先按原始请求验签，再进入框架 XSS 清洗链。
@@ -43,13 +43,13 @@ public class ClientWebMvcConfig implements WebMvcConfigurer {
     }
 
     /**
-     * 对应用用户受保护接口增加实时状态校验。
+     * 对应用用户受保护接口增加实时有效性校验。
      *
      * @param registry 拦截器注册器
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(sessionStatusInterceptor)
+        registry.addInterceptor(sessionValidityInterceptor)
             .addPathPatterns("/client/**");
     }
 

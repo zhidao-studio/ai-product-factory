@@ -4,6 +4,8 @@ import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import org.apache.fesod.sheet.annotation.ExcelIgnoreUnannotated;
 import org.apache.fesod.sheet.annotation.ExcelProperty;
+import org.dromara.common.excel.annotation.ExcelDictFormat;
+import org.dromara.common.excel.convert.ExcelDictConvert;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -65,10 +67,11 @@ public class AppClientExportVo implements Serializable {
     private String ipWhitelist;
 
     /**
-     * 状态。
+     * 是否有效。
      */
-    @ExcelProperty(value = "状态")
-    private String status;
+    @ExcelProperty(value = "是否有效", converter = ExcelDictConvert.class)
+    @ExcelDictFormat(readConverterExp = "1=有效,0=无效")
+    private String validFlag;
 
     /**
      * 创建时间。

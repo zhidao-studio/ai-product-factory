@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
+import org.dromara.client.um.constant.AppDataConstants;
 import org.dromara.client.um.domain.AppUser;
 import org.dromara.client.um.domain.AppUserIdentity;
 import org.dromara.client.um.domain.bo.AppUserBo;
@@ -15,6 +16,7 @@ import org.dromara.common.core.domain.PageResult;
 import org.dromara.common.core.enums.UserType;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.MapstructUtils;
+import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.query.QueryBuilder;
 import org.dromara.common.mybatis.helper.DataPermissionHelper;
@@ -64,14 +66,17 @@ public class AppUserServiceImpl implements IAppUserService {
     }
 
     private LambdaQueryWrapper<AppUser> buildQueryWrapper(AppUserBo bo) {
+        if (bo.getValidFlag() != null) {
+            validateValidFlag(bo.getValidFlag());
+        }
         return QueryBuilder.lambda(AppUser.class)
             .likeIfText(AppUser::getUserName, bo.getUserName())
             .likeIfText(AppUser::getNickName, bo.getNickName())
             .eqIfText(AppUser::getPhoneNumber, bo.getPhoneNumber())
             .eqIfText(AppUser::getEmail, bo.getEmail())
-            .eqIfText(AppUser::getStatus, bo.getStatus())
+            .eqIfText(AppUser::getValidFlag, bo.getValidFlag())
             .betweenParams(AppUser::getCreateTime, bo.getParams(), "beginCreateTime", "endCreateTime")
-            .orderByAsc(AppUser::getUserId)
+            .orderByAsc(AppUser::getId)
             .build();
     }
 
@@ -79,7 +84,7 @@ public class AppUserServiceImpl implements IAppUserService {
     public boolean checkUserNameUnique(AppUserBo bo) {
         return !userMapper.lambda()
             .eq(AppUser::getUserName, bo.getUserName())
-            .neIfPresent(AppUser::getUserId, bo.getUserId())
+            .neIfPresent(AppUser::getId, bo.getId())
             .exists();
     }
 
@@ -87,7 +92,7 @@ public class AppUserServiceImpl implements IAppUserService {
     public boolean checkPhoneUnique(AppUserBo bo) {
         return !userMapper.lambda()
             .eqIfText(AppUser::getPhoneNumber, bo.getPhoneNumber())
-            .neIfPresent(AppUser::getUserId, bo.getUserId())
+            .neIfPresent(AppUser::getId, bo.getId())
             .exists();
     }
 
@@ -95,7 +100,7 @@ public class AppUserServiceImpl implements IAppUserService {
     public boolean checkEmailUnique(AppUserBo bo) {
         return !userMapper.lambda()
             .eqIfText(AppUser::getEmail, bo.getEmail())
-            .neIfPresent(AppUser::getUserId, bo.getUserId())
+            .neIfPresent(AppUser::getId, bo.getId())
             .exists();
     }
 
@@ -103,15 +108,19 @@ public class AppUserServiceImpl implements IAppUserService {
     public Boolean insertByBo(AppUserBo bo) {
         AppUser add = MapstructUtils.convert(bo, AppUser.class);
         add.setUserType(UserType.APP_USER.getUserType());
+        add.setValidFlag(normalizeValidFlag(add.getValidFlag()));
         boolean flag = userMapper.insert(add) > 0;
         if (flag) {
-            bo.setUserId(add.getUserId());
+            bo.setId(add.getId());
         }
         return flag;
     }
 
     @Override
     public Boolean updateByBo(AppUserBo bo) {
+        if (bo.getValidFlag() != null) {
+            validateValidFlag(bo.getValidFlag());
+        }
         AppUser update = MapstructUtils.convert(bo, AppUser.class);
         update.setPassword(null);
         update.setUserType(UserType.APP_USER.getUserType());
@@ -119,27 +128,28 @@ public class AppUserServiceImpl implements IAppUserService {
     }
 
     @Override
-    public Boolean updateStatus(Long userId, String status) {
+    public Boolean updateValidFlag(Long userId, String validFlag) {
+        validateValidFlag(validFlag);
         AppUser update = new AppUser();
-        update.setUserId(userId);
-        update.setStatus(status);
+        update.setId(userId);
+        update.setValidFlag(validFlag);
         return userMapper.updateById(update) > 0;
     }
 
     @Override
     public Boolean resetPassword(Long userId, String password) {
         AppUser update = new AppUser();
-        update.setUserId(userId);
+        update.setId(userId);
         update.setPassword(password);
         return userMapper.update(update, Wrappers.lambdaUpdate(AppUser.class)
             .setSql("credential_version = credential_version + 1")
-            .eq(AppUser::getUserId, userId)) > 0;
+            .eq(AppUser::getId, userId)) > 0;
     }
 
     @Override
     public Boolean updateLastLoginInfo(Long userId, String ip) {
         AppUser update = new AppUser();
-        update.setUserId(userId);
+        update.setId(userId);
         update.setLoginIp(ip);
         update.setLoginDate(LocalDateTime.now());
         update.setUpdateBy(userId);
@@ -149,9 +159,23 @@ public class AppUserServiceImpl implements IAppUserService {
     @Override
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
         if (identityMapper.lambda().in(AppUserIdentity::getUserId, ids).exists()) {
-            throw new ServiceException("应用用户已绑定第三方身份，请停用账号而不是删除");
+            throw new ServiceException("应用用户已绑定第三方身份，请将账号设为无效而不是删除");
         }
         return userMapper.deleteByIds(ids) > 0;
+    }
+
+    private String normalizeValidFlag(String validFlag) {
+        if (StringUtils.isBlank(validFlag)) {
+            return AppDataConstants.VALID;
+        }
+        validateValidFlag(validFlag);
+        return validFlag;
+    }
+
+    private void validateValidFlag(String validFlag) {
+        if (!AppDataConstants.isValidFlag(validFlag)) {
+            throw new ServiceException("有效标志值不正确");
+        }
     }
 
 }

@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.dromara.client.api.model.ClientLoginUser;
 import org.dromara.client.api.model.ClientSmsLoginBody;
 import org.dromara.client.config.properties.ClientSmsProperties;
+import org.dromara.client.um.constant.AppDataConstants;
 import org.dromara.client.um.domain.vo.AppClientVo;
 import org.dromara.client.um.domain.vo.AppUserVo;
 import org.dromara.client.um.service.IAppUserService;
@@ -15,7 +16,6 @@ import org.dromara.client.web.service.ClientLoginService;
 import org.dromara.client.web.service.IClientAuthStrategy;
 import org.dromara.common.core.constant.Constants;
 import org.dromara.common.core.constant.GlobalConstants;
-import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.enums.LoginType;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.exception.user.CaptchaExpireException;
@@ -81,8 +81,8 @@ public class ClientSmsAuthStrategy implements IClientAuthStrategy {
             log.info("登录用户：{} 不存在.", phoneNumber);
             throw new UserException("user.not.exists", phoneNumber);
         }
-        if (SystemConstants.DISABLE.equals(user.getStatus())) {
-            log.info("登录用户：{} 已被停用.", phoneNumber);
+        if (!AppDataConstants.VALID.equals(user.getValidFlag())) {
+            log.info("登录用户：{} 已无效.", phoneNumber);
             throw new UserException("user.blocked", phoneNumber);
         }
         return user;

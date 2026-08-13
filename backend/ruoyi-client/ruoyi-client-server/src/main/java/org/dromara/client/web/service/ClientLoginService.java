@@ -50,7 +50,7 @@ public class ClientLoginService {
      */
     public ClientLoginUser buildLoginUser(AppUserVo user) {
         ClientLoginUser loginUser = new ClientLoginUser();
-        loginUser.setUserId(user.getUserId());
+        loginUser.setUserId(user.getId());
         loginUser.setUsername(user.getUserName());
         loginUser.setNickname(user.getNickName());
         loginUser.setUserType(user.getUserType());
@@ -114,7 +114,7 @@ public class ClientLoginService {
      */
     public void recordLoginSuccess(AppUserVo user) {
         String ip = ServletUtils.getClientIP();
-        userService.updateLastLoginInfo(user.getUserId(), ip);
+        userService.updateLastLoginInfo(user.getId(), ip);
         recordLoginInfo(user.getUserName(), Constants.LOGIN_SUCCESS,
             MessageUtils.message("user.login.success"));
     }

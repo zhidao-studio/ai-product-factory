@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.dromara.client.api.admin.domain.AppClientAdminCommand;
 import org.dromara.client.api.admin.domain.AppClientAdminQuery;
-import org.dromara.client.api.admin.domain.AppClientStatusCommand;
+import org.dromara.client.api.admin.domain.AppClientValidFlagCommand;
 import org.dromara.common.core.domain.PageResult;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.core.utils.MapstructUtils;
@@ -104,14 +104,14 @@ public class ClientApplicationController extends BaseController {
     }
 
     /**
-     * 修改接入客户端状态。
+     * 修改接入客户端有效标志。
      */
     @SaCheckPermission("client:application:edit")
     @Log(title = "接入客户端", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
-    @PutMapping("/changeStatus")
-    public R<Void> changeStatus(@Validated @RequestBody AppClientStatusCommand command) {
-        clientManagementService.updateClientStatus(command);
+    @PutMapping("/changeValidFlag")
+    public R<Void> changeValidFlag(@Validated @RequestBody AppClientValidFlagCommand command) {
+        clientManagementService.updateClientValidFlag(command);
         return R.ok();
     }
 

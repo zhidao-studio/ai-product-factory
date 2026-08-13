@@ -37,11 +37,6 @@ public final class InternalAdminAuthConstants {
     public static final String HEADER_OPERATOR_ID = "X-Internal-Operator-Id";
 
     /**
-     * 操作人部门 ID 请求头。
-     */
-    public static final String HEADER_OPERATOR_DEPT_ID = "X-Internal-Operator-Dept-Id";
-
-    /**
      * HMAC-SHA256 签名请求头。
      */
     public static final String HEADER_SIGNATURE = "X-Internal-Signature";

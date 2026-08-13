@@ -2,6 +2,7 @@ package org.dromara.client.api.admin.domain;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.dromara.common.core.validate.AddGroup;
@@ -94,15 +95,10 @@ public class AppClientAdminCommand implements Serializable {
     private Long timeout;
 
     /**
-     * 状态。
+     * 是否有效（1 有效、0 无效）。
      */
-    private String status;
-
-    /**
-     * 乐观锁版本号。
-     */
-    @NotNull(message = "乐观锁版本号不能为空", groups = EditGroup.class)
-    private Long version;
+    @Pattern(regexp = "[01]", message = "有效标志值不正确", groups = {AddGroup.class, EditGroup.class})
+    private String validFlag;
 
     /**
      * 备注。

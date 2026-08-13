@@ -8,7 +8,7 @@ import org.dromara.client.api.admin.domain.AppUserAdminCommand;
 import org.dromara.client.api.admin.domain.AppUserAdminQuery;
 import org.dromara.client.api.admin.domain.AppUserAdminVo;
 import org.dromara.client.api.admin.domain.AppUserPasswordCommand;
-import org.dromara.client.api.admin.domain.AppUserStatusCommand;
+import org.dromara.client.api.admin.domain.AppUserValidFlagCommand;
 import org.dromara.client.internal.service.ClientInternalAdminService;
 import org.dromara.common.core.domain.PageResult;
 import org.dromara.common.core.domain.R;
@@ -83,11 +83,11 @@ public class InternalAppUserAdminController extends BaseController {
     }
 
     /**
-     * 修改应用用户状态。
+     * 修改应用用户有效标志。
      */
-    @PutMapping("/status")
-    public R<Void> changeStatus(@Validated @RequestBody AppUserStatusCommand command) {
-        return toAjax(internalAdminService.updateUserStatus(command));
+    @PutMapping("/validFlag")
+    public R<Void> changeValidFlag(@Validated @RequestBody AppUserValidFlagCommand command) {
+        return toAjax(internalAdminService.updateUserValidFlag(command));
     }
 
     /**

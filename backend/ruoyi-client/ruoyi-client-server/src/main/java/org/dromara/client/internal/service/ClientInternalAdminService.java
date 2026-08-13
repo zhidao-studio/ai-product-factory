@@ -5,12 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.dromara.client.api.admin.domain.AppClientAdminCommand;
 import org.dromara.client.api.admin.domain.AppClientAdminQuery;
 import org.dromara.client.api.admin.domain.AppClientAdminVo;
-import org.dromara.client.api.admin.domain.AppClientStatusCommand;
+import org.dromara.client.api.admin.domain.AppClientValidFlagCommand;
 import org.dromara.client.api.admin.domain.AppUserAdminCommand;
 import org.dromara.client.api.admin.domain.AppUserAdminQuery;
 import org.dromara.client.api.admin.domain.AppUserAdminVo;
 import org.dromara.client.api.admin.domain.AppUserPasswordCommand;
-import org.dromara.client.api.admin.domain.AppUserStatusCommand;
+import org.dromara.client.api.admin.domain.AppUserValidFlagCommand;
 import org.dromara.client.um.domain.bo.AppClientBo;
 import org.dromara.client.um.domain.bo.AppUserBo;
 import org.dromara.client.um.domain.vo.AppClientVo;
@@ -83,10 +83,10 @@ public class ClientInternalAdminService {
     }
 
     /**
-     * 修改应用用户状态。
+     * 修改应用用户有效标志。
      */
-    public Boolean updateUserStatus(AppUserStatusCommand command) {
-        return userService.updateStatus(command.getUserId(), command.getStatus());
+    public Boolean updateUserValidFlag(AppUserValidFlagCommand command) {
+        return userService.updateValidFlag(command.getUserId(), command.getValidFlag());
     }
 
     /**
@@ -144,10 +144,10 @@ public class ClientInternalAdminService {
     }
 
     /**
-     * 修改接入客户端状态。
+     * 修改接入客户端有效标志。
      */
-    public Boolean updateClientStatus(AppClientStatusCommand command) {
-        return clientService.updateStatus(command.getId(), command.getStatus());
+    public Boolean updateClientValidFlag(AppClientValidFlagCommand command) {
+        return clientService.updateValidFlag(command.getId(), command.getValidFlag());
     }
 
     private void validateUserUnique(AppUserBo bo, String action) {
@@ -168,14 +168,14 @@ public class ClientInternalAdminService {
         bo.setNickName(query.getNickName());
         bo.setEmail(query.getEmail());
         bo.setPhoneNumber(query.getPhoneNumber());
-        bo.setStatus(query.getStatus());
+        bo.setValidFlag(query.getValidFlag());
         bo.setParams(query.getParams() == null ? new HashMap<>() : query.getParams());
         return bo;
     }
 
     private AppUserBo toUserBo(AppUserAdminCommand command) {
         AppUserBo bo = new AppUserBo();
-        bo.setUserId(command.getUserId());
+        bo.setId(command.getUserId());
         bo.setUserName(command.getUserName());
         bo.setNickName(command.getNickName());
         bo.setUserType(command.getUserType());
@@ -184,8 +184,7 @@ public class ClientInternalAdminService {
         bo.setGender(command.getGender());
         bo.setAvatar(command.getAvatar());
         bo.setPassword(command.getPassword());
-        bo.setStatus(command.getStatus());
-        bo.setVersion(command.getVersion());
+        bo.setValidFlag(command.getValidFlag());
         bo.setRemark(command.getRemark());
         return bo;
     }
@@ -195,7 +194,7 @@ public class ClientInternalAdminService {
         bo.setClientId(query.getClientId());
         bo.setClientKey(query.getClientKey());
         bo.setDeviceType(query.getDeviceType());
-        bo.setStatus(query.getStatus());
+        bo.setValidFlag(query.getValidFlag());
         return bo;
     }
 
@@ -214,8 +213,7 @@ public class ClientInternalAdminService {
         bo.setIpWhitelistList(command.getIpWhitelistList());
         bo.setActiveTimeout(command.getActiveTimeout());
         bo.setTimeout(command.getTimeout());
-        bo.setStatus(command.getStatus());
-        bo.setVersion(command.getVersion());
+        bo.setValidFlag(command.getValidFlag());
         bo.setRemark(command.getRemark());
         return bo;
     }
@@ -229,7 +227,7 @@ public class ClientInternalAdminService {
             return null;
         }
         AppUserAdminVo target = new AppUserAdminVo();
-        target.setUserId(source.getUserId());
+        target.setUserId(source.getId());
         target.setUserName(source.getUserName());
         target.setNickName(source.getNickName());
         target.setUserType(source.getUserType());
@@ -237,8 +235,7 @@ public class ClientInternalAdminService {
         target.setPhoneNumber(source.getPhoneNumber());
         target.setGender(source.getGender());
         target.setAvatar(source.getAvatar());
-        target.setStatus(source.getStatus());
-        target.setVersion(source.getVersion());
+        target.setValidFlag(source.getValidFlag());
         target.setLoginIp(source.getLoginIp());
         target.setLoginDate(source.getLoginDate());
         target.setRemark(source.getRemark());
@@ -268,8 +265,7 @@ public class ClientInternalAdminService {
         target.setIpWhitelistList(source.getIpWhitelistList());
         target.setActiveTimeout(source.getActiveTimeout());
         target.setTimeout(source.getTimeout());
-        target.setStatus(source.getStatus());
-        target.setVersion(source.getVersion());
+        target.setValidFlag(source.getValidFlag());
         target.setRemark(source.getRemark());
         target.setCreateTime(source.getCreateTime());
         target.setUpdateTime(source.getUpdateTime());

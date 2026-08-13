@@ -8,7 +8,7 @@ interface ClientUserFormModalProps {
   form: FormInstance<ClientUserForm>;
   initialValues: ClientUserForm;
   genderOptions: Array<{ label: string; value: string }>;
-  statusOptions: Array<{ label: string; value: string }>;
+  validFlagOptions: Array<{ label: string; value: string }>;
   onClose: () => void;
   onFinish: (values: ClientUserForm) => Promise<boolean>;
 }
@@ -19,7 +19,7 @@ export default function ClientUserFormModal({
   form,
   initialValues,
   genderOptions,
-  statusOptions,
+  validFlagOptions,
   onClose,
   onFinish
 }: ClientUserFormModalProps) {
@@ -44,7 +44,6 @@ export default function ClientUserFormModal({
       onFinish={onFinish}
     >
       <ProFormText name="userId" hidden />
-      <ProFormText name="version" hidden />
       <div className="form-grid">
         <ProFormText
           name="userName"
@@ -91,7 +90,12 @@ export default function ClientUserFormModal({
           rules={[{ type: 'email', message: '请输入正确的邮箱地址' }]}
         />
         <ProFormSelect name="gender" label="用户性别" allowClear options={genderOptions} placeholder="请选择" />
-        <ProFormSelect name="status" label="状态" options={statusOptions} placeholder="请选择" />
+        <ProFormSelect
+          name="validFlag"
+          label="是否有效"
+          options={validFlagOptions}
+          placeholder="请选择"
+        />
       </div>
       <ProFormTextArea name="remark" label="备注" fieldProps={{ rows: 3 }} placeholder="请输入内容" />
     </ModalForm>

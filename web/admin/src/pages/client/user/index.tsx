@@ -13,7 +13,7 @@ import { useRef, useState } from 'react';
 import type { ClientUserForm, ClientUserQuery, ClientUserVO } from '@/api/client/user/types';
 import {
   addClientUser,
-  changeClientUserStatus,
+  changeClientUserValidFlag,
   delClientUser,
   getClientUser,
   listClientUser,
@@ -36,8 +36,13 @@ import { toPageQuery, toTableData } from '@/utils/ruoyi';
 import ClientUserFormModal from './components/ClientUserFormModal';
 
 const defaultForm: ClientUserForm = {
-  status: '0'
+  validFlag: '1'
 };
+
+const validFlagOptions = [
+  { label: '有效', value: '1' },
+  { label: '无效', value: '0' }
+];
 
 interface ResetPasswordForm {
   password: string;
@@ -49,7 +54,7 @@ export default function ClientUserPage() {
   const [form] = Form.useForm<ClientUserForm>();
   const [resetPasswordForm] = Form.useForm<ResetPasswordForm>();
   const userInfo = useUserStore(state => state.userInfo);
-  const dicts = useDict('sys_normal_disable', 'sys_user_gender');
+  const dicts = useDict('sys_user_gender');
   const {
     ids: selectedIds,
     selectedOne,
@@ -103,13 +108,13 @@ export default function ClientUserPage() {
     actionRef.current?.reloadAndRest?.();
   };
 
-  const toggleStatus = async (row: ClientUserVO, checked: boolean) => {
-    const nextStatus = checked ? '0' : '1';
-    const actionText = nextStatus === '0' ? '启用' : '停用';
+  const toggleValidFlag = async (row: ClientUserVO, checked: boolean) => {
+    const nextValidFlag = checked ? '1' : '0';
+    const validText = nextValidFlag === '1' ? '有效' : '无效';
     try {
-      await confirmAction(`确认要“${actionText}”应用用户“${row.userName}”吗？`);
-      await changeClientUserStatus(row.userId, nextStatus);
-      message.success(`${actionText}成功`);
+      await confirmAction(`确认要将应用用户“${row.userName}”设为${validText}吗？`);
+      await changeClientUserValidFlag(row.userId, nextValidFlag);
+      message.success(`已设为${validText}`);
       actionRef.current?.reload();
     } catch {
       actionRef.current?.reload();
@@ -163,18 +168,18 @@ export default function ClientUserPage() {
       render: (_, row) => <DictTag options={dicts.sys_user_gender} value={row.gender} />
     },
     {
-      title: '状态',
-      dataIndex: 'status',
+      title: '是否有效',
+      dataIndex: 'validFlag',
       valueType: 'select',
-      fieldProps: { options: dictOptions(dicts.sys_normal_disable) },
+      fieldProps: { options: validFlagOptions },
       width: 100,
       render: (_, row) => (
         <Switch
-          checked={row.status === '0'}
-          checkedChildren="启用"
-          unCheckedChildren="停用"
+          checked={row.validFlag === '1'}
+          checkedChildren="有效"
+          unCheckedChildren="无效"
           disabled={!canEdit}
-          onChange={checked => toggleStatus(row, checked)}
+          onChange={checked => toggleValidFlag(row, checked)}
         />
       )
     },
@@ -294,7 +299,7 @@ export default function ClientUserPage() {
         form={form}
         initialValues={defaultForm}
         genderOptions={dictOptions(dicts.sys_user_gender)}
-        statusOptions={dictOptions(dicts.sys_normal_disable)}
+        validFlagOptions={validFlagOptions}
         onClose={closeModal}
         onFinish={submitForm}
       />

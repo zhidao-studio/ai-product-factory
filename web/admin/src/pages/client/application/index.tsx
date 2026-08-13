@@ -13,7 +13,7 @@ import {
 } from '@ant-design/pro-components';
 import { useBoolean } from 'ahooks';
 import { Button, Form, message, Switch } from 'antd';
-import { useMemo, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import type {
   ClientApplicationForm,
   ClientApplicationQuery,
@@ -21,26 +21,29 @@ import type {
 } from '@/api/client/application/types';
 import {
   addClientApplication,
-  changeClientApplicationStatus,
+  changeClientApplicationValidFlag,
   getClientApplication,
   listClientApplication,
   updateClientApplication
 } from '@/api/client/application';
 import EllipsisText from '@/components/common/EllipsisText';
 import RowActions from '@/components/common/RowActions';
-import { useDict } from '@/hooks/useDict';
 import { useTableExport } from '@/hooks/useTableExport';
 import { useTableScroll } from '@/hooks/useTableScroll';
 import { useTableSelection } from '@/hooks/useTableSelection';
 import { useUserStore } from '@/stores/userStore';
-import { dictOptions } from '@/utils/dict';
 import { confirmAction } from '@/utils/modal';
 import { hasPermi } from '@/utils/permission';
 import { toPageQuery, toTableData } from '@/utils/ruoyi';
 
 const defaultForm: ClientApplicationForm = {
-  status: '0'
+  validFlag: '1'
 };
+
+const validFlagOptions = [
+  { label: '有效', value: '1' },
+  { label: '无效', value: '0' }
+];
 
 const grantTypeOptions = [
   { label: '密码认证', value: 'password' },
@@ -80,7 +83,6 @@ export default function ClientApplicationPage() {
   const { tableScroll } = useTableScroll(1750);
   const [form] = Form.useForm<ClientApplicationForm>();
   const userInfo = useUserStore(state => state.userInfo);
-  const dicts = useDict('sys_normal_disable');
   const { ids, selectedOne, handleSelectionChange } = useTableSelection<ClientApplicationVO>(
     row => row.id
   );
@@ -91,7 +93,6 @@ export default function ClientApplicationPage() {
   const canAdd = hasPermi(userInfo, ['client:application:add']);
   const canEdit = hasPermi(userInfo, ['client:application:edit']);
   const canExport = hasPermi(userInfo, ['client:application:export']);
-  const statusOptions = useMemo(() => dictOptions(dicts.sys_normal_disable), [dicts.sys_normal_disable]);
   const editingApplication = !!Form.useWatch('id', form);
   const selectedDeviceType = Form.useWatch('deviceType', form);
   const availableGrantTypeOptions = grantTypeOptions.filter(option =>
@@ -123,13 +124,13 @@ export default function ClientApplicationPage() {
     return true;
   };
 
-  const toggleStatus = async (row: ClientApplicationVO, checked: boolean) => {
-    const nextStatus = checked ? '0' : '1';
-    const actionText = nextStatus === '0' ? '启用' : '停用';
+  const toggleValidFlag = async (row: ClientApplicationVO, checked: boolean) => {
+    const nextValidFlag = checked ? '1' : '0';
+    const validText = nextValidFlag === '1' ? '有效' : '无效';
     try {
-      await confirmAction(`确认要“${actionText}”接入客户端“${row.clientKey}”吗？`);
-      await changeClientApplicationStatus(row.id, nextStatus);
-      message.success(`${actionText}成功`);
+      await confirmAction(`确认要将接入客户端“${row.clientKey}”设为${validText}吗？`);
+      await changeClientApplicationValidFlag(row.id, nextValidFlag);
+      message.success(`已设为${validText}`);
       actionRef.current?.reload();
     } catch {
       actionRef.current?.reload();
@@ -200,18 +201,18 @@ export default function ClientApplicationPage() {
       width: 150
     },
     {
-      title: '状态',
-      dataIndex: 'status',
+      title: '是否有效',
+      dataIndex: 'validFlag',
       valueType: 'select',
-      fieldProps: { options: statusOptions },
+      fieldProps: { options: validFlagOptions },
       width: 100,
       render: (_, row) => (
         <Switch
-          checked={row.status === '0'}
-          checkedChildren="启用"
-          unCheckedChildren="停用"
+          checked={row.validFlag === '1'}
+          checkedChildren="有效"
+          unCheckedChildren="无效"
           disabled={!canEdit}
-          onChange={checked => toggleStatus(row, checked)}
+          onChange={checked => toggleValidFlag(row, checked)}
         />
       )
     },
@@ -288,7 +289,6 @@ export default function ClientApplicationPage() {
         onFinish={submitForm}
       >
         <ProFormText name="id" hidden />
-        <ProFormText name="version" hidden />
         <ProFormText name="clientId" hidden />
         <ProFormText
           name="clientKey"
@@ -332,7 +332,7 @@ export default function ClientApplicationPage() {
           <ProFormDigit name="activeTimeout" label="Token 活跃超时时间" min={0} />
           <ProFormDigit name="timeout" label="Token 固定超时时间" min={0} />
         </div>
-        <ProFormRadio.Group name="status" label="状态" options={statusOptions} />
+        <ProFormRadio.Group name="validFlag" label="是否有效" options={validFlagOptions} />
         <ProFormTextArea name="remark" label="备注" fieldProps={{ rows: 3 }} placeholder="请输入内容" />
       </ModalForm>
     </PageContainer>

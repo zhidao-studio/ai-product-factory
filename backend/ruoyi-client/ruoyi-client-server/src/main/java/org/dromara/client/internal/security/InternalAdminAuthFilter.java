@@ -74,7 +74,6 @@ public class InternalAdminAuthFilter implements Filter {
             String timestamp = requiredHeader(request, InternalAdminAuthConstants.HEADER_TIMESTAMP);
             String nonce = requiredHeader(request, InternalAdminAuthConstants.HEADER_NONCE);
             String operatorIdValue = requiredHeader(request, InternalAdminAuthConstants.HEADER_OPERATOR_ID);
-            String operatorDeptIdValue = requiredHeader(request, InternalAdminAuthConstants.HEADER_OPERATOR_DEPT_ID);
             String actualSignature = requiredHeader(request, InternalAdminAuthConstants.HEADER_SIGNATURE);
 
             if (!InternalAdminAuthConstants.ADMIN_CALLER.equals(caller)
@@ -91,15 +90,14 @@ public class InternalAdminAuthFilter implements Filter {
             }
 
             long operatorId = Long.parseLong(operatorIdValue);
-            long operatorDeptId = Long.parseLong(operatorDeptIdValue);
-            if (operatorId <= 0 || operatorDeptId < -1) {
+            if (operatorId <= 0) {
                 return reject(request, response);
             }
 
             byte[] rawBody = readRawBody(request);
             String expectedSignature = InternalAdminHmacSigner.sign(
                 properties.getSecret(), request.getMethod(), request.getRequestURI(), request.getQueryString(),
-                timestamp, nonce, operatorIdValue, operatorDeptIdValue, rawBody);
+                timestamp, nonce, operatorIdValue, rawBody);
             if (!InternalAdminHmacSigner.matches(expectedSignature, actualSignature)) {
                 return reject(request, response);
             }
@@ -109,7 +107,7 @@ public class InternalAdminAuthFilter implements Filter {
                 return reject(request, response);
             }
 
-            AuditOperatorContext.set(operatorId, operatorDeptId);
+            AuditOperatorContext.set(operatorId);
             return true;
         } catch (Exception e) {
             log.warn("Client 内部管理接口认证失败，path={}", request.getRequestURI());

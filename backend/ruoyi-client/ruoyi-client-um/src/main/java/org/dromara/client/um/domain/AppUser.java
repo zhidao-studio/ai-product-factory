@@ -2,13 +2,9 @@ package org.dromara.client.um.domain;
 
 import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.Version;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.dromara.common.mybatis.core.domain.BaseEntity;
 
 import java.time.LocalDateTime;
 
@@ -20,13 +16,7 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("app_user")
-public class AppUser extends BaseEntity {
-
-    /**
-     * 用户 ID。
-     */
-    @TableId(value = "user_id")
-    private Long userId;
+public class AppUser extends AppBaseEntity {
 
     /**
      * 用户账号。
@@ -77,23 +67,6 @@ public class AppUser extends BaseEntity {
      * 凭证版本；重置密码后递增，使已签发会话失效。
      */
     private Integer credentialVersion;
-
-    /**
-     * 账号状态（0 正常、1 停用）。
-     */
-    private String status;
-
-    /**
-     * 乐观锁版本号。
-     */
-    @Version
-    private Long version;
-
-    /**
-     * 删除标志（0 存在、1 删除）。
-     */
-    @TableLogic
-    private String delFlag;
 
     /**
      * 最后登录 IP。
