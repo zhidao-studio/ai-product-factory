@@ -1,7 +1,7 @@
 # 贡献指南（CONTRIBUTING）
 
 本文件面向**参与本仓库协作的开发者与 AI 助手**，定义环境要求、协作流程与编码约定。
-项目总览、技术栈、接口契约与排障详见 [`CLAUDE.md`](./CLAUDE.md)，Agent 入口见 [`AGENTS.md`](./AGENTS.md)。
+项目总览、技术栈、接口契约与排障详见 [`CLAUDE.md`](./CLAUDE.md)，Agent 入口见 [`AGENTS.md`](./AGENTS.md)，新业务的 Spec Kit 门禁见 [`docs/需求驱动开发流程.md`](./docs/需求驱动开发流程.md)。
 
 ---
 
@@ -70,7 +70,11 @@ ai-product-factory/
 │   ├── miniapp/      # 微信小程序 (Taro)
 │   └── harmony/      # HarmonyOS (Taro Harmony CPP)
 ├── infra/            # 本地/生产 Compose、MySQL 8、Redis 7 与双 Gateway
-├── docs/             # 设计系统 Token / 组件范式 / 平台适配
+├── docs/             # 工程导航、需求流程、设计系统 / 平台适配
+├── specs/            # 需求、方案、任务与检查清单工件
+├── .specify/         # 全仓库共用的 Spec Kit 约法、模板与脚本
+├── .agents/          # Codex Spec Kit Skills
+├── .claude/          # Claude Code Spec Kit Skills
 ├── scripts/          # 一键启动/停止
 ├── CLAUDE.md         # 项目总览与契约（AI 必读）
 ├── AGENTS.md         # Agent 入口摘要
@@ -79,7 +83,26 @@ ai-product-factory/
 
 ---
 
-## 5. 分支策略
+## 5. 需求到实现的协作流程
+
+真实业务改动使用仓库已集成的 GitHub Spec Kit `v0.16.3`。Codex 和 Claude Code 共享根目录 `.specify/` 与 `specs/`，不为 Admin、Client 或各前端分别初始化子项目。
+
+标准顺序为：
+
+1. Specify 只编写 WHY / WHO / WHAT、场景、业务规则、验收标准和非目标，不写接口、表字段、框架或代码结构；
+2. 按需 Clarify，然后由需求负责人确认 `spec.md`；
+3. 再将工程边界、契约、数据、风险和验证方案写入 `plan.md`，单独评审确认；
+4. 依据已确认方案生成 `tasks.md`，评审任务范围、顺序和可追溯性；
+5. 在实现前执行 Analyze，处理重大矛盾或遗漏；
+6. 仅在获得明确的实施授权后执行 Implement，完成后逐条验证验收标准。
+
+仓库不默认使用跳过人工门禁的一键 workflow，也不安装 `git`、`lean`、`agent-context` 或社区扩展。`specs/NNN-short-name` 是工件目录，不决定 Git 分支；并行需求应使用独立 worktree，或在同一工作目录显式设定 `SPECIFY_FEATURE_DIRECTORY`。详细规则以 [`docs/需求驱动开发流程.md`](./docs/需求驱动开发流程.md) 为准。
+
+本地使用 `node scripts/verify-spec-kit.mjs` 检查 Spec Kit 集成基线；使用 `node .specify/scripts/verify-specs.mjs` 检查需求工件，进入 Plan 前对目标目录追加 `--ready`。这些是本地检查，当前仓库没有 CI，不得在 PR 中将其表述为 CI 通过。
+
+---
+
+## 6. 分支策略
 
 分支、PR 与合并的唯一详细规范是 [`git-workflow-spec.md`](./git-workflow-spec.md)，本文不再维护第二套规则。摘要如下：
 
@@ -90,7 +113,7 @@ ai-product-factory/
 
 ---
 
-## 6. 提交规范（Conventional Commits）
+## 7. 提交规范（Conventional Commits）
 
 提交信息采用 [Conventional Commits](https://www.conventionalcommits.org/)：
 
@@ -122,7 +145,7 @@ docs: 补充 CONTRIBUTING 协作规范
 
 ---
 
-## 7. 编码约定
+## 8. 编码约定
 
 - **后端**：遵循 RuoYi 的 Entity / BO / VO / Mapper / Service / Controller 分层，统一返回 `R<T>`，新增接口默认需 Sa-Token 鉴权；登录等敏感接口使用 `@ApiEncrypt`。Admin 模块直接位于 `backend/ruoyi-admin/`，Client 模块直接位于 `backend/ruoyi-client/`，Common 只承载中立技术能力；禁止重新建立泛化的模块桶。`backend/ruoyi-client/ruoyi-client-um/` 负责 `AppUser`、`AppClient`、`AppUserIdentity` 及其 Mapper/Service；对应 `app_*` 表的七要素为 `id`、`valid_flag`、`del_flag`、`create_by`、`create_time`、`update_by`、`update_time`，不含部门和通用 `version`，Admin `sys_*` 表继续沿用原 RuoYi 字段。Admin 运营 Client 时只依赖 `ruoyi-client-api`，经私有 HTTP 适配层调用 Client；内部请求只传递并签名操作人 ID，不传部门 ID，禁止直接依赖 UM 实现。
 - **前端**：五个工程分别维护自己的 `src/api/request.ts`，不得跨工程引用源码或建立共享运行包；但每一份实现都必须遵守同一个 `R<T>`、`Authorization + clientid`、AES+RSA 与 401 契约。
@@ -131,15 +154,15 @@ docs: 补充 CONTRIBUTING 协作规范
 
 ---
 
-## 8. PR 流程
+## 9. PR 流程
 
-1. 从 `main` 切出分支 → 开发 → 本地验证（构建 + 可选前后端贯通）。
-2. 推送分支并发起 PR 到 `main`，PR 描述说明：改动目的、受影响端点/页面、验证方式。
+1. 从 `main` 切出分支；业务改动完成 Spec / Plan / Tasks / Analyze 门禁并获得实施授权后，再开发和本地验证。
+2. 推送分支并发起 PR 到 `main`，PR 描述说明：Spec 目录、改动目的、受影响端点/页面、验收标准对应结果、实际验证和未验证范围。
 3. 当前仓库尚未建立 GitHub Actions。在 CI 建成前，按受影响范围执行 `CLAUDE.md` 中的本地构建命令、在 PR 记录结果并完成人工评审后合并；CI 建成后再将状态检查设为强制门禁。合并后 `main` 须保持可运行。
 
 ---
 
-## 9. 常见问题
+## 10. 常见问题
 
 - **后端起不来 / 连不上库**：确认 `docker compose up -d` 已执行且 MySQL 健康（`mysqladmin ping`），端口应为标准 `3306/6379`。
 - **前端登录 401「客户端ID与Token不匹配」**：受保护接口必须带 `clientid` 请求头，确认请求层未被改掉。

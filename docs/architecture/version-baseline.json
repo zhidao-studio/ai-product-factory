@@ -99,6 +99,41 @@
   ],
   "jsonAssertions": [
     {
+      "file": ".specify/init-options.json",
+      "path": "speckit_version",
+      "equals": "0.16.3"
+    },
+    {
+      "file": ".specify/integration.json",
+      "path": "version",
+      "equals": "0.16.3"
+    },
+    {
+      "file": ".specify/integration.json",
+      "path": "default_integration",
+      "equals": "codex"
+    },
+    {
+      "file": ".specify/integration.json",
+      "path": "installed_integrations.0",
+      "equals": "codex"
+    },
+    {
+      "file": ".specify/integration.json",
+      "path": "installed_integrations.1",
+      "equals": "claude"
+    },
+    {
+      "file": ".specify/presets/.registry",
+      "path": "presets.ai-product-factory-governance.version",
+      "equals": "1.0.0"
+    },
+    {
+      "file": ".specify/presets/.registry",
+      "path": "presets.ai-product-factory-governance.enabled",
+      "equals": true
+    },
+    {
       "file": "web/admin/package.json",
       "path": "packageManager",
       "equals": "pnpm@11.21.0"

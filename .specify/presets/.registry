@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0",
+  "presets": {
+    "ai-product-factory-governance": {
+      "version": "1.0.0",
+      "source": "local",
+      "manifest_hash": "sha256:b6a91bbdff455d5147cbaa761adb86d46522a6bd0ff8de6720286aa22ccf4c4c",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "codex": [
+          "speckit.specify",
+          "speckit.clarify",
+          "speckit.plan",
+          "speckit.tasks",
+          "speckit.analyze",
+          "speckit.implement",
+          "speckit.converge",
+          "speckit.taskstoissues"
+        ],
+        "claude": [
+          "speckit.specify",
+          "speckit.clarify",
+          "speckit.plan",
+          "speckit.tasks",
+          "speckit.analyze",
+          "speckit.implement",
+          "speckit.converge",
+          "speckit.taskstoissues"
+        ]
+      },
+      "registered_skills": {
+        "codex": [
+          "speckit-specify",
+          "speckit-clarify",
+          "speckit-plan",
+          "speckit-tasks",
+          "speckit-analyze",
+          "speckit-implement",
+          "speckit-converge",
+          "speckit-taskstoissues"
+        ],
+        "claude": [
+          "speckit-specify",
+          "speckit-clarify",
+          "speckit-plan",
+          "speckit-tasks",
+          "speckit-analyze",
+          "speckit-implement",
+          "speckit-converge",
+          "speckit-taskstoissues"
+        ]
+      },
+      "installed_at": "2026-08-14T00:44:16.863121+00:00"
+    }
+  }
+}

@@ -2,7 +2,7 @@
 
 面向中大型项目的可复制工程脚手架：Admin 后台与 Client 客户端后台双入口，配套五个互不共享源码的前端工程。
 
-开始开发前先阅读 [工程现状与开发导航](./docs/工程现状.md)，了解当前已经完成的能力、业务留白、工程边界和新成员阅读路径；稳定编码约束见 [CLAUDE.md](./CLAUDE.md)，精确运行时、主框架和语言版本见 [工程版本基线](./docs/工程版本基线.md)。
+开始开发前先阅读 [工程现状与开发导航](./docs/工程现状.md)，了解当前已经完成的能力、业务留白、工程边界和新成员阅读路径；新业务从 [需求驱动开发流程](./docs/需求驱动开发流程.md) 开始；稳定编码约束见 [CLAUDE.md](./CLAUDE.md)，精确运行时、主框架和语言版本见 [工程版本基线](./docs/工程版本基线.md)。
 
 ```text
 ai-product-factory/
@@ -31,7 +31,11 @@ ai-product-factory/
 │   ├── miniapp/              # 微信小程序
 │   └── harmony/              # HarmonyOS
 ├── infra/                    # MySQL、Redis 与网关配置
-├── docs/                     # 设计系统与各平台适配规范
+├── docs/                     # 工程导航、需求流程、设计系统与平台规范
+├── specs/                    # 已编号的需求、方案与任务工件
+├── .specify/                 # Spec Kit 项目约法、模板与脚本
+├── .agents/                  # Codex Spec Kit Skills
+├── .claude/                  # Claude Code Spec Kit Skills
 └── scripts/                  # 双后端一键启动/停止脚本
 ```
 
@@ -43,6 +47,14 @@ ai-product-factory/
 - Admin 运营 Client 的业务数据，但不装载 Client UM 实现；Admin 保留管理权限和日志，通过 Client 私有管理 API 执行业务操作。
 - Admin 与 Client 分别维护 `ruoyi-admin-api`、`ruoyi-client-api`；Common 不承载业务 API。
 - 五个前端分别安装依赖、构建、部署，不建立共享前端包。
+
+## 从真实需求开始
+
+仓库已接入 GitHub Spec Kit `v0.16.3`，Codex 和 Claude Code 共用根目录的 `.specify/` 和 `specs/`，不在 Admin、Client 或前端子工程内建立多套 Spec。
+
+业务需求的 `spec.md` 只说明为什么做、谁在什么场景使用、要完成什么、业务规则、验收和非目标；接口、表、框架和代码结构等技术内容在需求人工确认后进入 `plan.md`。Spec、Plan、Tasks 都需单独人工确认；Analyze 解决重大矛盾并获得明确授权后，才能 Implement。仓库不默认运行跳过这些门禁的一键 workflow。
+
+完整用法、并行需求策略和 AI 停止条件见 [需求驱动开发流程](./docs/需求驱动开发流程.md)。需求目录的顺序号不决定 Git 分支，分支仍遵循 [Git 分支与提交规范](./git-workflow-spec.md)。
 
 ## 本地基础设施
 
@@ -127,4 +139,4 @@ Client 新表统一使用 `app_*`，七要素固定为 `id`、`valid_flag`、`de
 
 已有环境不会因重新启动而自动执行新版初始化 SQL。开发数据可丢弃时重建数据卷；需要保留数据时先备份，再人工迁移至 `app_*` 表。
 
-完整约束见 [CLAUDE.md](./CLAUDE.md)，协作规范见 [CONTRIBUTING.md](./CONTRIBUTING.md)，UI 规范见 [docs/AI-设计系统上下文.md](./docs/AI-设计系统上下文.md)。
+完整约束见 [CLAUDE.md](./CLAUDE.md)，协作规范见 [CONTRIBUTING.md](./CONTRIBUTING.md)，需求流程见 [docs/需求驱动开发流程.md](./docs/需求驱动开发流程.md)，UI 规范见 [docs/AI-设计系统上下文.md](./docs/AI-设计系统上下文.md)。

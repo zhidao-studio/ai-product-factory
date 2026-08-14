@@ -6,6 +6,8 @@
 ---
 
 > **当前落地状态：** 本仓库尚未配置 GitHub Actions 和强制状态检查。本文件中的 CI/分支保护条款是目标治理规则；现阶段按 `CONTRIBUTING.md` 执行本地构建、PR 记录和人工评审门禁。
+>
+> 业务需求的 Spec / Plan / Tasks / Analyze / Implement 门禁由 [`docs/需求驱动开发流程.md`](./docs/需求驱动开发流程.md) 统一定义；本文件只定义 Git 分支、提交、PR 和合并。
 
 ## 0. 一句话总览（AI 速记）
 
@@ -14,6 +16,7 @@
 - **没有** `develop` / `release` / `hotfix` 这类长存分支（紧急修复也走同一套）。
 - 人工创建的分支描述、提交信息、PR 标题使用中文；Codex 桌面端任务分支允许工具固定的 `codex/` 命名空间。
 - 合并默认用 **Squash**，保持 `main` 历史干净线性。
+- `specs/NNN-short-name` 是需求工件编号，**不是分支名**；Spec Kit 不替代或自动操作本规范的分支。
 - 发版 = 给 `main` 上某个 commit 打 `vX.Y.Z` tag 并建 Release。
 
 ---
@@ -53,6 +56,7 @@ GitHub Flow 只有「一条主干 + 临时分支」，**不区分测试/生产�
 3. 开发中途若 `main` 变了，用 `git rebase main` 把本地提交接到最新 `main` 之上（保持线性）。
 4. 合入 `main` 即代表可发布；发版时直接在 `main` 上打 tag，不再开 release 分支。
 5. 紧急修复、实验性改动，**流程完全一样**，只是优先级更高、分支名不同。
+6. 需求目录的顺序号不改变上述模型。并行处理多个需求时，优先为每个分支创建独立 worktree；如共用一个工作目录，必须显式设定 `SPECIFY_FEATURE_DIRECTORY`，避免 Spec Kit 本地 feature 指针串线。
 
 ### 1.2 main 保护规则（CI 建成后的目标态）
 
@@ -75,6 +79,7 @@ GitHub Flow 只有「一条主干 + 临时分支」，**不区分测试/生产�
 - 要能一眼看懂做了什么，建议 ≤ 20 字。
 - GitHub Flow 本身不强求类型前缀，但为清晰我们保留前缀。
 - Codex 桌面端自动管理的任务分支使用 `codex/<简短描述>`，这是工具命名空间例外，不改变分支来源、PR、评审和 Squash 合并规则。
+- 不使用 `NNN-short-name` 需求目录自动覆盖人工或 Codex 分支名；本仓库因此不安装 Spec Kit `git` 扩展。
 
 | 正确示例 | 错误示例 |
 |---------|---------|
@@ -167,6 +172,7 @@ Closes #234
 ### 4.1 何时开 PR
 
 - 特性分支开发完成、自测通过、commit 符合规范后，开 PR 回 `main`。
+- 业务改动在开始实现前必须已完成 Spec、Plan、Tasks 三次人工确认，执行 Analyze 并获得明确实施授权；PR 不能用事后补 Spec 掩盖跳过门禁。
 - 一个 PR 聚焦 **一个主题**，不做巨型 PR（>800 行建议拆）。
 
 ### 4.2 PR 标题规范
@@ -182,14 +188,26 @@ Closes #234
 ## 改动说明
 <!-- 中文说清楚做了什么、为什么 -->
 
+## 需求工件
+<!-- 业务改动填 specs/NNN-short-name；非业务改动写“不适用”并说明原因 -->
+- Spec 目录：
+- [ ] Spec / Plan / Tasks 已分别人工确认
+- [ ] Analyze 重大问题已处理，且已获得实施授权
+
 ## 改动类型
 <!-- 勾选：feat / fix / refactor / perf / docs / test / build / ci / chore -->
+
+## 验收结果
+<!-- 逐条对应 Spec 验收标准；非业务改动写“不适用” -->
 
 ## 自测情况
 - [ ] 本地编译/运行通过
 - [ ] 相关功能手动验证通过
 - [ ] 单元测试通过（如有）
 - [ ] 不影响其他模块
+
+## 未验证范围
+<!-- 如实说明未运行的平台/环境/检查，没有写“无” -->
 
 ## 关联
 <!-- 需求单 / Issue：PRJ-789 / Closes #234 -->
@@ -287,6 +305,8 @@ git push origin main --tags
 - [ ] 分支名、PR 标题、commit 符合第 2、3、4 节
 - [ ] 一个 PR 一个主题，无巨型 PR
 - [ ] 关联需求单 / Issue
+- [ ] 业务改动关联已确认 Spec，实现与 Plan / Tasks 一致
+- [ ] PR 记录了 Analyze、实施授权和验收标准对应结果
 
 **正确性**
 - [ ] 逻辑正确，边界（空值/0/超长/并发）已处理
@@ -346,6 +366,10 @@ branch_prefix:
   chore:      { from: main, to: main }
   experiment: { from: main, to: main }
   codex:      { from: main, to: main }
+spec_artifacts:
+  directory: "specs/NNN-short-name"
+  independent_from_branch: true
+  parallel: "prefer_worktree | set_SPECIFY_FEATURE_DIRECTORY"
 naming:
   branch: "<type>/<chinese-dash-separated> | codex/<tool-description>"
   pr_title: "<type>: <chinese-desc>"

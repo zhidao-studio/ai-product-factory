@@ -20,6 +20,14 @@ Client 是客户端后台业务主体；Admin 是独立的运营管理后台。A
 1. **UI 服从设计系统。** 修改任一界面前，完整读取 `docs/AI-设计系统上下文.md` 和对应的 `docs/平台适配/<端>.md`。颜色、间距、字号、圆角、触控尺寸和交互语义只能来自 Token 与平台规范。
 2. **前端服从真实后端契约。** API 路径、字段、加密与鉴权以后端 Controller/VO 为准。禁止根据页面需要虚构字段，也禁止把 Admin DTO 套给 Client。
 
+### 1.2 需求驱动门禁
+
+真实业务改动使用仓库根目录的 Spec Kit 流程。`specs/NNN-short-name/spec.md` 只定义 WHY、WHO、WHAT、场景、业务规则、验收标准和非目标，不写 API、表字段、框架、类名、目录或代码方案；技术设计在需求确认后写入 `plan.md`。
+
+强制顺序是：Specify → 按需 Clarify → **人工确认 Spec** → Plan → **人工确认 Plan** → Tasks → **人工确认 Tasks** → Analyze → **消解重大问题并明确授权** → Implement。上一步通过不自动授权下一步；Analyze 通过也不等于可以直接修改业务代码。详细角色、并行策略和停止条件见 [`docs/需求驱动开发流程.md`](./docs/需求驱动开发流程.md)。
+
+全仓库只有一个 `.specify/`；Codex 与 Claude Code 分别从 `.agents/skills/speckit-*/` 和 `.claude/skills/speckit-*/` 调用同一套流程，共享 `specs/` 工件。不在各子工程重复初始化，不默认使用一键 workflow，也不安装 `git`、`lean`、`agent-context` 或社区扩展。
+
 ## 2. 架构与职责边界
 
 ```text
@@ -74,6 +82,7 @@ Admin 管理员 Token 不能访问 Client 用户接口，Client Token 也不能�
 | HarmonyOS | 独立 Taro 4 Harmony CPP 工程 |
 | 基础设施 | MySQL 8、Redis 7、Admin/Client 双网关 |
 | 设计系统 | `docs/design-tokens.*` 与 `docs/平台适配/` |
+| 需求治理 | GitHub Spec Kit 0.16.3，Codex + Claude Code Skills |
 
 精确版本、兼容例外和升级流程以 [`docs/工程版本基线.md`](./docs/工程版本基线.md) 为准。生产运行时采用最新 LTS 的最新补丁；主框架和 TypeScript 编译器采用官方最新 GA。若最新 GA 尚未进入主框架的正式兼容矩阵，只能使用本文登记的最新兼容稳定组合，并在解除条件满足后升级。禁止 Beta、RC、Canary、Nightly、Snapshot，也禁止为了版本号在同一工程并装一套实际不生效的构建器。
 
@@ -105,6 +114,11 @@ web/
 ├── app/
 ├── miniapp/
 └── harmony/
+
+.specify/                         # 全仓库唯一的 Spec Kit 约法、模板与脚本
+.agents/skills/speckit-*/         # Codex Skills
+.claude/skills/speckit-*/         # Claude Code Skills
+specs/                            # 人类与两类 Agent 共享的需求工件
 ```
 
 Admin 新模块放入 `backend/ruoyi-admin/`，Client 新模块放入 `backend/ruoyi-client/`，并加入对应总工程的 `<modules>`。`ruoyi-admin/ruoyi-gen` 是 Admin 代码生成器，默认模板含 Admin 表结构、权限和 `BaseEntity` 语义；Client 业务可参考其分层，但必须改为 `AppBaseEntity`、`app_*` 与 Client 七要素，禁止原样搬用。
@@ -352,6 +366,7 @@ cd web/harmony && pnpm install && pnpm dev:harmony
 
 - Agent 摘要：`AGENTS.md`
 - 当前完成度与开发导航：`docs/工程现状.md`
+- 需求到实施的门禁：`docs/需求驱动开发流程.md`
 - 协作规范：`CONTRIBUTING.md`
 - Git 分支、PR 与合并规范：`git-workflow-spec.md`
 - 设计系统：`docs/AI-设计系统上下文.md`

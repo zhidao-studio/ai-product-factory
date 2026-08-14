@@ -1,0 +1,9 @@
+# Agent 目录可能产生本地状态或凭据，默认全部忽略。
+*
+
+# 仅提交 Spec Kit 官方生成的 Skill 入口。
+!.gitignore
+!skills/
+skills/*
+!skills/speckit-*/
+!skills/speckit-*/SKILL.md

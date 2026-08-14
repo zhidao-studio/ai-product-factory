@@ -34,6 +34,9 @@ Pods/
 # 生产部署从 infra/.env.prod.example 复制本地密钥文件，真实值禁止入库。
 infra/.env.prod
 
+# 本地 Agent 记忆不属于项目事实，不得进入提交。
+.workbuddy/
+
 # ============ Misc ============
 *.tmp
 *.bak
